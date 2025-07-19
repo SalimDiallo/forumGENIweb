@@ -1,0 +1,56 @@
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  // Optimisations d'images
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 3600, // Cache plus long
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    dangerouslyAllowSVG: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+    ],
+  },
+  
+  // Optimisations de bundle pour navigation rapide
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizeCss: true,
+  },
+
+  // Compression et performance
+  compress: true,
+  
+  // Prefetch automatique de toutes les pages
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+        ],
+      },
+    ];
+  },
+};
+
+export default nextConfig;

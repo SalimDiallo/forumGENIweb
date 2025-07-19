@@ -1,0 +1,322 @@
+// components/Partners.tsx
+'use client';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
+
+// Types des partenaires
+type PartnerCategory = 'platinum' | 'gold' | 'silver' | 'academic';
+
+interface Partner {
+  id: number;
+  name: string;
+  logo: string;
+  category: PartnerCategory;
+  website: string;
+  description: string;
+}
+
+const Partners = () => {
+  // État pour les catégories filtrées
+  const [activeCategory, setActiveCategory] = useState<PartnerCategory | 'all'>('all');
+  
+  // Données de démonstration des partenaires (à remplacer par vos vrais partenaires)
+  const partners: Partner[] = [
+    {
+      id: 1,
+      name: "Groupe OCP",
+      logo: "data:image/jpeg;base64,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",
+      category: "platinum",
+      website: "https://example.com",
+      description: "Leader mondial dans l'industrie des phosphates et des engrais."
+    },
+    {
+      id: 2,
+      name: "Attijariwafa Bank",
+      logo: "data:image/jpeg;base64,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",
+      category: "platinum",
+      website: "https://example.com",
+      description: "Premier groupe bancaire et financier du Maghreb et de l'UEMOA."
+    },
+    {
+      id: 3,
+      name: "Maroc Telecom",
+      logo: "data:image/png;base64,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",
+      category: "gold",
+      website: "https://example.com",
+      description: "Opérateur de télécommunications leader au Maroc."
+    },
+    {
+      id: 4,
+      name: "Royal Air Maroc",
+      logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ8AAAC6CAMAAACHgTh+AAAAk1BMVEX////CCDHBACm/ABnBAC7RZXS8AADBACvuztK/AB6+ABW+ABLBACjAACXAACPAACG9AAvQX2/46uzGKUT9+Pnx09f35ei9AAftyM389fb03uHEFzrlr7bPWmvXfYnouL7INk7aiJPqvsTio6vLR1vfmqPrw8jNUWPcjpjUb33gnKXz2d3WeIXJPVPMTF/jqbDFIT9Wo/AfAAAb2ElEQVR4nO1dibaqOgwVWotlFlEQUEFFxfn/v+4lLagoeubh+s5e696jTLahSZM0SVut34HpTzfgl8H96Qb8LnRY56eb8KswJuOfbsJvQSfsdDYKpZsO4Kcb8wsw3DFCqEIJYan30435FZgxBcHWP92Q34KIADnI5qeb8WsQ6Yr9R48zVpzknGc/3YzfgEkI/6kgSL2Uw6fFwf/pFv0ojoRlrf5WfB53Whkjyg+36EexcWFaGQ7hE860Qx8mGrf/0436GUxzIINvqAoBjkl0V09arZAopg4M460mP92878aBcQf+eF2NT1shKiBgwUyJ2oaB4usOm/10A78B3iTP8qkUmHNNMYAzhj1qbFptE+hhFq2NQY9Aj76uaHN5y2K9yifDH2zz12GzZ9y2HOKKeRVIwDvhilCqtlpdQY92qwVmjD6ehg4SB7DSiWM7nC2fUDXJmKpIOMoAxgCwCCG2ogQgKiYgVsWHKRy1OAfmgbHjHXl5h8qeTjdpo0quOdzRFIW6IRotJsWervDsmBHZ5ZzBUKEWio++DpdqNrc1VOa7P9v8z0auIxnmebLeu9A/dgAlvTADY1Ra+F5YmrabLmfKNoIxw6ii4R353AXCkdXPNf7z4QEfaLGUAlEKbGAUL9wxBhZyevKOTYwkHHxxG78TWwsk5UkTx77aSlK7Iqp9m8QOaGbb6quv0FLCPgmAAGRx/joJNIVyd9duV1Npn1Vq6bAo9gYHXgkuCBYCuwXf1divR4coNL48MOjpMNuo+slYoRqtPiqGONWr8UePCj32STBzFOtqxpyOuGuNKxZaOYpTCUx/rLrO6Go9ZmUrzvO4z7A3h+ZTkmFUqqBedvp+g4TfUPQfRmYpPGk60SFsjhTYBEqAc8lwz5rZYgL0eJ4Vidy5M9qXhmKayDR5kMP/vmoq+rLpQuA4+3k0EHi7avvqWCgkRE4Ua4QfLPyvaykE6dKaXg+Swrwzwv5JeDDf6vVDc5cIB/JelZyC6mkUSLs2AqNvV78cVDi3rqL804Dp0ql7NEBAUh1ER984C4axpeigv/sEJtf6YDjwqwn7H8cErDm9WnzbHFC1CA3FRkKobkDKE07gIttktmIgv3iHyswfwu3kzgT1b6IHCmkstY0F4wx11SUnDP5El3rXACnACN/Dn7C8DgbMUXuu4QEdDcCg04ROPgDmcYE0i3HYvLYwXGyn6DSkVOqoGwUUVvZE0gPRAfOdum18/wO39HogvMV6PEoVR3eUdDReL04r2jlTXSRHVARwJ1s0PfRfxsYEk9UUXp/lXk6n0azrGMSxVEoVBQxg1XKIYXcPkoMWc+SaFTqIbP6MgRCZy03K0H+O36IsNpzKhXgJ1THileAOXHlgVOXB9jkX7fykODI5kSY918ZBoWgWJ7rhGgb80wm30DmoUNtNy+uY0j08p3/9DH9FOBXuVF2fjw9h5OH7970oPGRzXRejhnKeP+eouMEKZCcQgwf7WdM6QjRbBhyHiaPn3962H8AMFxdsd5/cf/3+ZO/auATxf1ilO4Cxq2cvRYp5GYyie06Tp8Is4Jd8sElWxS5qZXG6LFZJ/2LQ5Dz4P9BjffZzhVnq6ty2FbD3NaqZNidump1t/ex5XIQvo7PViVh7Q09PX6/UD2oTvXhG9esxDrFuyv6bDtugRxG0D8cUOoli6vH/QZKeseZCAYGx4KbbGVhvlGpef7repi6xqFQ//j+8MlEFNSwjrmTFxlB0qYv4IejxFg4Sbv4/goS8uQ7UoI4+PmtjK1uxz2J2M9YdvESf/w/itxNXFS+/JiBieuXwmZkY+6G6Tz/htg0hL+vCIcKDRt3jsxby1rh2yz8Xhj1Uw932lcW6suWsW7+2jXEfdu+JrVtPxaVqfpMrdxRTyvH68ILj5eYzBX7UMCDQbye9eeEDV2gdtwsswx1YwpQ8KUE8nGVJQ1hLDr0GRdVpMO8LjLPiT0mQoQrkMJoW6XtUUUeaQnsN51Ygaqn6jDKkB8LAaFqTRnbRh9Bvt2kc5HBCbaLUP442MAVpDOGYOYrabS3VOzEAKwKs9HTTbmLc7VWqKXyCC7pa2ni+AEoaz7O4L+ABOe501wsUJfBbQ/zTrJ/vgNPc51Ld99Al0iwVkV0wBGSv3fMPDkF3V+df2LpvxxSGh3GnZMFck6EuyDB3Ov3o9n8SlCrmqPkU8omLI2cI00xwZ2Ltmgqlzaf+Rcx42ecG4LDYi0/VQGkAzsb8eVxmJm1UPgVAbHApNg5ORZlbgApL7S9p2w8AhoDi3DknphU5dLzgPsO0bPo8AXW9B8MD2aWKnUtdnd1zAK2Z7mpf0LYfwAZV8XuLkyP1HGnnRVF013TbRNHmORa4t5Zi3ost9t1/RNXqLNufggIjnyiddxuwXGCkLqqty6bT3dE1QNpuP6dZyzeveI1d9RMgLLgNtWjTSTZsdYUVF77yt9x+KyOf0Sz3HbHwI7shmOmtIGELI+G6RsM5nFyllb+1Xn4Sly7WkHxCq6zGGPmX0BPRXSb5CGAI7GKQkUkgVmoVyi/OHVpTIrxA7P4DuFzB1IIEKAH6/PDBta+AWCN9pztliKupZibqHL0bMAQ0zB71ehgURI9h/3zOx6xkmImH4d3b+6HwNTvHgdDnDRBsH8EmE+ms73S3DQw54j+ESC81y3FAMcmy5jTWb5ZdriBSK8vMQqCM/sGoXMFt708M6Ig6Ax9TC6enXA+xfEDZhWa2INerDNl2W1wUvFgxzFkuUxEx5+NjRm5S1k14NzB/XHmPMD5jfc7kGc5F3aT5abhCD69WoTLdOnvgy+t35fX5R3PotriuwT5EUkEQR/nASvv4Mlcsv3zfrRZ016iHGKIuW6U7LEh9PH0wZyxRcMJkHwwaCHHRkHJeJP33qZFt9TL1dqNYJ3mA3Eyvy+Mop8RS8TYteqYXXH6TZfU6eP2kEBEnonLAxzCIRZUFkxPD4Fp87N0gfjgCl5pCLkvgiAVtnC+Eo9i+9rhntmIitQZHnI+MyzIGG13RHioO0/i2ccdY44ZBuJhonfgzVrZWgQytxvmyEcGjTL+ddjUrJFjQQMPQwejo6NfVgjCQjJf6iubWRDnMVNpVGlkNWdDcvKrtdvBJGavDlWY4llY9+BY8vV8E6YYepSqio/9we1v2VAWG6WCCsuL06hz6mB79Hr/bPqqZjmGuPnGVLzps54ruYtx9EwKWTu4Y4/MbepSqiKX2r8sYiHMWSs3IoMG17HxAD3+SsnttM1xD2xWNoeEfxtC7i8Ed6i/VuvwQCKUq0sRnHdDfzFYrvtUDNyBP78gPLxrcgecNP99r4guF+p3zi1kr7VA9cY+qBd81EBGEFUiV5PYMVuN65/yCzb+TnfYurMCK0m9k36uAuepNTkCpiujXc5OPxm5zqv67c/j7ug7W46emd2PYgRK8J//ibqb5RuhHbj0epBAWffNaC1ZFeM+awypQ7kQWfAAr1I54/HbtDmwU9c5SlFRFLnSCwZH3mrRWia7axHkvIRH6k/vpyf8zJhRVvbteyHymVwKMZJSPN8g3pSpCT1kuM5h23EGDVSMBmoTxBn3K9zaLdVcXaulXlLvrWMJhpjqY7+a6gXuNgDQa0lg9qUEUx9Irgi9PX6Lw9EcY02+shdXbkH2MRQDI7WGYh3lDW+CfoROZsGjbX5MfMGb2fZ0M1Z7G8NmRiuEdN50wZGWLDIad6oJU7ZvoqhFKR7NXBItENDHewX3cKJt9WeGQ4Sp2uW3e11TJ7pbxweBvmCbBeJdHQ0dHB4D0dHChdDQzDBxtEKfR/K5DVSTUuPHqS5czvMmqmPdMI2gGY73rMRIZTeP8CGq5nGuHawysRL6pPCPTGzcRgjeMmiRl7IZXSoZxjvP2avILQxOVU9fPGEhnaImpLtTVk7PHbXDqLRqcA62fXrCLkslk0qA6PgToDTeMD0x09mUUIuNSObMarspc6zpw7K0Vc4YJ4PClhRCWjHMSv40jcSywq1tSehKyUYzzlgjc35ZtB9F5HYyKFf8a4zHvw4sJ5+yO7vNZWGIE9Ruj/cDkv3L04dxZLnHPhNsdnxjFTqmKiFXdeudB7X/o/LhFYmB0+BeTA6ZPIfl6b1FUQT5ehQdVMXQtf4lKB0dPR4IzjL4UVBpdB6NigNCNEHoAf9ITBuOXk6P0a1LuzrNk0Y8GTbb/9S0xVazt5YGdJtmlY6HSUVZ7FV4R00Ld6SYYFQtC3uhojW6HqL84ZHNXrOu52+tbvgITmd+GlRlAVW3yDl3nrGD5oMsCLxgJxHypjCmmU3k6QqeiDhYevwxGHWA13ashOTw2eoDAlC2rRFjGNyXgDQvmPNQJNefK7urR2vs+OOjZ8VLBevvzpFl6RVJPRG9fKF/pbbT/gmsP1VKHFd+XBeDlvYA4tqlqWqMLVwtGNXHYhwFBzjMoRhJOp4ZWUzoE1kxI1+m0Foy6BjIFNe/LYOQ2O4+pppqWQ4Je/s1RNsPwkBWj+e7WxS8XIczupcOvABZjp/JZWFxJWG+2cq0dRMIroo+0i9i6CK63L/0k4YgocSOO6W5ZZLPw1yeIWBTsiZIzMN4QE4CaswWFVwTPVm41Hwz9RpfBL8IhW61Wb3GX4dK4WioQe8n52h15NzHK82Uw6s584yJ0Dm3LvjdT1VeIbZP5G+wHTGOxhTqA7FKKzWZIQVsxDMYpvaW6tj/HpinfbNr4MZhgpvkGFQn7xXH9UbALfVhiPkNVRK6Dd3lFx9dhin4UNf52S88/WphSnr5+d4UUGuoshfKpmC+4rEIbezXCqn5wcfranxhOUkyGt44/YfgKZUHjbq/Ik8nifsyTxAAoCISwU0wNIsuXGuwviUgTAkXEPML8+sLTw8UkyYueK5QSci8K/oshNhfACh425y9GsrlIEBMJ+Er37iyQaWRmz28NUO18DM5tWT3EZD9WlsrrMuehlnipMGIWbYor2Xb8OpdExNVua8hgUvIeq8MX0BzW/clwZy/fuTp3bMt8MQbWQm9fV79egbqLPij5BsxLuJBtvfRw07Rsh+vubv3zwd+b6Ww1LtqNIde18Ov9AHkMlI6N1X6x3paoZiBsOG//4qPb7e14NZv+o9vE5IyarHjENFEhRJNN/9EevgkzhjLHdHd3KtT5yc5FamjsW9wXP49oJzRyjQfLmzCVTVW9kBq7JyuJ+wBhaoiVRNXR9d02T6ZhJ5wm+XZnyOqWimr0nq4i7kN0RkE5iWqmI9QXzh2zDPp3guXzbObxWnjrFAvmXqspJii8v2DS/BF4SaG4hDtCezEthxNXKZL/KTFKDPuTPAPtpV1k+aT/6/1af/jDH/7whz/84Q9/+MMf/vCHP/zhD3/4wx/+8Ic//J/wlI7786JdfY3m5WixyeP1vtPC+SeU0LwMMTwVNfDfWqXHm+bFMlW4bnDViavW+7Wou/4pzHBWC96OXq4nFj8spDKvzvqXYb/visnrp5cZSLvqvb1tZzA/L/M2y9VLu4pbzmqvNdWqr6xGj/TFcMwJCRpzq2RzJwbPZOe3ank9/Nux9tspMmXB8syaYZXqOryMLvUxbmH1oJBRaFTxYVQzLcc5ZVP1a/1e6JTJXq1q4coDFr9UaWGu6U0/P2E77HJmU1V0feHKjMV5YK9HRH/Pmnp0GRfdqzKS2/wcJDZQWHd25PrdETtkVHPELqe8tyyy9eEUnb1ml+EhOw0DMPGGoFYcJOEae6GVrGlvCH9kOIIeCS+zOVWRwTlMuT7dZLtXrCPPaiEq/lWpkYVR7ovus3Pho4RZZLx3HwRBTom2P0zCzen3exW75DV6zM2yPntk1OoarLl2G9w7mF+KxqKxrtSWyXJNURWIdBT06Gz5ayNx3It2pCIT2OqNxrNyl+e+UaURa9opn3hy3ANDTR/I14TTWij7+kTLVX3X7CoJzzNqqXT9oKFsu2leVnnasEaOKnloULF579W7lvsHlFmTi9p9U13wOwZSOsSQv9epxMZS5a98cEsMKxqc5W92DtbN6vSYMzkeh269bp+S3jwTd8+4EDJeMz1KDKpmp9rr6NHfGhw7GF4IxSNmN+2W+1Shp1SEqCrCMrZuC0fdB+4CdKridzn0x6w2KywrMXFFj3klHPxONVLj2LlMQCzp4R26MW3fzDT9KklrdxrW4a57L9l3kMcGlsc/5qudeyLzJiW2zGmbYYEN+dMneqydqsRF2fBHFUOGrYJg6ZzbGWBbT2MeBd5mhkfcesGItqTHYhkQIt/YsdPKnIsMREEPOM9VSk1JmzDLxuPxtijabWqEZ3qIXxwwzQyahMgm77kwGVLeo9S2NePyXGYp5nLsYgg2kRIwMtJ17+hhgnW53eBAECjU3Huxk/6adHCrcaUpW6qo06Or6kSMU71OjzHmGYU9XewzjRJxgu8FmDmtrhiyTqKQcvdymfpqORbABKingbRTey3Brbj9BnWupPTm0LblRoHkOOhgMoNzyrL2+0m+UjHpFENJjTLRfKBTm3JoS59URQjxz0ZkGjflu3TariPSwmb4eOt6ntjVytN7PZFTC+OY1OmxWraGI6aLmnxCokNfVjPlIkV1aDicypKD5T5V2UWZDLNq2hzogbkRC2bowBJGupolh9k6z1fbURwQR6YvcNw5YcjgvrLMUZj1AsLtquixWZTMMI0ptUTVgYFRtlhM7IrliJ20rnimn2m45x4VqUxt8XLrpUsm5KI+jo/l+Lgm5hheL9U/G08ZXYeLAjqL24CCgFZsHLZV2aDEoSbh7UPfG3Y4JfB7/nan66csASvY51iOa67GLTzb23kDlMia7XDuAGxLlddS2zjKST9nTFQL81cObkFKxbQiqySKIbbJFUJpb2XiXOi78qCHAnGut2dY9dcyuutpZxMNBlF/mne5bot9LC1NnfVzoshn9U6KQjgytJPe5WUGiKs43FvID7yeur4wS7m1NcXQ906soThKHi56xDGqLXUL8zTteEnvFN2o2QQ4GseHMwH5imyaXtfTphZ34+ysEYmxOwGqao6hp+1stvALUTfbMXpHF3pHHXUED8PrSo2pwxJvx/cy/x7Db0EN1TGHmsuwW1OPE9CWHZDN5lhEn1KijJPF9FA4xIyXMlHMS/aBVfJCjMyvB7WhljGpFnkjs6yCMBnpBtHkCyVcU5FDhoNw1jZMe9EaepswWRVpLYvEBCG051nrqPR3Qk3z94FjajKlF9+9m44npTjD0dkRTShcyvX9uabGoUwJklImiYGjhLC3ZIun3NE1F0m6YLeRpnIj5DK9kLU8UfgCXwPuDAyDfZpwKy26scx60ghWRh0hH9aFc4YThheu567lXry9aH9OzbGxApQhyytxUWmpyh4q20JV5No5DIyRSiqtOFoX814c93b47iWh8960tYkNq9NC4T+IHX5VK9frMm6pqum4WPJhZKdLMZeXFYOwfnOZZ91RdOvUAuizoY5LZshRs9NRcrQvSyMZY6x7QU3JuZa723AFBCJ2lZViNsxW62RmKKllQGc1R7nQGZJYtXRZX/w+BNfrLjxBFGRNoREr68HWTEuiMZPBbOstQB7MXEefASvXrxkm4+6oWIshk1lUqpSlYolVTE42yGKcGvBqwG7T020yaA1SIN1Mz1vtgJSCdBGT8qWqwuDJXUk9QrYbURpS7Jq8OWniXuYynQqNkFoXoyYsdE75uAUiVnduYqDLUktA3F43Oyyi0ySW4sMZu2u9pMwyDqAlAgWycX/nYomALXuQhhEyJxUfKo9E4dbrBg4HUSSdRoM2I4wznY2GrXB6atJkD1MXJ2wkG7Viuu4ey5G0YI7QH2u696LQXB0ussfl4IgOXTEuuDSDNut2T7wGzMDTUXoB4xz3RT65LYAsxFDyIOdmIfKYsLFrxmQbOw8LVE8K8SPnEiDTe2kKfubCu97ub19Gfzo559/7/egsOyfbRjfoMNpE5Q96eQwNxW7Xyqf63iDabPqbDdYr+Zxc1OnkX4krhzF4os8f/vCHP/zh/4nhIgzDxVMuJl5hzwyDvbgpaZ8hvqZc65fjcSVzvxNeTvpd3Cu+Yc0lCi81MF8USX+VhuR71S0Xl9ef1oRhffBFySyZbt4+IMemsMS8vJDqa2ergImoyW8OmsHCB+HABzXFYwUjhC29GS8PNNNjohjEAJMQq2Vh0egNj+PY6YsnKbj/bZhdlTtIVUr5rDXpBa7YrKxgBktLlXpCxdN88TQgjIeWIem3JuPSSJjtCViz6cl5v0ld7nCuu/FbF67HNvRrCRZDgLaDv3SFVURNYXitodPU7GIxfSQMWrxiOw5F5SNovnaXHqK8mEJ1vEr0YGPAB1HYncAHnrRd+2qtLdXweCYsXzJqCZ+AJv3u+fXTPCQM6aQ6FxVRFkTWbNO4IwkYssoFYL81FX6M1XBSq9w/qofuGI7OR1nIXDgfXR9dymArwoGVqAnEdZlqfo8eaO6C6U6IcDXitg6b8o2K8rflD17RA10re0d2w1Rkh6yi8WlYekahPVXuiyJcLpouas0awrWHtXTgnRHCyXvoIexopIfoLUm8BFuPzocc28cnWPpWuguF29mcRLJW0j16rPDl8nHUn2uN9JA/eEsPRSW6NNodQ17Xu3zaTrukBz5E0APbpM2jwVItCbgW1VhGkzCcbF9ZhKROD6WkBxaQttEfsTVlmTQff1gdid/X/XInMrFIlNsP6LHUyqbKG2/poTTTg8Yb6Vy3V2V1KqTH/uZpXrXtHx7GKqOicaKxRnXD24qoXtHDMVwWiuqtctOSCTRGBCNk+G5s3M1NbKkgViMMlPvoEbtLj6OUmQDzzvjg8IO39MB7kDVFr/D9C3ocq8HZUmv00IiLRXZw+MhldSQlihfr9PPvpAfBooi+2AlPEcXm8eWI5RxxSLjEhS86PNFjwR/Q48ReovcN8uMIqtnV5Iv0wMWLcUWPtKLH7dMEPbR538eHCHoIBSim8jSyy/t2xJA/b1ZCB93FJnIccqosXFvxkyp80ZHgF5zDcB3lLj121YAV9LulB2lQzO7T4/Zpgh5GqVwsxDuK5BZMInIEC5+Va1T9N8+31gUtM6Sss8x32Ca5rimFO/ygdN4J1z3Jp+2X5ak9ms7s5vnlduOcR/TIyqcJMXmmx2nrYV1wfCYaLwbKVLATd3qxwd4jT0/0GArprtkox6u9QcfCdV2Jp1zMwDa3zUf0kERUufNheqSNT6vTYy0IYomBzIQHdimnbRju1ofo0eoHleOeY2VAf7XKJT2Mypm61MX2H73cekCP1kQs15gscT7IL6l8mlp/Wp0erbZReta1yqk9EmolBRXkrXv7FMy9XJP32gy1GEOozK0hs225c+p59jr0WKCsQAOF+9ALvscPN/Zc1DVcvRv5GFuECxF98QHJID40RDXF+JwEYx/wAjwQGEYgV+Q3+LR2+bQIwxTww1kgJ7GLzvogPS+CtjXXNUdv3/7EF7g80J9OF6XdMCyL9Vr2rWFU3XfzgNMFl1c1fLjzvDsXvPCQQTidhl/uW/bjFHH8xorN34X/AO2XFXCoESd6AAAAAElFTkSuQmCC",
+      category: "gold",
+      website: "https://example.com",
+      description: "Compagnie aérienne nationale du Maroc."
+    },
+    {
+      id: 5,
+      name: "BMCE Bank",
+      logo: "data:image/png;base64,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",
+      category: "silver",
+      website: "https://example.com",
+      description: "Banque marocaine du commerce extérieur."
+    },
+    {
+      id: 6,
+      name: "Université Mohammed V",
+      logo: "/api/placeholder/240/120",
+      category: "academic",
+      website: "https://example.com",
+      description: "Une des plus grandes universités publiques du Maroc."
+    },
+    {
+      id: 7,
+      name: "Lydec",
+      logo: "/api/placeholder/240/120",
+      category: "silver",
+      website: "https://example.com",
+      description: "Distributeur d'électricité, d'eau potable et service d'assainissement."
+    },
+    {
+      id: 8,
+      name: "École Polytechnique",
+      logo: "/api/placeholder/240/120",
+      category: "academic",
+      website: "https://example.com",
+      description: "Institution académique d'excellence en France."
+    },
+  ];
+
+  // Filtrer les partenaires en fonction de la catégorie active
+  const filteredPartners = activeCategory === 'all' 
+    ? partners 
+    : partners.filter(partner => partner.category === activeCategory);
+
+  // Mapping des noms de catégories pour l'affichage
+  const categoryNames = {
+    all: 'Tous les partenaires',
+    platinum: 'Partenaires Platinum',
+    gold: 'Partenaires Gold',
+    silver: 'Partenaires Silver',
+    academic: 'Partenaires Académiques'
+  };
+
+  return (
+    <section className="py-20 bg-gray-50">
+      {/* Décoration en fond */}
+      <div className="absolute left-0 w-1/4 h-64 bg-green-800/5 rounded-r-full -z-10"></div>
+      <div className="absolute right-0 top-1/2 w-1/3 h-80 bg-green-800/5 rounded-l-full -z-10"></div>
+
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col items-center text-center mb-12">
+          <div className="inline-flex items-center mb-4 bg-green-50 px-3 py-1 rounded-full border border-green-100">
+            <span className="text-green-800 text-sm font-medium">Ensemble pour l'excellence</span>
+          </div>
+          
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Nos Partenaires <span className="text-green-800">Stratégiques</span>
+          </h2>
+          
+          <p className="text-lg text-gray-600 max-w-3xl">
+            Nous collaborons avec des organisations de premier plan pour créer des opportunités exceptionnelles 
+            et façonner l'avenir des professionnels de demain.
+          </p>
+        </div>
+
+        {/* Filtres de catégories */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
+          {(['all', 'platinum', 'gold', 'silver', 'academic'] as const).map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                activeCategory === category
+                  ? 'bg-green-800 text-white '
+                  : 'bg-white text-gray-700 border border-gray-200 hover:border-green-300'
+              }`}
+            >
+              {categoryNames[category]}
+            </button>
+          ))}
+        </div>
+
+        {/* Grille de partenaires */}
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          layout
+        >
+          {filteredPartners.map((partner) => (
+            <motion.div
+              key={partner.id}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              whileHover={{ y: -5, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+              className="bg-white rounded-xl p-6 'border border-gray-100 flex flex-col"
+            >
+              <div className="relative h-24 mb-4 flex items-center justify-center">
+                <Image
+                  src={partner.logo}
+                  alt={partner.name}
+                  width={240}
+                  height={120}
+                  className="max-h-24 w-auto object-contain"
+                />
+                <div className="absolute top-0 right-0">
+                  {partner.category === 'platinum' && (
+                    <div className="bg-gradient-to-r from-green-800 to-green-700 text-white text-xs font-bold px-2 py-1 rounded">
+                      PLATINUM
+                    </div>
+                  )}
+                  {partner.category === 'gold' && (
+                    <div className="bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold px-2 py-1 rounded">
+                      GOLD
+                    </div>
+                  )}
+                  {partner.category === 'silver' && (
+                    <div className="bg-gradient-to-r from-gray-500 to-gray-400 text-white text-xs font-bold px-2 py-1 rounded">
+                      SILVER
+                    </div>
+                  )}
+                  {partner.category === 'academic' && (
+                    <div className="bg-gradient-to-r from-blue-700 to-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                      ACADÉMIQUE
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{partner.name}</h3>
+              <p className="text-gray-600 text-sm mb-4 flex-1">{partner.description}</p>
+              
+              <a 
+                href={partner.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center text-green-800 hover:text-green-700 text-sm font-medium mt-auto"
+              >
+                Visiter le site
+                <ExternalLink size={14} className="ml-1" />
+              </a>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Section "Devenir partenaire" */}
+        <div className="mt-16">
+          <div className="bg-gradient-to-r from-green-900 to-green-800 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
+            {/* Motif de fond */}
+            <div className="absolute inset-0 w-full h-full opacity-10">
+              <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeWidth="1"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+              </svg>
+            </div>
+            
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              <div className="flex-1">
+                <h3 className="text-2xl md:text-3xl font-bold mb-3">Devenez notre partenaire</h3>
+                <p className="text-green-100">
+                  Rejoignez notre réseau exclusif et connectez-vous avec les meilleurs talents. Ensemble, développons des 
+                  opportunités professionnelles inégalées.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/partenariat" className="inline-block">
+                  <motion.button 
+                    className="w-full px-6 py-3 bg-white text-green-800 font-medium rounded-xl hover:bg-green-50 transition-all whitespace-nowrap"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Nos offres de partenariat
+                  </motion.button>
+                </Link>
+                <Link href="/contact" className="inline-block">
+                  <motion.button 
+                    className="w-full px-6 py-3 bg-white/10 border border-white/20 backdrop-blur-sm text-white font-medium rounded-xl hover:bg-white/20 transition-all whitespace-nowrap"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Contactez-nous
+                  </motion.button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Témoignages des partenaires */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+              Ce que disent nos <span className="text-green-800">partenaires</span>
+            </h3>
+            <p className="text-gray-600 max-w-3xl mx-auto">
+              Découvrez comment notre collaboration crée de la valeur pour nos partenaires et construit des ponts entre 
+              l'excellence académique et le monde professionnel.
+            </p>
+          </div>
+          
+          {/* Carrousel de témoignages */}
+          <div className="relative">
+            <div className="mx-auto max-w-4xl bg-white rounded-xl p-8 'border border-gray-100">
+              <div className="flex flex-col md:flex-row gap-8 items-center">
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden flex-shrink-0">
+                  <Image 
+                    src="/api/placeholder/128/128" 
+                    width={128} 
+                    height={128} 
+                    alt="Photo du partenaire" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <svg className="h-10 w-10 text-green-100 mb-3" fill="currentColor" viewBox="0 0 32 32">
+                    <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
+                  </svg>
+                  <p className="text-gray-700 mb-4 italic">
+                    "Notre partenariat avec Forum GENI Entreprises a considérablement renforcé notre marque employeur et nous a permis
+                    d'identifier et de recruter des talents exceptionnels. Les événements sont toujours organisés avec 
+                    professionnalisme et nous offrent une valeur inestimable."
+                  </p>
+                  <div>
+                    <h4 className="font-bold text-gray-900">Mohammed Amine El Hajjami</h4>
+                    <p className="text-green-800">Directeur des Ressources Humaines, Groupe OCP</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Navigation du carrousel (pour démonstration, non fonctionnelle) */}
+              <div className="flex justify-center mt-8 gap-2">
+                <button className="w-8 h-8 rounded-full bg-green-100 text-green-800 flex items-center justify-center hover:bg-green-200 transition-colors">
+                  <ChevronLeft size={16} />
+                </button>
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 rounded-full bg-green-800"></div>
+                  <div className="w-2 h-2 rounded-full bg-green-200"></div>
+                  <div className="w-2 h-2 rounded-full bg-green-200"></div>
+                </div>
+                <button className="w-8 h-8 rounded-full bg-green-100 text-green-800 flex items-center justify-center hover:bg-green-200 transition-colors">
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Partners;
