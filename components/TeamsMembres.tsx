@@ -19,7 +19,7 @@ const TeamsMembres = () => {
       id: 2,
       name: "Sophia",
       role: "Vice-Présidente",
-      image: "/team/vice-president.jpg",
+      image: "/team/president.jpg",
       level: 2
     },
     
@@ -27,42 +27,42 @@ const TeamsMembres = () => {
       id: 3,
       name: "Karim Idrissi",
       role: "Secrétaire Général",
-      image: "/team/secretary.jpg",
+      image: "/team/president.jpg",
       level: 2
     },
     {
       id: 4,
       name: "Yasmine Tazi",
       role: "Trésorière",
-      image: "/team/treasurer.jpg",
+      image: "/team/president.jpg",
       level: 2
     },
     {
       id: 5,
       name: "Omar Bensouda",
       role: "Responsable Communication",
-      image: "/team/communication.jpg",
+      image: "/team/president.jpg",
       level: 3
     },
     {
       id: 6,
       name: "Leila Chraibi",
       role: "Responsable Événements",
-      image: "/team/events.jpg",
+      image: "/team/president.jpg",
       level: 3
     },
     {
       id: 7,
       name: "Mehdi Alaoui",
       role: "Responsable Partenariats",
-      image: "/team/partnerships.jpg",
+      image: "/team/president.jpg",
       level: 3
     },
     {
       id: 8,
       name: "Nadia Berrada",
       role: "Responsable Technique",
-      image: "/team/technical.jpg",
+      image: "/team/president.jpg",
       level: 3
     }
   ];

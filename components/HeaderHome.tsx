@@ -1,4 +1,4 @@
-// components/Header.tsx
+// components/HeaderHome.tsx
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -8,13 +8,13 @@ import { Menu, X, ChevronDown, Calendar, Users, Award, Camera, FileText, Briefca
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 
-const Header = () => {
+const HeaderHome = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
-  const headerRef = useRef<HTMLElement>(null);
+  const headerHomeRef = useRef<HTMLElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
   // Smooth scroll tracking avec framer-motion
@@ -136,8 +136,8 @@ const Header = () => {
 
   return (
     <>
-      <motion.header 
-        ref={headerRef}
+      <motion.header
+        ref={headerHomeRef}
         className={`fixed w-full z-50 transition-all duration-500 ${
           scrolled 
             ? 'bg-white/95 backdrop-blur-3xl border-b border-gray-200/30 shadow-2xl shadow-black/10' 
@@ -211,10 +211,10 @@ const Header = () => {
                           isActive(item.path)
                             ? scrolled 
                               ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' 
-                              : 'text-black bg-white/20 border border-white/30'
+                              : 'text-white bg-white/20 border border-white/30'
                             : scrolled 
                               ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50/80' 
-                              : 'text-black/90 hover:text-emerald-600 hover:bg-white/15'
+                              : 'text-white/90 hover:text-white hover:bg-white/15'
                         }`}
                       >
                         {item.icon && <item.icon className="w-4 h-4" />}
@@ -286,10 +286,10 @@ const Header = () => {
                         isActive(item.path)
                           ? scrolled 
                             ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' 
-                            : 'text-black bg-white/20 border border-white/30'
+                            : 'text-white bg-white/20 border border-white/30'
                           : scrolled 
                             ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50/80' 
-                            : 'text-black/90 hover:text-black hover:bg-white/15'
+                            : 'text-white/90 hover:text-white hover:bg-white/15'
                       }`}
                     >
                       {item.icon && <item.icon className="w-4 h-4" />}
@@ -382,7 +382,7 @@ const Header = () => {
                     exit={{ rotate: -180, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Menu size={24} className='text-black' />
+                    <Menu size={24} />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -520,6 +520,6 @@ const Header = () => {
   );
 };
 
-Header.displayName = 'Header';
+HeaderHome.displayName = 'HeaderHome';
 
-export default Header;
+export default HeaderHome;

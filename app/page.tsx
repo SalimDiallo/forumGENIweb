@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react';
 import Hero from '@/components/Hero';
 import Stats from '@/components/Stats';
 import Link from 'next/link';
+import HeaderHome from '@/components/HeaderHome';
 
 // Lazy loading des composants non critiques
 const UpcomingEvents = lazy(() => import('@/components/UpcomingEvents'));
@@ -19,12 +20,16 @@ const SimpleLoader = () => (
 export default function Home() {
   return (
     <main>
+      <HeaderHome />
       <Hero />
-      <Stats />
       
       <Suspense fallback={<SimpleLoader />}>
         <UpcomingEvents />
       </Suspense>
+
+
+      <Stats />
+
       
       <Suspense fallback={<SimpleLoader />}>
         <Partners />

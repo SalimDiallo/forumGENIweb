@@ -1,14 +1,7 @@
 import type { Metadata } from 'next';
-import { Freeman } from 'next/font/google';
-import './globals.css';
 import Header from '@/components/Header';
 
-// const inter = Freeman(
-//   { subsets: ['latin'], variable: '--font-freeman' ,
-//     display: 'swap',
-//     weight: ['400'],
-//   }
-// );
+
 
 export const metadata: Metadata = {
   title: 'Forum GENI Entreprises | INSEA',
@@ -28,7 +21,10 @@ export default function RootLayout({
   return (
     <html lang="fr" className="scroll-smooth">
       <body className={` antialiased min-h-screen`}>
+        <Header />
+        <div className='py-24'>
         {children}
+        </div>
       </body>
     </html>
   );
