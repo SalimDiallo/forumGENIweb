@@ -2,11 +2,11 @@ import { Suspense, lazy } from 'react';
 import Hero from '@/components/Hero';
 import Stats from '@/components/Stats';
 import Link from 'next/link';
-import HeaderHome from '@/components/HeaderHome';
+import HeaderHome from '@/components/home/HeaderHome';
 
 // Lazy loading des composants non critiques
 const UpcomingEvents = lazy(() => import('@/components/UpcomingEvents'));
-const Partners = lazy(() => import('@/components/Partners'));
+const Partners = lazy(() => import('@/components/home/Partners'));
 const VideoTestimonials = lazy(() => import('@/components/VideoTestimonials'));
 const TeamsMembres = lazy(() => import('@/components/TeamsMembres'));
 
