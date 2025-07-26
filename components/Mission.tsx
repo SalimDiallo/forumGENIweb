@@ -1,113 +1,222 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Eye, Target, Heart, Lightbulb } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Eye, Target, Heart, Lightbulb, Star, Zap, Shield, Globe } from 'lucide-react';
 
 const Mission = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   const values = [
     {
-      icon: <Target className="text-green-600" size={32} />,
+      icon: <Target size={24} className="md:w-8 md:h-8" />,
       title: "Excellence",
-      description: "Nous visons l'excellence dans tout ce que nous entreprenons, en nous appuyant sur les meilleurs talents et pratiques."
+      description: "Nous visons l'excellence dans tout ce que nous entreprenons, en nous appuyant sur les meilleurs talents et pratiques.",
+      bgImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop",
+      gradient: "from-amber-500 to-orange-600"
     },
     {
-      icon: <Lightbulb className="text-green-600" size={32} />,
+      icon: <Lightbulb size={24} className="md:w-8 md:h-8" />,
       title: "Innovation",
-      description: "Nous encourageons la créativité et l'innovation pour construire l'économie de demain."
+      description: "Nous encourageons la créativité et l'innovation pour construire l'économie de demain.",
+      bgImage: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&h=400&fit=crop",
+      gradient: "from-purple-500 to-indigo-600"
     },
     {
-      icon: <Heart className="text-green-600" size={32} />,
+      icon: <Heart size={24} className="md:w-8 md:h-8" />,
       title: "Solidarité",
-      description: "Nous croyons en la force du collectif et en l'importance de l'entraide pour réussir ensemble."
+      description: "Nous croyons en la force du collectif et en l'importance de l'entraide pour réussir ensemble.",
+      bgImage: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=600&h=400&fit=crop",
+      gradient: "from-pink-500 to-rose-600"
     },
     {
-      icon: <Eye className="text-green-600" size={32} />,
+      icon: <Eye size={24} className="md:w-8 md:h-8" />,
       title: "Vision",
-      description: "Nous gardons toujours en vue l'objectif d'un impact positif sur la société et l'économie."
+      description: "Nous gardons toujours en vue l'objectif d'un impact positif sur la société et l'économie.",
+      bgImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop",
+      gradient: "from-teal-500 to-cyan-600"
     }
   ];
 
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
-          {/* Mission */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="bg-green-50 rounded-xl p-8"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <Target className="text-green-600" size={36} />
-              <h2 className="text-3xl font-bold text-green-900">Notre Mission</h2>
-            </div>
-            <p className="text-lg text-green-700/80 leading-relaxed">
-              Connecter l'excellence académique de l'INSEA avec les leaders du monde professionnel 
-              pour créer un écosystème d'innovation et d'entrepreneuriat qui façonne les leaders 
-              de demain et contribue au développement économique durable du Maroc et de l'Afrique.
-            </p>
-          </motion.div>
+    <section 
+      className="py-16 sm:py-20 md:py-24 relative overflow-hidden"
+      style={{
+        backgroundImage: `
+          linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.9) 100%),
+          url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&h=1080&fit=crop')
+        `,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Animated background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-white-50/50"></div>
+      <div className="absolute top-1/4 right-1/4 w-24 h-24 md:w-48 md:h-48 bg-green-200/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-1/3 left-1/5 w-32 h-32 md:w-64 md:h-64 bg-white-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '3s' }}></div>
 
-          {/* Vision */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="bg-green-800 rounded-xl p-8 text-white"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <Eye className="text-green-200" size={36} />
-              <h2 className="text-3xl font-bold">Notre Vision</h2>
-            </div>
-            <p className="text-lg text-green-200 leading-relaxed">
-              Être la plateforme de référence qui unit l'expertise académique et l'innovation 
-              entrepreneuriale, créant un impact positif et durable sur le développement 
-              économique et social de notre région.
-            </p>
-          </motion.div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* Hero Section */}
+        <div className={`text-center mb-12 sm:mb-16 md:mb-20 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+          <div className="inline-flex items-center px-4 sm:px-6 py-2 bg-green-100 border border-green-200 text-green-700 rounded-full mb-6 sm:mb-8 text-sm font-medium">
+            <Star size={16} className="mr-2" />
+            Mission • Vision • Valeurs
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+            Notre <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-white-600">Identité</span>
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Découvrez les valeurs et la vision qui nous animent depuis plus de 20 ans
+          </p>
         </div>
 
-        {/* Valeurs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-green-900 mb-4">
-            Nos Valeurs
+        {/* Mission & Vision Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-16 sm:mb-20 md:mb-24">
+          
+          {/* Mission Card */}
+          <div
+            className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl transform transition-all duration-700 hover:scale-105 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+            style={{
+              backgroundImage: `
+                linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.95)),
+                url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop')
+              `,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
+            <div className="p-6 sm:p-8 md:p-10 text-white relative z-10">
+              <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <Target className="text-white" size={24} />
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Notre Mission</h2>
+              </div>
+              <p className="text-base sm:text-lg leading-relaxed text-white/90">
+                Connecter l'excellence académique de l'INSEA avec les leaders du monde professionnel 
+                pour créer un écosystème d'innovation et d'entrepreneuriat qui façonne les leaders 
+                de demain et contribue au développement économique durable du Maroc et de l'Afrique.
+              </p>
+              <div className="absolute bottom-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-white/10 rounded-full blur-2xl"></div>
+            </div>
+          </div>
+
+          {/* Vision Card */}
+          <div
+            className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl transform transition-all duration-700 hover:scale-105 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+            style={{ 
+              transitionDelay: '200ms',
+              backgroundImage: `
+                linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.95)),
+                url('https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop')
+              `,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
+            <div className="p-6 sm:p-8 md:p-10 text-white relative z-10">
+              <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <Eye className="text-white" size={24} />
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Notre Vision</h2>
+              </div>
+              <p className="text-base sm:text-lg leading-relaxed text-white/90">
+                Être la plateforme de référence qui unit l'expertise académique et l'innovation 
+                entrepreneuriale, créant un impact positif et durable sur le développement 
+                économique et social de notre région.
+              </p>
+              <div className="absolute bottom-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-white/10 rounded-full blur-2xl"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Values Section */}
+        <div className={`text-center mb-8 sm:mb-12 md:mb-16 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ transitionDelay: '400ms' }}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+            Nos <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-white-600">Valeurs</span>
           </h2>
-          <p className="text-lg text-green-700/80 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Les principes fondamentaux qui guident nos actions et notre engagement quotidien
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Values Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {values.map((value, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="bg-white border border-green-100 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+              className={`group relative overflow-hidden rounded-2xl transform transition-all duration-700 hover:scale-105 hover:-translate-y-2 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+              style={{ 
+                transitionDelay: `${600 + index * 100}ms`,
+                backgroundImage: `
+                  linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4)),
+                  url('${value.bgImage}')
+                `,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             >
-              <div className="flex justify-center mb-4">
-                {value.icon}
+              <div className="p-4 sm:p-6 text-center relative z-10 h-full flex flex-col justify-between min-h-[280px] sm:min-h-[320px]">
+                
+                {/* Icon */}
+                <div className={`mx-auto w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r ${value.gradient} rounded-xl flex items-center justify-center text-white mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  {value.icon}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 flex flex-col justify-center">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-3 sm:mb-4">
+                    {value.title}
+                  </h3>
+                  <p className="text-gray-200 text-sm sm:text-base leading-relaxed">
+                    {value.description}
+                  </p>
+                </div>
+
+                {/* Decorative element */}
+                <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all duration-300"></div>
               </div>
-              <h3 className="text-xl font-bold text-green-900 mb-3">
-                {value.title}
-              </h3>
-              <p className="text-green-700/80 text-sm leading-relaxed">
-                {value.description}
-              </p>
-            </motion.div>
+            </div>
           ))}
+        </div>
+
+        {/* Call to Action */}
+        <div 
+          className="text-center mt-16 sm:mt-20 md:mt-24 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 relative overflow-hidden"
+          style={{
+            backgroundImage: `
+              linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.95)),
+              url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop')
+            `,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <div className="relative z-10">
+            <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-full mb-4 sm:mb-6 text-sm font-medium">
+              <Zap size={16} className="mr-2" />
+              Rejoignez Notre Mission
+            </div>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">
+              Ensemble, Construisons l'Avenir
+            </h3>
+            <p className="text-white/90 mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+              Participez à notre mission et aidez-nous à créer un impact positif durable
+            </p>
+            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-green-700 font-semibold rounded-xl hover:bg-gray-50 hover:scale-105 transition-all duration-300 text-sm sm:text-base">
+              Découvrir Nos Actions
+            </button>
+          </div>
+          
+          {/* Decorative elements */}
+          <div className="absolute top-0 left-0 w-24 h-24 sm:w-32 sm:h-32 bg-white/10 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-0 right-0 w-20 h-20 sm:w-28 sm:h-28 bg-white/10 rounded-full blur-2xl"></div>
         </div>
       </div>
     </section>
