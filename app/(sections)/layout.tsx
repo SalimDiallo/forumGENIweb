@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="fr" className="scroll-smooth">
       <body className={` antialiased min-h-screen`}>
         <Header />
-        <div className='py-24'>
+        <div className='py-18'>
         {children}
         </div>
       </body>

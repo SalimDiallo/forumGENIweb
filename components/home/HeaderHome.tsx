@@ -93,7 +93,7 @@ const HeaderHome = () => {
       name: 'Événements', 
       path: '/events',
       icon: Calendar,
-      hasDropdown: true,
+      hasDropdown: false,
       dropdownItems: [
         { name: 'Forum 2025', path: '/events/forum-2025', description: 'L\'événement principal de l\'année' },
         { name: 'Conférences', path: '/events/conferences', description: 'Rencontres avec les experts' },
@@ -115,7 +115,7 @@ const HeaderHome = () => {
       name: 'Carrières', 
       path: '/careers',
       icon: Briefcase,
-      hasDropdown: true,
+      hasDropdown: false,
       dropdownItems: [
         { name: 'Offres d\'emploi', path: '/careers/jobs', description: 'Découvrez les opportunités' },
         { name: 'Stages', path: '/careers/internships', description: 'Programme de stages' },
@@ -138,25 +138,25 @@ const HeaderHome = () => {
     <>
       <motion.header
         ref={headerHomeRef}
-        className={`fixed w-full z-50 transition-all duration-500 ${
+        className={`fixed w-full z-30 transition-all duration-500 ${
           scrolled 
-            ? 'bg-white/95 backdrop-blur-3xl border-b border-gray-200/30 shadow-2xl shadow-black/10' 
-            : 'bg-white/10 backdrop-blur-sm'
+            ? 'bg-white/90 backdrop-blur-2xl border-b border-gray-200/30 shadow-2xl shadow-black/10'
+            : 'bg-slate-900/30 backdrop-blur-xl'
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
         style={{ 
-          backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.1)',
+          backgroundColor: scrolled ? 'rgba(255,255,255,0.90)' : 'rgba(15,23,42,0.30)',
         }}
       >
         {/* Bande décorative supérieure avec animation */}
-        <motion.div 
+        {/* <motion.div 
           className="h-1 bg-gradient-to-r from-emerald-500  via-purple-500 to-emerald-500 bg-[length:200%_100%]"
           animate={{ backgroundPosition: ['0% 50%', '200% 50%'] }}
           transition={{ duration: 8, ease: 'linear', repeat: Infinity }}
         />
-        
+         */}
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo amélioré avec micro-interactions */}
@@ -164,8 +164,8 @@ const HeaderHome = () => {
               <motion.div 
                 className={`relative transition-all duration-500 ${
                   scrolled 
-                    ? 'p-3 bg-white/20 backdrop-blur-3xl rounded-2xl border border-white/30 shadow-lg' 
-                    : 'p-2'
+                    ? 'p-3 bg-white/80 backdrop-blur-2xl rounded-2xl border border-white/30 shadow-lg' 
+                    : 'p-2 bg-slate-900/60 backdrop-blur-2xl rounded-2xl shadow-emerald-500/10 shadow-lg'
                 }`}
                 whileHover={{ 
                   scale: 1.05,
@@ -185,7 +185,7 @@ const HeaderHome = () => {
                 
                 {/* Glow effect */}
                 <motion.div 
-                  className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
+                  className={`absolute inset-0 rounded-2xl blur-xl transition-opacity duration-500 -z-10 ${scrolled ? 'bg-white/0' : 'bg-gradient-to-br from-emerald-500/20 to-blue-500/20 opacity-80'}`}
                   animate={scrolled ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -211,10 +211,10 @@ const HeaderHome = () => {
                           isActive(item.path)
                             ? scrolled 
                               ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' 
-                              : 'text-white bg-white/20 border border-white/30'
+                              : 'text-white bg-emerald-500/10 border border-emerald-400/30'
                             : scrolled 
                               ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50/80' 
-                              : 'text-white/90 hover:text-white hover:bg-white/15'
+                              : 'text-white/90 hover:text-white hover:bg-white/10'
                         }`}
                       >
                         {item.icon && <item.icon className="w-4 h-4" />}
@@ -286,10 +286,10 @@ const HeaderHome = () => {
                         isActive(item.path)
                           ? scrolled 
                             ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' 
-                            : 'text-white bg-white/20 border border-white/30'
+                            : 'text-white bg-emerald-500/10 border border-emerald-400/30'
                           : scrolled 
                             ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50/80' 
-                            : 'text-white/90 hover:text-white hover:bg-white/15'
+                            : 'text-white/90 hover:text-white hover:bg-white/10'
                       }`}
                     >
                       {item.icon && <item.icon className="w-4 h-4" />}
@@ -357,7 +357,7 @@ const HeaderHome = () => {
               className={`lg:hidden p-3 transition-all duration-300 rounded-xl relative overflow-hidden ${
                 scrolled 
                   ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50' 
-                  : 'text-white/90 hover:text-white hover:bg-white/10'
+                  : 'text-white/90 hover:text-white hover:bg-slate-900/40'
               }`}
               aria-label="Menu"
               whileHover={{ scale: 1.05 }}
@@ -409,6 +409,7 @@ const HeaderHome = () => {
               animate={{ backdropFilter: 'blur(20px)' }}
               exit={{ backdropFilter: 'blur(0px)' }}
             />
+
             
             {/* Menu Content */}
             <motion.div
@@ -418,7 +419,42 @@ const HeaderHome = () => {
               transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white/98 backdrop-blur-3xl border-l border-gray-200/30 shadow-3xl overflow-y-auto"
             >
-              <div className="p-6 pt-20">
+                <motion.button
+                  onClick={toggleMenu}
+                  className={`lg:hidden pt-6 transition-all duration-300 rounded-xl relative overflow-hidden flex w-full px-8 justify-end ${
+                    scrolled 
+                      ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50' 
+                      : 'text-white/90 hover:text-white hover:bg-slate-900/40'
+                  }`}
+                  aria-label="Menu"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <AnimatePresence mode="wait">
+                    {isMenuOpen ? (
+                      <motion.div
+                        key="close"
+                        initial={{ rotate: -180, opacity: 0 }}
+                        animate={{ rotate: 0, opacity: 1 }}
+                        exit={{ rotate: 180, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <X size={24} className='text-black' />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="menu"
+                        initial={{ rotate: 180, opacity: 0 }}
+                        animate={{ rotate: 0, opacity: 1 }}
+                        exit={{ rotate: -180, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Menu size={24} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              <div className="p-6">
                 {/* Navigation Links avec animations staggered */}
                 <nav className="space-y-1">
                   {navItems.map((item, index) => (

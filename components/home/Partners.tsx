@@ -106,7 +106,7 @@ const Partners = () => {
   };
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 ">
       {/* Décoration en fond */}
       <div className="absolute left-0 w-1/4 h-64 bg-green-800/5 rounded-r-full -z-10"></div>
       <div className="absolute right-0 top-1/2 w-1/3 h-80 bg-green-800/5 rounded-l-full -z-10"></div>

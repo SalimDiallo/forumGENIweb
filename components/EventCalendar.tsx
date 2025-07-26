@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Calendar, MapPin, Clock, Users, Plus } from 'lucide-react';
 
 const EventCalendar = () => {
@@ -77,40 +76,36 @@ const EventCalendar = () => {
   });
 
   return (
-    <section className="py-20 bg-gradient-to-b from-green-50 to-white">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <div className="inline-flex items-center p-1 bg-green-100 rounded-full mb-4">
-            <span className="px-3 py-1 text-sm font-medium bg-green-800 text-white rounded-full">
-              Événements
-            </span>
+    <section
+      className="relative py-24 md:py-28"
+      style={{
+        backgroundImage: "url('/event.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-b from-green-50/80 via-white/70 to-white/90 pointer-events-none z-0 backdrop-blur-md" />
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-1 bg-gradient-to-r from-emerald-500 to-blue-500 text-white rounded-full shadow mb-4">
+            <Calendar className="w-4 h-4" />
+            <span className="font-semibold">Événements</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-green-900 mb-6">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-blue-500 to-emerald-400 mb-4">
             Calendrier des Événements
           </h1>
-          <p className="text-xl text-green-700/80 max-w-3xl mx-auto">
+          <p className="text-xl text-emerald-800/80 max-w-3xl mx-auto">
             Découvrez tous nos événements à venir et ne manquez aucune opportunité de networking
           </p>
-        </motion.div>
+        </div>
 
         {/* Sélecteur de mois/année */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-4 mb-12"
-        >
+        <div className="flex flex-wrap justify-center gap-4 mb-16">
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-            className="px-4 py-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="px-5 py-3 border border-emerald-200 rounded-3xl bg-white shadow-lg focus:ring-2 focus:ring-emerald-400 focus:border-transparent text-emerald-800 font-semibold text-base"
           >
             {months.map((month, index) => (
               <option key={index} value={index}>{month}</option>
@@ -119,119 +114,98 @@ const EventCalendar = () => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="px-4 py-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="px-5 py-3 border border-emerald-200 rounded-3xl bg-white shadow-lg focus:ring-2 focus:ring-emerald-400 focus:border-transparent text-emerald-800 font-semibold text-base"
           >
             <option value={2024}>2024</option>
             <option value={2025}>2025</option>
             <option value={2026}>2026</option>
           </select>
-        </motion.div>
+        </div>
 
         {/* Liste des événements */}
-        <div className="space-y-6">
+        <div className="space-y-12">
           {filteredEvents.length > 0 ? (
             filteredEvents.map((event, index) => (
-              <motion.div
+              <div
                 key={event.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-xl border border-green-100 p-6 hover:shadow-lg transition-shadow"
+                className="bg-white/60 backdrop-blur-xl border border-emerald-100 rounded-3xl shadow-2xl hover:shadow-emerald-300/40 transition-all p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-8 group hover:scale-[1.025] duration-300"
               >
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-3 mb-3">
-                      <h3 className="text-xl font-bold text-green-900">{event.title}</h3>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getEventTypeColor(event.type)}`}>
-                        {event.type}
-                      </span>
-                    </div>
-                    
-                    <p className="text-green-700/80 mb-4">{event.description}</p>
-                    
-                    <div className="flex flex-wrap items-center gap-4 text-green-700">
-                      <div className="flex items-center gap-1">
-                        <Calendar size={16} />
-                        {new Date(event.date).toLocaleDateString('fr-FR', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                        {event.endDate && event.endDate !== event.date && (
-                          <span> - {new Date(event.endDate).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'long'
-                          })}</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock size={16} />
-                        {event.time}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MapPin size={16} />
-                        {event.location}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Users size={16} />
-                        {event.participants} participants
-                      </div>
-                    </div>
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <span className={`px-4 py-1 rounded-2xl text-xs font-bold border ${getEventTypeColor(event.type)} shadow-sm tracking-wide`}>
+                      {event.type}
+                    </span>
+                    <h3 className="text-2xl md:text-3xl font-extrabold text-emerald-900 tracking-tight leading-tight">{event.title}</h3>
                   </div>
-                  
-                  <div className="flex flex-col gap-2 lg:items-end">
-                    <button className="px-6 py-3 bg-green-800 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
-                      S'inscrire
-                    </button>
-                    <button className="px-6 py-2 border border-green-200 text-green-800 rounded-lg font-medium hover:bg-green-50 transition-colors">
-                      Plus d'infos
-                    </button>
+                  <p className="text-emerald-800/80 mb-4 text-base md:text-lg leading-relaxed">{event.description}</p>
+                  <div className="flex flex-wrap items-center gap-6 text-emerald-700 text-sm mb-2">
+                    <div className="flex items-center gap-1">
+                      <Calendar size={16} className="text-emerald-500" />
+                      {new Date(event.date).toLocaleDateString('fr-FR', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                      {event.endDate && event.endDate !== event.date && (
+                        <span> - {new Date(event.endDate).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'long'
+                        })}</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock size={16} className="text-blue-500" />
+                      {event.time}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin size={16} className="text-orange-500" />
+                      {event.location}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users size={16} className="text-purple-500" />
+                      {event.participants} participants
+                    </div>
                   </div>
                 </div>
-              </motion.div>
+                <div className="flex flex-col gap-3 md:items-end mt-4 md:mt-0 w-full md:w-auto">
+                  <button className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white rounded-3xl font-semibold shadow-lg hover:scale-105 hover:shadow-emerald-400/30 transition flex items-center justify-center gap-2 text-base md:text-lg">
+                    S'inscrire <Plus size={20} />
+                  </button>
+                  <button className="w-full md:w-auto px-8 py-2 border border-emerald-200 text-emerald-700 rounded-3xl font-medium hover:bg-emerald-50 hover:shadow-md transition flex items-center justify-center gap-2 text-base">
+                    Plus d'infos
+                  </button>
+                </div>
+              </div>
             ))
           ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="text-center py-12"
-            >
-              <Calendar className="text-green-300 mx-auto mb-4" size={64} />
-              <h3 className="text-xl font-bold text-green-900 mb-2">
+            <div className="text-center py-24">
+              <Calendar className="text-emerald-200 mx-auto mb-4" size={72} />
+              <h3 className="text-2xl font-bold text-emerald-900 mb-2">
                 Aucun événement prévu
               </h3>
-              <p className="text-green-700/80">
+              <p className="text-emerald-700/80">
                 Aucun événement n'est planifié pour {months[selectedMonth]} {selectedYear}
               </p>
-            </motion.div>
+            </div>
           )}
         </div>
 
         {/* CTA pour proposer un événement */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mt-12"
-        >
-          <div className="bg-green-800 rounded-xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">
+        <div className="text-center mt-24">
+          <div className="bg-gradient-to-r from-emerald-600 to-blue-500 rounded-3xl p-12 text-white shadow-2xl">
+            <h3 className="text-3xl font-extrabold mb-4">
               Vous souhaitez organiser un événement ?
             </h3>
-            <p className="text-green-200 mb-6">
+            <p className="text-emerald-100 mb-8 text-lg">
               Proposez votre atelier, conférence ou session de networking à notre communauté
             </p>
-            <button className="inline-flex items-center gap-2 px-8 py-3 bg-white text-green-800 rounded-lg font-medium hover:bg-green-50 transition-colors">
-              <Plus size={20} />
+            <button className="inline-flex items-center gap-2 px-10 py-4 bg-white text-emerald-700 rounded-3xl font-bold hover:bg-emerald-50 transition text-lg shadow-lg text-center">
+              <Plus size={24} />
               Proposer un événement
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
