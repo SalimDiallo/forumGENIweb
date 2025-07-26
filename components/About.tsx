@@ -61,12 +61,12 @@ const About = () => {
     }
   ];
 
-  // const stats = [
-  //   { number: "23", label: "Années d'Excellence", icon: <Calendar size={16} className="md:w-5 md:h-5" /> },
-  //   { number: "500+", label: "Experts Mobilisés", icon: <Users size={16} className="md:w-5 md:h-5" /> },
-  //   { number: "15K+", label: "Participants Cumulés", icon: <Target size={16} className="md:w-5 md:h-5" /> },
-  //   { number: "50+", label: "Entreprises Partenaires", icon: <Award size={16} className="md:w-5 md:h-5" /> }
-  // ];
+  const stats = [
+    { number: "23", label: "Années d'Excellence", icon: <Calendar size={16} className="md:w-5 md:h-5" /> },
+    { number: "500+", label: "Experts Mobilisés", icon: <Users size={16} className="md:w-5 md:h-5" /> },
+    { number: "15K+", label: "Participants Cumulés", icon: <Target size={16} className="md:w-5 md:h-5" /> },
+    { number: "50+", label: "Entreprises Partenaires", icon: <Award size={16} className="md:w-5 md:h-5" /> }
+  ];
 
   return (
     <section 
@@ -102,7 +102,7 @@ const About = () => {
         </div>
 
         {/* Stats Grid */}
-        {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-16 sm:mb-24 md:mb-32">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-16 sm:mb-24 md:mb-32">
           {stats.map((stat, index) => (
             <div 
               key={index}
@@ -116,7 +116,7 @@ const About = () => {
               <div className="text-gray-400 text-xs sm:text-sm leading-tight">{stat.label}</div>
             </div>
           ))}
-        </div> */}
+        </div>
 
         {/* Timeline */}
         <div>
