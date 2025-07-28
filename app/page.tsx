@@ -27,7 +27,10 @@ export default function Home() {
         <UpcomingEvents />
       </Suspense>
 
-
+      <Suspense fallback={<SimpleLoader />}>
+        <TeamsMembres />
+      </Suspense>
+      
       <Stats />
 
       
@@ -39,9 +42,7 @@ export default function Home() {
         <VideoTestimonials />
       </Suspense>
       
-      <Suspense fallback={<SimpleLoader />}>
-        <TeamsMembres />
-      </Suspense>
+     
       <section className="py-16 bg-gradient-to-b from-green-50 to-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-green-900 mb-4">
