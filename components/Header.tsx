@@ -165,7 +165,7 @@ const Header = () => {
                 className={`relative transition-all duration-500 ${
                   scrolled 
                     ? 'p-3 bg-white/80 backdrop-blur-2xl rounded-2xl border border-white/30 shadow-lg' 
-                    : 'p-2 bg-slate-900/60 backdrop-blur-2xl rounded-2xl shadow-emerald-500/10 shadow-lg'
+                    : 'p-2 bg-white/80 backdrop-blur-2xl rounded-2xl shadow-emerald-500/10 shadow-lg'
                 }`}
                 whileHover={{ 
                   scale: 1.05,

@@ -7,25 +7,25 @@ import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 const Contact = () => {
   const contactInfo = [
     {
-      icon: <Mail className="text-green-600" size={24} />,
+      icon: <Mail className="text-black" size={24} />,
       title: "Email",
       details: "contact@forumgenieentreprises.ma",
       description: "Écrivez-nous pour toute question"
     },
     {
-      icon: <Phone className="text-green-600" size={24} />,
+      icon: <Phone className="text-black" size={24} />,
       title: "Téléphone",
       details: "+212 5 37 77 48 90",
       description: "Lun-Ven de 9h à 18h"
     },
     {
-      icon: <MapPin className="text-green-600" size={24} />,
+      icon: <MapPin className="text-black" size={24} />,
       title: "Adresse",
       details: "INSEA, Avenue Allal Ben Abdellah",
       description: "Rabat, Maroc"
     },
     {
-      icon: <Clock className="text-green-600" size={24} />,
+      icon: <Clock className="text-black" size={24} />,
       title: "Horaires",
       details: "Lundi - Vendredi",
       description: "9h00 - 18h00"
@@ -47,10 +47,10 @@ const Contact = () => {
               Contact
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-green-900 mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
             Contactez-nous
           </h1>
-          <p className="text-xl text-green-700/80 max-w-3xl mx-auto">
+          <p className="text-xl text-black/80 max-w-3xl mx-auto">
             Nous sommes là pour répondre à vos questions et vous accompagner dans vos projets
           </p>
         </motion.div>
@@ -68,13 +68,13 @@ const Contact = () => {
               <div className="flex justify-center mb-4">
                 {info.icon}
               </div>
-              <h3 className="text-xl font-bold text-green-900 mb-2">
+              <h3 className="text-xl font-bold text-black mb-2">
                 {info.title}
               </h3>
               <p className="text-green-800 font-medium mb-1">
                 {info.details}
               </p>
-              <p className="text-green-700/80 text-sm">
+              <p className="text-black/80 text-sm">
                 {info.description}
               </p>
             </motion.div>
@@ -91,10 +91,10 @@ const Contact = () => {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-8">
-              <h2 className="text-2xl font-bold text-green-900 mb-6">
+              <h2 className="text-2xl font-bold text-black mb-6">
                 Venez nous rencontrer
               </h2>
-              <div className="space-y-4 text-green-700/80">
+              <div className="space-y-4 text-black/80">
                 <p>
                   Notre équipe est basée au cœur de l'INSEA à Rabat, dans un environnement 
                   propice à l'innovation et à l'excellence académique.
@@ -104,7 +104,7 @@ const Contact = () => {
                   nos portes sont ouvertes pour discuter de collaborations et d'opportunités.
                 </p>
                 <div className="pt-4">
-                  <h3 className="font-semibold text-green-900 mb-2">Transports</h3>
+                  <h3 className="font-semibold text-black mb-2">Transports</h3>
                   <ul className="space-y-1 text-sm">
                     <li>• Tramway : Arrêt INSEA</li>
                     <li>• Bus : Lignes 12, 23, 45</li>
@@ -117,9 +117,9 @@ const Contact = () => {
               {/* Ici vous pourriez intégrer une vraie carte Google Maps */}
               <div className="w-full h-64 bg-green-200 rounded-lg flex items-center justify-center">
                 <div className="text-center">
-                  <MapPin className="text-green-600 mx-auto mb-2" size={32} />
+                  <MapPin className="text-black mx-auto mb-2" size={32} />
                   <p className="text-green-800 font-medium">Carte interactive</p>
-                  <p className="text-green-700 text-sm">INSEA, Rabat</p>
+                  <p className="text-black text-sm">INSEA, Rabat</p>
                 </div>
               </div>
             </div>

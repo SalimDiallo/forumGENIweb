@@ -191,21 +191,6 @@ const EventCalendar = () => {
           )}
         </div>
 
-        {/* CTA pour proposer un événement */}
-        <div className="text-center mt-24">
-          <div className="bg-gradient-to-r from-emerald-600 to-black rounded-3xl p-12 text-white shadow-2xl">
-            <h3 className="text-3xl font-extrabold mb-4">
-              Vous souhaitez organiser un événement ?
-            </h3>
-            <p className="text-emerald-100 mb-8 text-lg">
-              Proposez votre atelier, conférence ou session de networking à notre communauté
-            </p>
-            <button className="inline-flex items-center gap-2 px-10 py-4 bg-white text-emerald-700 rounded-3xl font-bold hover:bg-emerald-50 transition text-lg shadow-lg text-center">
-              <Plus size={24} />
-              Proposer un événement
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   );

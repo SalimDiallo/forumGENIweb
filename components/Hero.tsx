@@ -51,7 +51,7 @@ const Hero = () => {
               className="mb-6 sm:mb-10 flex justify-center"
             >
               <div className="relative">
-                <div className="p-2 sm:p-6 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl">
+                <div className="p-2 sm:p-6 bg-white/80 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl">
                   <Image
                     src="/logo 4.png"
                     alt="Forum GENI Entreprises"

@@ -3,19 +3,20 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Calendar, User, ArrowRight, Clock, Tag } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar, User, ArrowRight, Clock, Tag, Search, Filter, TrendingUp, Star } from 'lucide-react';
 
 const BlogList = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const categories = [
-    { id: 'all', name: 'Tous' },
-    { id: 'innovation', name: 'Innovation' },
-    { id: 'entrepreneuriat', name: 'Entrepreneuriat' },
-    { id: 'carrieres', name: 'Carrières' },
-    { id: 'industrie', name: 'Industrie' },
-    { id: 'evenements', name: 'Événements' }
+    { id: 'all', name: 'Tous', count: 6, icon: Filter },
+    { id: 'innovation', name: 'Innovation', count: 1, icon: TrendingUp },
+    { id: 'entrepreneuriat', name: 'Entrepreneuriat', count: 2, icon: Star },
+    { id: 'carrieres', name: 'Carrières', count: 1, icon: User },
+    { id: 'industrie', name: 'Industrie', count: 1, icon: Tag },
+    { id: 'evenements', name: 'Événements', count: 1, icon: Calendar }
   ];
 
   const blogPosts = [
@@ -28,7 +29,9 @@ const BlogList = () => {
       date: "2025-01-15",
       readTime: "8 min",
       category: "innovation",
-      tags: ["IA", "Industrie", "Maroc"]
+      tags: ["IA", "Industrie", "Maroc"],
+      featured: true,
+      views: "2.5K"
     },
     {
       id: 2,
@@ -39,7 +42,8 @@ const BlogList = () => {
       date: "2025-01-10",
       readTime: "6 min",
       category: "entrepreneuriat",
-      tags: ["Startup", "Conseil", "Entrepreneuriat"]
+      tags: ["Startup", "Conseil", "Entrepreneuriat"],
+      views: "1.8K"
     },
     {
       id: 3,
@@ -50,7 +54,8 @@ const BlogList = () => {
       date: "2024-12-20",
       readTime: "5 min",
       category: "evenements",
-      tags: ["Forum", "Bilan", "2024"]
+      tags: ["Forum", "Bilan", "2024"],
+      views: "3.2K"
     },
     {
       id: 4,
@@ -61,7 +66,8 @@ const BlogList = () => {
       date: "2024-12-15",
       readTime: "7 min",
       category: "carrieres",
-      tags: ["Carrière", "Futur", "Compétences"]
+      tags: ["Carrière", "Futur", "Compétences"],
+      views: "1.4K"
     },
     {
       id: 5,
@@ -72,7 +78,8 @@ const BlogList = () => {
       date: "2024-12-05",
       readTime: "9 min",
       category: "industrie",
-      tags: ["Digital", "Industrie 4.0", "Productivité"]
+      tags: ["Digital", "Industrie 4.0", "Productivité"],
+      views: "2.1K"
     },
     {
       id: 6,
@@ -83,180 +90,307 @@ const BlogList = () => {
       date: "2024-11-28",
       readTime: "10 min",
       category: "entrepreneuriat",
-      tags: ["Écosystème", "Startup", "Maroc"]
+      tags: ["Écosystème", "Startup", "Maroc"],
+      views: "2.7K"
     }
   ];
 
-  const filteredPosts = activeCategory === 'all' 
-    ? blogPosts 
-    : blogPosts.filter(post => post.category === activeCategory);
+  const filteredPosts = blogPosts.filter(post => {
+    const matchesCategory = activeCategory === 'all' || post.category === activeCategory;
+    const matchesSearch = searchTerm === '' || 
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
+
+  const featuredPost = filteredPosts.find(post => post.featured) || filteredPosts[0];
+  const regularPosts = filteredPosts.filter(post => post.id !== featuredPost?.id);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-20 bg-gradient-to-b from-white to-green-50/30">
       <div className="container mx-auto px-4">
-        {/* Filtres de catégories */}
+        {/* Header avec search */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
+          className="text-center mb-12"
         >
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
-              className={`px-6 py-3 rounded-full font-medium transition-all ${
-                activeCategory === category.id
-                  ? 'bg-green-800 text-white'
-                  : 'bg-green-50 text-green-800 hover:bg-green-100'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
+          <h2 className="text-3xl md:text-4xl font-bold text-green-900 mb-4">
+            Explorez nos derniers articles
+          </h2>
+          <p className="text-black/80 mb-8 max-w-2xl mx-auto">
+            Restez informé des dernières tendances et innovations avec notre sélection d'articles experts
+          </p>
+          
+          {/* Barre de recherche */}
+          <div className="relative max-w-md mx-auto mb-8">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Rechercher un article..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-green-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all"
+            />
+          </div>
         </motion.div>
 
-        {/* Articles en vedette */}
-        {filteredPosts.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="mb-16"
-          >
-            <div className="bg-green-800 rounded-xl overflow-hidden">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="relative h-64 lg:h-auto">
-                  <Image
-                    src={filteredPosts[0].image}
-                    alt={filteredPosts[0].title}
-                    width={600}
-                    height={400}
-                    className="w-full h-full object-cover"
-                  />
+        {/* Filtres de catégories améliorés */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
+          className="flex flex-wrap justify-center gap-3 mb-16"
+        >
+          {categories.map((category) => {
+            const IconComponent = category.icon;
+            return (
+              <motion.button
+                key={category.id}
+                onClick={() => setActiveCategory(category.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`group relative px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 ${
+                  activeCategory === category.id
+                    ? 'bg-gradient-to-r from-black to-emerald-700 text-white shadow-lg'
+                    : 'bg-white/70 backdrop-blur-sm text-black hover:bg-green-50 border border-green-100 hover:border-green-200'
+                }`}
+              >
+                <IconComponent className="w-4 h-4" />
+                {category.name}
+                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                  activeCategory === category.id
+                    ? 'bg-white/20 text-white'
+                    : 'bg-green-100 text-green-600'
+                }`}>
+                  {category.count}
+                </span>
+              </motion.button>
+            );
+          })}
+        </motion.div>
+
+        {/* Article en vedette amélioré */}
+        <AnimatePresence mode="wait">
+          {featuredPost && (
+            <motion.div
+              key={featuredPost.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.6 }}
+              className="mb-20"
+            >
+              <div className="relative bg-gradient-to-br from-green-800 via-black to-emerald-800 rounded-2xl overflow-hidden shadow-2xl">
+                {/* Background pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-300 rounded-full translate-y-1/2 -translate-x-1/2"></div>
                 </div>
-                <div className="p-8 flex flex-col justify-center">
-                  <div className="inline-flex items-center gap-2 mb-4">
-                    <span className="px-3 py-1 bg-green-600 text-white text-xs rounded-full">
-                      Article vedette
-                    </span>
+                
+                <div className="relative grid grid-cols-1 lg:grid-cols-2">
+                  <div className="relative h-80 lg:h-auto overflow-hidden">
+                    <Image
+                      src={featuredPost.image}
+                      alt={featuredPost.title}
+                      width={600}
+                      height={400}
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-green-800/20"></div>
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                    {filteredPosts[0].title}
-                  </h2>
-                  <p className="text-green-200 mb-6">
-                    {filteredPosts[0].excerpt}
-                  </p>
-                  <div className="flex items-center gap-4 text-green-200 text-sm mb-6">
-                    <div className="flex items-center gap-1">
-                      <User size={16} />
-                      {filteredPosts[0].author}
+                  
+                  <div className="relative p-8 lg:p-12 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-semibold rounded-full shadow-lg">
+                        ⭐ Article vedette
+                      </span>
+                      <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs rounded-full">
+                        {featuredPost.views} vues
+                      </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar size={16} />
-                      {new Date(filteredPosts[0].date).toLocaleDateString('fr-FR')}
+                    
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">
+                      {featuredPost.title}
+                    </h2>
+                    
+                    <p className="text-green-100 mb-8 text-lg leading-relaxed">
+                      {featuredPost.excerpt}
+                    </p>
+                    
+                    <div className="flex flex-wrap items-center gap-6 text-green-200 text-sm mb-8">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                          <User size={16} />
+                        </div>
+                        {featuredPost.author}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} />
+                        {new Date(featuredPost.date).toLocaleDateString('fr-FR')}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} />
+                        {featuredPost.readTime}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock size={16} />
-                      {filteredPosts[0].readTime}
+                    
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {featuredPost.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-white/10 backdrop-blur-sm text-white text-sm rounded-full border border-white/20"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
                     </div>
+                    
+                    <Link 
+                      href={`/blog/${featuredPost.id}`}
+                      className="group inline-flex items-center gap-3 bg-white text-green-800 px-8 py-4 rounded-xl font-semibold hover:bg-green-50 transition-all duration-300 hover:shadow-lg hover:scale-105 w-fit"
+                    >
+                      Lire l'article complet
+                      <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Link>
                   </div>
-                  <Link 
-                    href={`/blog/${filteredPosts[0].id}`}
-                    className="inline-flex items-center gap-2 bg-white text-green-800 px-6 py-3 rounded-lg font-medium hover:bg-green-50 transition-colors w-fit"
-                  >
-                    Lire l'article
-                    <ArrowRight size={16} />
-                  </Link>
                 </div>
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Grille d'articles améliorée */}
+        <AnimatePresence>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {regularPosts.map((post, index) => (
+              <motion.article
+                key={post.id}
+                layout
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-green-100/50 hover:border-green-200"
+              >
+                <div className="relative overflow-hidden">
+                  <Image
+                    src={post.image}
+                    alt={post.title}
+                    width={400}
+                    height={250}
+                    className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  <div className="absolute top-4 left-4 flex items-center gap-2">
+                    <span className="px-3 py-1 bg-black/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                      {categories.find(cat => cat.id === post.category)?.name}
+                    </span>
+                  </div>
+                  
+                  <div className="absolute top-4 right-4">
+                    <span className="px-2 py-1 bg-black/50 backdrop-blur-sm text-white text-xs rounded-full">
+                      {post.views}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-green-900 mb-3 line-clamp-2 group-hover:text-black transition-colors leading-tight">
+                    {post.title}
+                  </h3>
+                  
+                  <p className="text-black/80 mb-6 line-clamp-3 leading-relaxed">
+                    {post.excerpt}
+                  </p>
+                  
+                  <div className="flex items-center gap-4 text-sm text-green-600 mb-6">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                        <User size={12} />
+                      </div>
+                      {post.author}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
+                      {post.readTime}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      {post.tags.slice(0, 2).map((tag, tagIndex) => (
+                        <span
+                          key={tagIndex}
+                          className="px-2 py-1 bg-green-50 text-black text-xs rounded-lg font-medium"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <Link 
+                      href={`/blog/${post.id}`}
+                      className="group/link inline-flex items-center gap-2 text-black font-semibold hover:text-green-600 transition-colors"
+                    >
+                      Lire
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1" />
+                    </Link>
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </AnimatePresence>
+
+        {/* Message si aucun résultat */}
+        {filteredPosts.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16"
+          >
+            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Search className="w-12 h-12 text-green-600" />
             </div>
+            <h3 className="text-xl font-semibold text-green-900 mb-2">Aucun article trouvé</h3>
+            <p className="text-black/80 mb-6">Essayez de modifier vos filtres ou votre recherche</p>
+            <button
+              onClick={() => {
+                setActiveCategory('all');
+                setSearchTerm('');
+              }}
+              className="px-6 py-3 bg-black text-white rounded-lg hover:bg-green-600 transition-colors"
+            >
+              Réinitialiser les filtres
+            </button>
           </motion.div>
         )}
 
-        {/* Grille d'articles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredPosts.slice(1).map((post, index) => (
-            <motion.article
-              key={post.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="bg-white border border-green-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group"
-            >
-              <div className="relative overflow-hidden">
-                <Image
-                  src={post.image}
-                  alt={post.title}
-                  width={400}
-                  height={250}
-                  className="w-full h-48 object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute top-3 left-3">
-                  <span className="px-2 py-1 bg-green-800 text-white text-xs rounded">
-                    {categories.find(cat => cat.id === post.category)?.name}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-green-900 mb-3 line-clamp-2 group-hover:text-green-700 transition-colors">
-                  {post.title}
-                </h3>
-                <p className="text-green-700/80 mb-4 line-clamp-3">
-                  {post.excerpt}
-                </p>
-                
-                <div className="flex items-center gap-3 text-sm text-green-600 mb-4">
-                  <div className="flex items-center gap-1">
-                    <User size={14} />
-                    {post.author}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock size={14} />
-                    {post.readTime}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-wrap gap-1">
-                    {post.tags.slice(0, 2).map((tag, tagIndex) => (
-                      <span
-                        key={tagIndex}
-                        className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <Link 
-                    href={`/blog/${post.id}`}
-                    className="inline-flex items-center gap-1 text-green-800 font-medium hover:text-green-600 transition-colors"
-                  >
-                    Lire
-                    <ArrowRight size={14} />
-                  </Link>
-                </div>
-              </div>
-            </motion.article>
-          ))}
-        </div>
-
-        {/* Pagination ou "Voir plus" */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mt-12"
-        >
-          <button className="px-8 py-3 bg-green-800 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
-            Voir plus d'articles
-          </button>
-        </motion.div>
+        {/* Bouton "Voir plus" amélioré */}
+        {filteredPosts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mt-16"
+          >
+            <button className="group px-10 py-4 bg-gradient-to-r from-black to-emerald-700 text-white rounded-xl font-semibold hover:from-green-800 hover:to-emerald-800 transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center gap-3 mx-auto">
+              Charger plus d'articles
+              <motion.div
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+              />
+            </button>
+          </motion.div>
+        )}
       </div>
     </section>
   );

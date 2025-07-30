@@ -8,7 +8,7 @@ import { BookOpen, TrendingUp, Users, FileText, ExternalLink } from 'lucide-reac
 const CareerAdvice = () => {
   const careerTips = [
     {
-      icon: <TrendingUp className="text-green-600" size={32} />,
+      icon: <TrendingUp className="text-black" size={32} />,
       title: "Développer ses compétences techniques",
       description: "Les compétences les plus recherchées en 2025",
       tips: [
@@ -19,7 +19,7 @@ const CareerAdvice = () => {
       ]
     },
     {
-      icon: <Users className="text-green-600" size={32} />,
+      icon: <Users className="text-black" size={32} />,
       title: "Construire son réseau professionnel",
       description: "Stratégies efficaces pour développer votre réseau",
       tips: [
@@ -30,7 +30,7 @@ const CareerAdvice = () => {
       ]
     },
     {
-      icon: <FileText className="text-green-600" size={32} />,
+      icon: <FileText className="text-black" size={32} />,
       title: "Optimiser son CV et profil",
       description: "Les meilleures pratiques pour se démarquer",
       tips: [
@@ -41,7 +41,7 @@ const CareerAdvice = () => {
       ]
     },
     {
-      icon: <BookOpen className="text-green-600" size={32} />,
+      icon: <BookOpen className="text-black" size={32} />,
       title: "Formation continue",
       description: "Rester compétitif dans un marché en évolution",
       tips: [
@@ -81,7 +81,7 @@ const CareerAdvice = () => {
   ];
 
   return (
-    <section className="py-16 bg-green-50">
+    <section className="py-16">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -93,7 +93,7 @@ const CareerAdvice = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-green-900 mb-4">
             Conseils Carrière
           </h2>
-          <p className="text-lg text-green-700/80 max-w-2xl mx-auto">
+          <p className="text-lg text-black/80 max-w-2xl mx-auto">
             Guides pratiques et conseils d'experts pour booster votre développement professionnel
           </p>
         </motion.div>
@@ -117,13 +117,13 @@ const CareerAdvice = () => {
                   <h3 className="text-xl font-bold text-green-900 mb-2">
                     {tip.title}
                   </h3>
-                  <p className="text-green-700/80 mb-4">
+                  <p className="text-black/80 mb-4">
                     {tip.description}
                   </p>
                   <ul className="space-y-2">
                     {tip.tips.map((item, itemIndex) => (
-                      <li key={itemIndex} className="flex items-center gap-2 text-green-700">
-                        <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                      <li key={itemIndex} className="flex items-center gap-2 text-black">
+                        <span className="w-2 h-2 bg-black rounded-full"></span>
                         {item}
                       </li>
                     ))}
@@ -158,12 +158,12 @@ const CareerAdvice = () => {
                     {resource.type}
                   </span>
                 </div>
-                <p className="text-green-700/80 text-sm mb-4">
+                <p className="text-black/80 text-sm mb-4">
                   {resource.description}
                 </p>
                 <Link
                   href={resource.link}
-                  className="inline-flex items-center gap-1 text-green-800 font-medium hover:text-green-600 transition-colors"
+                  className="inline-flex items-center gap-1 text-green-800 font-medium hover:text-black transition-colors"
                 >
                   Télécharger
                   <ExternalLink size={14} />

@@ -37,10 +37,10 @@ const ContactForm = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-green-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
               Envoyez-nous un message
             </h2>
-            <p className="text-lg text-green-700/80">
+            <p className="text-lg text-black/80">
               Nous répondons généralement sous 24h
             </p>
           </motion.div>
@@ -55,11 +55,11 @@ const ContactForm = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-green-900 mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
                     Nom complet *
                   </label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-600" size={20} />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" size={20} />
                     <input
                       type="text"
                       id="name"
@@ -74,11 +74,11 @@ const ContactForm = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-green-900 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
                     Email *
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-600" size={20} />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" size={20} />
                     <input
                       type="email"
                       id="email"
@@ -94,7 +94,7 @@ const ContactForm = () => {
               </div>
 
               <div>
-                <label htmlFor="type" className="block text-sm font-medium text-green-900 mb-2">
+                <label htmlFor="type" className="block text-sm font-medium text-black mb-2">
                   Type de demande
                 </label>
                 <select
@@ -113,7 +113,7 @@ const ContactForm = () => {
               </div>
 
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-green-900 mb-2">
+                <label htmlFor="subject" className="block text-sm font-medium text-black mb-2">
                   Sujet *
                 </label>
                 <input
@@ -129,11 +129,11 @@ const ContactForm = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-green-900 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-black mb-2">
                   Message *
                 </label>
                 <div className="relative">
-                  <MessageSquare className="absolute left-3 top-3 text-green-600" size={20} />
+                  <MessageSquare className="absolute left-3 top-3 text-black" size={20} />
                   <textarea
                     id="message"
                     name="message"
@@ -157,7 +157,7 @@ const ContactForm = () => {
                 Envoyer le message
               </motion.button>
 
-              <p className="text-center text-sm text-green-600">
+              <p className="text-center text-sm text-black">
                 En envoyant ce formulaire, vous acceptez notre politique de confidentialité.
               </p>
             </form>
