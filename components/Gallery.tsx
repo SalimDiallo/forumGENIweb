@@ -435,7 +435,7 @@ const Gallery = () => {
                 placeholder="Rechercher..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               />
             </div>
 
@@ -445,7 +445,7 @@ const Gallery = () => {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'grid' 
-                    ? 'bg-green-500 text-white' 
+                    ? 'bg-emerald-500 text-white' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
                 title="Vue grille"
@@ -456,7 +456,7 @@ const Gallery = () => {
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'list' 
-                    ? 'bg-green-500 text-white' 
+                    ? 'bg-emerald-500 text-white' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
                 title="Vue liste"
@@ -474,7 +474,7 @@ const Gallery = () => {
                 onClick={() => setActiveCategory(category.id)}
                 className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                   activeCategory === category.id
-                    ? 'bg-green-500 text-white'
+                    ? 'bg-emerald-500 text-white'
                     : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                 }`}
               >
@@ -511,7 +511,7 @@ const Gallery = () => {
                 setSearchQuery('');
                 setActiveCategory('all');
               }}
-              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+              className="px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
             >
               Réinitialiser les filtres
             </button>
@@ -607,7 +607,7 @@ const Gallery = () => {
                       {filteredItems[selectedImage].title}
                     </h3>
                     <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-600 mb-3">
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
+                      <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
                         {filteredItems[selectedImage].year}
                       </span>
                       <div className="flex items-center gap-1">

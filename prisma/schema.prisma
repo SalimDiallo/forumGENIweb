@@ -1,0 +1,416 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================
+// BLOG MANAGEMENT
+// =====================================
+
+model BlogCategory {
+  id          Int         @id @default(autoincrement())
+  name        String
+  slug        String      @unique
+  description String?
+  color       String      @default("#10B981")
+  icon        String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  
+  posts       BlogPost[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@map("blog_categories")
+}
+
+model BlogPost {
+  id                Int       @id @default(autoincrement())
+  title             String
+  slug              String    @unique
+  excerpt           String?
+  content           String
+  featuredImage     String?
+  authorName        String
+  authorPosition    String?
+  categoryId        Int
+  status            String    @default("draft") // draft, published, archived
+  isFeatured        Boolean   @default(false)
+  readTimeMinutes   Int       @default(5)
+  viewsCount        Int       @default(0)
+  likesCount        Int       @default(0)
+  metaTitle         String?
+  metaDescription   String?
+  publishedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  category          BlogCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  tags              BlogPostTag[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([isFeatured])
+  @@index([publishedAt])
+  @@map("blog_posts")
+}
+
+model BlogTag {
+  id          Int           @id @default(autoincrement())
+  name        String
+  slug        String        @unique
+  color       String        @default("#10B981")
+  usageCount  Int           @default(0)
+  createdAt   DateTime      @default(now())
+  
+  posts       BlogPostTag[]
+
+  @@index([slug])
+  @@map("blog_tags")
+}
+
+model BlogPostTag {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  tagId     Int
+  createdAt DateTime @default(now())
+  
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag       BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId])
+  @@map("blog_post_tags")
+}
+
+// =====================================
+// EVENTS MANAGEMENT
+// =====================================
+
+model Event {
+  id                  Int       @id @default(autoincrement())
+  title               String
+  slug                String    @unique
+  description         String?
+  shortDescription    String?
+  featuredImage       String?
+  eventType           String    // forum, workshop, conference, networking, webinar, other
+  location            String?
+  isVirtual           Boolean   @default(false)
+  virtualLink         String?
+  startDate           DateTime
+  endDate             DateTime
+  registrationStart   DateTime?
+  registrationEnd     DateTime?
+  maxParticipants     Int?
+  currentParticipants Int       @default(0)
+  isFree              Boolean   @default(true)
+  price               Float     @default(0)
+  currency            String    @default("MAD")
+  status              String    @default("draft") // draft, published, ongoing, completed, cancelled
+  isFeatured          Boolean   @default(false)
+  organizerName       String
+  agenda              String?   // JSON string
+  speakers            String?   // JSON string
+  sponsors            String?   // JSON string
+  requirements        String?
+  whatToBring         String?
+  metaTitle           String?
+  metaDescription     String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  registrations       EventRegistration[]
+  media               MediaGallery[]
+
+  @@index([slug])
+  @@index([eventType])
+  @@index([startDate])
+  @@index([status])
+  @@index([isFeatured])
+  @@map("events")
+}
+
+model EventRegistration {
+  id                  Int       @id @default(autoincrement())
+  eventId             Int
+  firstName           String
+  lastName            String
+  email               String
+  phone               String?
+  organization        String?
+  position            String?
+  experienceLevel     String    @default("beginner") // beginner, intermediate, advanced
+  expectations        String?
+  dietaryRestrictions String?
+  specialNeeds        String?
+  newsletterConsent   Boolean   @default(false)
+  registrationStatus  String    @default("pending") // pending, confirmed, cancelled
+  paymentStatus       String    @default("pending") // pending, paid, refunded, exempted
+  paymentMethod       String?
+  paymentReference    String?
+  qrCode              String?
+  ipAddress           String?
+  userAgent           String?
+  registeredAt        DateTime  @default(now())
+  confirmedAt         DateTime?
+  attendedAt          DateTime?
+  
+  event               Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([email])
+  @@index([registrationStatus])
+  @@map("event_registrations")
+}
+
+// =====================================
+// JOB OFFERS
+// =====================================
+
+model JobOffer {
+  id                  Int       @id @default(autoincrement())
+  title               String
+  slug                String    @unique
+  companyName         String
+  companyLogo         String?
+  companyWebsite      String?
+  industry            String?
+  jobType             String    // stage, cdi, cdd, freelance, alternance
+  location            String?
+  isRemote            Boolean   @default(false)
+  salaryMin           Float?
+  salaryMax           Float?
+  salaryCurrency      String    @default("MAD")
+  salaryPeriod        String    @default("month") // hour, day, month, year
+  description         String
+  requirements        String?
+  benefits            String?
+  applicationEmail    String?
+  applicationUrl      String?
+  applicationPhone    String?
+  applicationDeadline DateTime?
+  experienceRequired  String    @default("none") // none, junior, senior, expert
+  educationLevel      String    @default("bac+3") // bac, bac+2, bac+3, bac+5, phd
+  contractDuration    String?
+  startDate           DateTime?
+  skillsRequired      String?   // JSON string
+  languagesRequired   String?   // JSON string
+  status              String    @default("draft") // draft, published, closed, filled
+  isFeatured          Boolean   @default(false)
+  viewsCount          Int       @default(0)
+  publishedAt         DateTime?
+  expiresAt           DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([jobType])
+  @@index([location])
+  @@index([status])
+  @@index([companyName])
+  @@index([publishedAt])
+  @@map("job_offers")
+}
+
+// =====================================
+// CONTACT & PARTNERSHIPS
+// =====================================
+
+model ContactMessage {
+  id          Int       @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?
+  subject     String
+  message     String
+  category    String    @default("general") // general, partnership, technical, press, event, career
+  status      String    @default("new") // new, in_progress, resolved, closed
+  priority    String    @default("normal") // low, normal, high, urgent
+  adminNotes  String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  resolvedAt  DateTime?
+
+  @@index([email])
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@map("contact_messages")
+}
+
+model PartnershipRequest {
+  id                  Int       @id @default(autoincrement())
+  companyName         String
+  industry            String?
+  companySize         String    // startup, pme, eti, grande_entreprise
+  website             String?
+  contactName         String
+  contactPosition     String?
+  contactEmail        String
+  contactPhone        String?
+  partnershipType     String    // sponsor, recruiter, speaker, mentor, other
+  budgetRange         String?
+  objectives          String?
+  previousPartnerships String?
+  additionalInfo      String?
+  status              String    @default("pending") // pending, reviewing, approved, rejected, on_hold
+  rejectionReason     String?
+  adminNotes          String?
+  ipAddress           String?
+  userAgent           String?
+  submittedAt         DateTime  @default(now())
+  reviewedAt          DateTime?
+  approvedAt          DateTime?
+
+  @@index([status])
+  @@index([partnershipType])
+  @@index([companyName])
+  @@index([submittedAt])
+  @@map("partnership_requests")
+}
+
+// =====================================
+// MEDIA & TESTIMONIALS
+// =====================================
+
+model MediaGallery {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String?
+  mediaType      String    // image, video
+  fileUrl        String
+  thumbnailUrl   String?
+  fileSize       Int?
+  mimeType       String?
+  altText        String?
+  eventId        Int?
+  album          String?
+  isFeatured     Boolean   @default(false)
+  isPublic       Boolean   @default(true)
+  sortOrder      Int       @default(0)
+  uploadedByName String?
+  uploadedAt     DateTime  @default(now())
+  
+  event          Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([mediaType])
+  @@index([eventId])
+  @@index([album])
+  @@index([isFeatured])
+  @@map("media_gallery")
+}
+
+model VideoTestimonial {
+  id              Int       @id @default(autoincrement())
+  name            String
+  position        String?
+  company         String?
+  graduationYear  Int?
+  videoUrl        String
+  thumbnailUrl    String?
+  quote           String?
+  fullTranscript  String?
+  isFeatured      Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  sortOrder       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([isFeatured])
+  @@index([isActive])
+  @@index([graduationYear])
+  @@map("video_testimonials")
+}
+
+// =====================================
+// NEWSLETTER
+// =====================================
+
+model NewsletterSubscription {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  name              String?
+  categories        String?   // JSON string
+  frequency         String    @default("weekly") // daily, weekly, monthly
+  isActive          Boolean   @default(true)
+  confirmationToken String?
+  confirmedAt       DateTime?
+  source            String?
+  ipAddress         String?
+  subscribedAt      DateTime  @default(now())
+  unsubscribedAt    DateTime?
+
+  @@index([email])
+  @@index([isActive])
+  @@index([source])
+  @@map("newsletter_subscriptions")
+}
+
+// =====================================
+// ANALYTICS
+// =====================================
+
+model SiteAnalytics {
+  id                    Int      @id @default(autoincrement())
+  date                  DateTime @unique
+  pageViews             Int      @default(0)
+  uniqueVisitors        Int      @default(0)
+  newsletterSignups     Int      @default(0)
+  eventRegistrations    Int      @default(0)
+  contactMessages       Int      @default(0)
+  partnershipRequests   Int      @default(0)
+  jobViews              Int      @default(0)
+  blogViews             Int      @default(0)
+  createdAt             DateTime @default(now())
+
+  @@index([date])
+  @@map("site_analytics")
+}
+
+// =====================================
+// ADMIN MANAGEMENT
+// =====================================
+
+model AdminUser {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique
+  email        String         @unique
+  passwordHash String
+  fullName     String
+  role         String         @default("editor") // super_admin, admin, editor
+  isActive     Boolean        @default(true)
+  lastLogin    DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  
+  sessions     AdminSession[]
+
+  @@index([username])
+  @@index([email])
+  @@index([role])
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id        String   @id
+  adminId   Int
+  expiresAt DateTime
+  data      String?  // JSON string
+  createdAt DateTime @default(now())
+  
+  admin     AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([expiresAt])
+  @@map("admin_sessions")
+}

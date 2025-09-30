@@ -108,17 +108,17 @@ const Partners = () => {
   return (
     <section className="py-20 ">
       {/* Décoration en fond */}
-      <div className="absolute left-0 w-1/4 h-64 bg-green-800/5 rounded-r-full -z-10"></div>
-      <div className="absolute right-0 top-1/2 w-1/3 h-80 bg-green-800/5 rounded-l-full -z-10"></div>
+      <div className="absolute left-0 w-1/4 h-64 bg-emerald-800/5 rounded-r-full -z-10"></div>
+      <div className="absolute right-0 top-1/2 w-1/3 h-80 bg-emerald-800/5 rounded-l-full -z-10"></div>
 
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center text-center mb-12">
-          <div className="inline-flex items-center mb-4 bg-green-50 px-3 py-1 rounded-full border border-green-100">
-            <span className="text-green-800 text-sm font-medium">Ensemble pour l'excellence</span>
+          <div className="inline-flex items-center mb-4 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+            <span className="text-emerald-800 text-sm font-medium">Ensemble pour l'excellence</span>
           </div>
           
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Nos Partenaires <span className="text-green-800">Stratégiques</span>
+            Nos Partenaires <span className="text-emerald-800">Stratégiques</span>
           </h2>
           
           <p className="text-lg text-gray-600 max-w-3xl">
@@ -135,8 +135,8 @@ const Partners = () => {
               onClick={() => setActiveCategory(category)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
                 activeCategory === category
-                  ? 'bg-green-800 text-white '
-                  : 'bg-white text-gray-700 border border-gray-200 hover:border-green-300'
+                  ? 'bg-emerald-800 text-white '
+                  : 'bg-white text-gray-700 border border-gray-200 hover:border-emerald-300'
               }`}
             >
               {categoryNames[category]}
@@ -170,7 +170,7 @@ const Partners = () => {
                 />
                 <div className="absolute top-0 right-0">
                   {partner.category === 'platinum' && (
-                    <div className="bg-gradient-to-r from-green-800 to-green-700 text-white text-xs font-bold px-2 py-1 rounded">
+                    <div className="bg-gradient-to-r from-emerald-800 to-emerald-700 text-white text-xs font-bold px-2 py-1 rounded">
                       PLATINUM
                     </div>
                   )}
@@ -199,7 +199,7 @@ const Partners = () => {
                 href={partner.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center text-green-800 hover:text-green-700 text-sm font-medium mt-auto"
+                className="flex items-center text-emerald-800 hover:text-emerald-700 text-sm font-medium mt-auto"
               >
                 Visiter le site
                 <ExternalLink size={14} className="ml-1" />
@@ -210,7 +210,7 @@ const Partners = () => {
 
         {/* Section "Devenir partenaire" */}
         <div className="mt-16">
-          <div className="bg-gradient-to-r from-green-900 to-green-800 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
             {/* Motif de fond */}
             <div className="absolute inset-0 w-full h-full opacity-10">
               <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -226,7 +226,7 @@ const Partners = () => {
             <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
               <div className="flex-1">
                 <h3 className="text-2xl md:text-3xl font-bold mb-3">Devenez notre partenaire</h3>
-                <p className="text-green-100">
+                <p className="text-emerald-100">
                   Rejoignez notre réseau exclusif et connectez-vous avec les meilleurs talents. Ensemble, développons des 
                   opportunités professionnelles inégalées.
                 </p>
@@ -235,7 +235,7 @@ const Partners = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/partenariat" className="inline-block">
                   <motion.button 
-                    className="w-full px-6 py-3 bg-white text-green-800 font-medium rounded-xl hover:bg-green-50 transition-all whitespace-nowrap"
+                    className="w-full px-6 py-3 bg-white text-emerald-800 font-medium rounded-xl hover:bg-emerald-50 transition-all whitespace-nowrap"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -260,7 +260,7 @@ const Partners = () => {
         <div className="mt-20">
           <div className="text-center mb-12">
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-              Ce que disent nos <span className="text-green-800">partenaires</span>
+              Ce que disent nos <span className="text-emerald-800">partenaires</span>
             </h3>
             <p className="text-gray-600 max-w-3xl mx-auto">
               Découvrez comment notre collaboration crée de la valeur pour nos partenaires et construit des ponts entre 
@@ -282,7 +282,7 @@ const Partners = () => {
                   />
                 </div>
                 <div>
-                  <svg className="h-10 w-10 text-green-100 mb-3" fill="currentColor" viewBox="0 0 32 32">
+                  <svg className="h-10 w-10 text-emerald-100 mb-3" fill="currentColor" viewBox="0 0 32 32">
                     <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
                   </svg>
                   <p className="text-gray-700 mb-4 italic">
@@ -292,22 +292,22 @@ const Partners = () => {
                   </p>
                   <div>
                     <h4 className="font-bold text-gray-900">Mohammed Amine El Hajjami</h4>
-                    <p className="text-green-800">Directeur des Ressources Humaines, Groupe OCP</p>
+                    <p className="text-emerald-800">Directeur des Ressources Humaines, Groupe OCP</p>
                   </div>
                 </div>
               </div>
               
               {/* Navigation du carrousel (pour démonstration, non fonctionnelle) */}
               <div className="flex justify-center mt-8 gap-2">
-                <button className="w-8 h-8 rounded-full bg-green-100 text-green-800 flex items-center justify-center hover:bg-green-200 transition-colors">
+                <button className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center hover:bg-emerald-200 transition-colors">
                   <ChevronLeft size={16} />
                 </button>
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 rounded-full bg-green-800"></div>
-                  <div className="w-2 h-2 rounded-full bg-green-200"></div>
-                  <div className="w-2 h-2 rounded-full bg-green-200"></div>
+                  <div className="w-2 h-2 rounded-full bg-emerald-800"></div>
+                  <div className="w-2 h-2 rounded-full bg-emerald-200"></div>
+                  <div className="w-2 h-2 rounded-full bg-emerald-200"></div>
                 </div>
-                <button className="w-8 h-8 rounded-full bg-green-100 text-green-800 flex items-center justify-center hover:bg-green-200 transition-colors">
+                <button className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center hover:bg-emerald-200 transition-colors">
                   <ChevronRight size={16} />
                 </button>
               </div>

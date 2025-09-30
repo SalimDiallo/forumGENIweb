@@ -143,7 +143,7 @@ const TeamsMembres = () => {
           onMouseEnter={() => setHoveredCard(member.id)}
           onMouseLeave={() => setHoveredCard(null)}
         >
-          <div className="relative bg-gradient-to-br from-green-600 via-green-600 to-pink-600 p-1 rounded-3xl">
+          <div className="relative bg-gradient-to-br from-emerald-600 via-emerald-600 to-pink-600 p-1 rounded-3xl">
             <div className="bg-white rounded-3xl p-8 h-full">
               <div className="text-center">
                 <div className="relative inline-block mb-6">
@@ -160,11 +160,11 @@ const TeamsMembres = () => {
                 </div>
                 
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{member.name}</h3>
-                <p className="text-lg font-semibold text-green-600 mb-3">{member.role}</p>
+                <p className="text-lg font-semibold text-emerald-600 mb-3">{member.role}</p>
                 <p className="text-gray-600 mb-4 leading-relaxed">{member.description}</p>
                 
                 {member.specialty && (
-                  <div className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium mb-4">
+                  <div className="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium mb-4">
                     <Award className="w-4 h-4 mr-1" />
                     {member.specialty}
                   </div>
@@ -173,15 +173,15 @@ const TeamsMembres = () => {
                 <div className="flex justify-center gap-3">
                   <a
                     href={`mailto:${member.email}`}
-                    className="w-10 h-10 bg-gray-100 hover:bg-green-100 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    className="w-10 h-10 bg-gray-100 hover:bg-emerald-100 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                   >
-                    <Mail className="w-4 h-4 text-gray-600 hover:text-green-600" />
+                    <Mail className="w-4 h-4 text-gray-600 hover:text-emerald-600" />
                   </a>
                   <a
                     href={member.linkedin}
-                    className="w-10 h-10 bg-gray-100 hover:bg-green-100 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    className="w-10 h-10 bg-gray-100 hover:bg-emerald-100 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                   >
-                    <Linkedin className="w-4 h-4 text-gray-600 hover:text-green-600" />
+                    <Linkedin className="w-4 h-4 text-gray-600 hover:text-emerald-600" />
                   </a>
                 </div>
               </div>
@@ -201,7 +201,7 @@ const TeamsMembres = () => {
           <div className={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden ${
             isHovered ? 'transform -translate-y-2' : ''
           }`}>
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50 opacity-50"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-emerald-50 opacity-50"></div>
             
             <div className="relative p-6">
               <div className="text-center">
@@ -213,17 +213,17 @@ const TeamsMembres = () => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  {/* <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-xl flex items-center justify-center shadow-md">
+                  {/* <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center shadow-md">
                     <IconComponent className="w-4 h-4 text-white" />
                   </div> */}
                 </div>
                 
                 <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-sm font-semibold text-green-600 mb-2">{member.role}</p>
+                <p className="text-sm font-semibold text-emerald-600 mb-2">{member.role}</p>
                 <p className="text-xs text-gray-600 mb-3 line-clamp-2">{member.description}</p>
                 
                 {member.specialty && (
-                  <div className="text-xs text-green-600 font-medium mb-3">
+                  <div className="text-xs text-emerald-600 font-medium mb-3">
                     {member.specialty}
                   </div>
                 )}
@@ -231,13 +231,13 @@ const TeamsMembres = () => {
                 <div className="flex justify-center gap-2">
                   <a
                     href={`mailto:${member.email}`}
-                    className="w-7 h-7 bg-gray-100 hover:bg-green-100 rounded-lg flex items-center justify-center transition-colors duration-200"
+                    className="w-7 h-7 bg-gray-100 hover:bg-emerald-100 rounded-lg flex items-center justify-center transition-colors duration-200"
                   >
                     <Mail className="w-3 h-3 text-gray-600" />
                   </a>
                   <a
                     href={member.linkedin}
-                    className="w-7 h-7 bg-gray-100 hover:bg-green-100 rounded-lg flex items-center justify-center transition-colors duration-200"
+                    className="w-7 h-7 bg-gray-100 hover:bg-emerald-100 rounded-lg flex items-center justify-center transition-colors duration-200"
                   >
                     <Linkedin className="w-3 h-3 text-gray-600" />
                   </a>
@@ -317,7 +317,7 @@ const TeamsMembres = () => {
             </div>
             <h1 className="text-3xl md:text-5xl font-bold mb-6 text-black leading-tight">
               L'Excellence au Service de
-              <span className="bg-gradient-to-r from-green-400 to-pink-400 bg-clip-text text-transparent"> Notre Vision</span>
+              <span className="bg-gradient-to-r from-emerald-400 to-pink-400 bg-clip-text text-transparent"> Notre Vision</span>
             </h1>
             <p className="text-lg text-black/80 max-w-2xl mx-auto leading-relaxed">
               Découvrez les leaders passionnés qui transforment nos ambitions en réalité et guident notre association vers de nouveaux sommets.
@@ -384,19 +384,19 @@ const TeamsMembres = () => {
         <div className="container mx-auto px-4 md:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">8</div>
+              <div className="text-3xl font-bold text-emerald-600 mb-2">8</div>
               <div className="text-sm text-gray-600">Membres de Direction</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">5+</div>
+              <div className="text-3xl font-bold text-emerald-600 mb-2">5+</div>
               <div className="text-sm text-gray-600">Années d'Expérience</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">100%</div>
+              <div className="text-3xl font-bold text-emerald-600 mb-2">100%</div>
               <div className="text-sm text-gray-600">Engagement</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">24/7</div>
+              <div className="text-3xl font-bold text-emerald-600 mb-2">24/7</div>
               <div className="text-sm text-gray-600">Disponibilité</div>
             </div>
           </div>
@@ -412,10 +412,10 @@ const TeamsMembres = () => {
             Nous sommes toujours à la recherche de talents exceptionnels.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-green-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-200">
+            <button className="bg-white text-emerald-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-200">
               Nous Rejoindre
             </button>
-            <button className="border-2 border-white text-white px-8 py-3 rounded-xl font-semibold hover:bg-white hover:text-green-600 transition-colors duration-200">
+            <button className="border-2 border-white text-white px-8 py-3 rounded-xl font-semibold hover:bg-white hover:text-emerald-600 transition-colors duration-200">
               En Savoir Plus
             </button>
           </div>

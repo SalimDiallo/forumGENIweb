@@ -62,7 +62,7 @@ const EventCalendar = () => {
 
   const getEventTypeColor = (type: string) => {
     const colors = {
-      'Forum': 'bg-green-100 text-green-800 border-green-200',
+      'Forum': 'bg-emerald-100 text-emerald-800 border-emerald-200',
       'Atelier': 'bg-black text-black border-black',
       'Conférence': 'bg-purple-100 text-purple-800 border-purple-200',
       'Networking': 'bg-orange-100 text-orange-800 border-orange-200'
@@ -85,7 +85,7 @@ const EventCalendar = () => {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-green-50/80 via-white/70 to-white/90 pointer-events-none z-0 backdrop-blur-md" />
+      <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/80 via-white/70 to-white/90 pointer-events-none z-0 backdrop-blur-md" />
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-4 py-1 bg-gradient-to-r from-emerald-500 to-black text-white rounded-full shadow mb-4">

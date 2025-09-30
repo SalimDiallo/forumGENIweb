@@ -33,7 +33,7 @@ const Contact = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-green-50 to-white">
+    <section className="py-20 bg-gradient-to-b from-emerald-50 to-white">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -42,8 +42,8 @@ const Contact = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center p-1 bg-green-100 rounded-full mb-4">
-            <span className="px-3 py-1 text-sm font-medium bg-green-800 text-white rounded-full">
+          <div className="inline-flex items-center p-1 bg-emerald-100 rounded-full mb-4">
+            <span className="px-3 py-1 text-sm font-medium bg-emerald-800 text-white rounded-full">
               Contact
             </span>
           </div>
@@ -63,7 +63,7 @@ const Contact = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white rounded-xl p-6 border border-green-100 text-center hover:shadow-lg transition-shadow"
+              className="bg-white rounded-xl p-6 border border-emerald-100 text-center hover:shadow-lg transition-shadow"
             >
               <div className="flex justify-center mb-4">
                 {info.icon}
@@ -71,7 +71,7 @@ const Contact = () => {
               <h3 className="text-xl font-bold text-black mb-2">
                 {info.title}
               </h3>
-              <p className="text-green-800 font-medium mb-1">
+              <p className="text-emerald-800 font-medium mb-1">
                 {info.details}
               </p>
               <p className="text-black/80 text-sm">
@@ -87,7 +87,7 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-white rounded-xl overflow-hidden border border-green-100"
+          className="bg-white rounded-xl overflow-hidden border border-emerald-100"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-8">
@@ -113,12 +113,12 @@ const Contact = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-green-100 flex items-center justify-center p-8">
+            <div className="bg-emerald-100 flex items-center justify-center p-8">
               {/* Ici vous pourriez intégrer une vraie carte Google Maps */}
-              <div className="w-full h-64 bg-green-200 rounded-lg flex items-center justify-center">
+              <div className="w-full h-64 bg-emerald-200 rounded-lg flex items-center justify-center">
                 <div className="text-center">
                   <MapPin className="text-black mx-auto mb-2" size={32} />
-                  <p className="text-green-800 font-medium">Carte interactive</p>
+                  <p className="text-emerald-800 font-medium">Carte interactive</p>
                   <p className="text-black text-sm">INSEA, Rabat</p>
                 </div>
               </div>

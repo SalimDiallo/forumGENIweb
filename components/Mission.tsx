@@ -55,20 +55,20 @@ const Mission = () => {
       }}
     >
       {/* Animated background elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-white-50/50"></div>
-      <div className="absolute top-1/4 right-1/4 w-24 h-24 md:w-48 md:h-48 bg-green-200/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-white-50/50"></div>
+      <div className="absolute top-1/4 right-1/4 w-24 h-24 md:w-48 md:h-48 bg-emerald-200/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-1/3 left-1/5 w-32 h-32 md:w-64 md:h-64 bg-white-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '3s' }}></div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Hero Section */}
         <div className={`text-center mb-12 sm:mb-16 md:mb-20 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <div className="inline-flex items-center px-4 sm:px-6 py-2 bg-green-100 border border-green-200 text-green-700 rounded-full mb-6 sm:mb-8 text-sm font-medium">
+          <div className="inline-flex items-center px-4 sm:px-6 py-2 bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-full mb-6 sm:mb-8 text-sm font-medium">
             <Star size={16} className="mr-2" />
             Mission • Vision • Valeurs
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-            Notre <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-white-600">Identité</span>
+            Notre <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-white-600">Identité</span>
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Découvrez les valeurs et la vision qui nous animent depuis plus de 20 ans
@@ -139,7 +139,7 @@ const Mission = () => {
         {/* Values Section */}
         <div className={`text-center mb-8 sm:mb-12 md:mb-16 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ transitionDelay: '400ms' }}>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
-            Nos <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-white-600">Valeurs</span>
+            Nos <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-white-600">Valeurs</span>
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Les principes fondamentaux qui guident nos actions et notre engagement quotidien
@@ -209,7 +209,7 @@ const Mission = () => {
             <p className="text-white/90 mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
               Participez à notre mission et aidez-nous à créer un impact positif durable
             </p>
-            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-green-700 font-semibold rounded-xl hover:bg-gray-50 hover:scale-105 transition-all duration-300 text-sm sm:text-base">
+            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-emerald-700 font-semibold rounded-xl hover:bg-gray-50 hover:scale-105 transition-all duration-300 text-sm sm:text-base">
               Découvrir Nos Actions
             </button>
           </div>

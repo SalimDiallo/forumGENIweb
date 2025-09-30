@@ -56,7 +56,7 @@ const UpcomingEvents = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-green-50/30">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
       <div className="container mx-auto px-6 max-w-7xl">
         {/* Header Section */}
         <motion.div
@@ -66,8 +66,8 @@ const UpcomingEvents = () => {
           viewport={{ once: true }}
           className="mb-16 text-center"
         >
-          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-green-100 rounded-full mb-6 border border-green-200/50">
-            <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-100 to-emerald-100 rounded-full mb-6 border border-emerald-200/50">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full mr-3 animate-pulse"></div>
             <span className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
               Agenda 2025
             </span>
@@ -118,11 +118,11 @@ const UpcomingEvents = () => {
                 <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
                   <div className="flex flex-col gap-2">
                     <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg flex items-center gap-2 text-slate-800 font-medium text-sm">
-                      <Calendar size={16} className="text-green-600" />
+                      <Calendar size={16} className="text-emerald-600" />
                       {event.date}
                     </div>
                     <div className="bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg flex items-center gap-2 text-slate-800 font-medium text-sm">
-                      <Clock size={16} className="text-green-600" />
+                      <Clock size={16} className="text-emerald-600" />
                       {event.time}
                     </div>
                   </div>
@@ -137,10 +137,10 @@ const UpcomingEvents = () => {
               {/* Content */}
               <div className="p-8">
                 <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-2xl font-bold text-slate-800 leading-tight group-hover:text-green-600 transition-colors">
+                  <h3 className="text-2xl font-bold text-slate-800 leading-tight group-hover:text-emerald-600 transition-colors">
                     {event.title}
                   </h3>
-                  <div className="flex items-center gap-1 text-green-600 ml-4 flex-shrink-0">
+                  <div className="flex items-center gap-1 text-emerald-600 ml-4 flex-shrink-0">
                     {getTypeIcon(event.type)}
                   </div>
                 </div>
@@ -152,11 +152,11 @@ const UpcomingEvents = () => {
                 {/* Stats */}
                 <div className="flex items-center gap-6 mb-6 text-sm">
                   <div className="flex items-center gap-2 text-slate-600">
-                    <Users size={16} className="text-green-500" />
+                    <Users size={16} className="text-emerald-500" />
                     <span className="font-medium">{event.attendees} participants</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-600">
-                    <Award size={16} className="text-green-500" />
+                    <Award size={16} className="text-emerald-500" />
                     <span className="font-medium">{event.companies} entreprises</span>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ const UpcomingEvents = () => {
                   
                   <Link href={event.link}>
                     <motion.button 
-                      className="group/btn px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
+                      className="group/btn px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
                       whileHover={{ scale: 1.02, y: -1 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -190,7 +190,7 @@ const UpcomingEvents = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
           viewport={{ once: true }}
-          className="text-center bg-gradient-to-r from-slate-50 to-green-50/50 rounded-2xl p-8 border border-slate-200/50"
+          className="text-center bg-gradient-to-r from-slate-50 to-emerald-50/50 rounded-2xl p-8 border border-slate-200/50"
         >
           <h3 className="text-2xl font-bold text-slate-800 mb-4">
             Ne manquez aucun événement

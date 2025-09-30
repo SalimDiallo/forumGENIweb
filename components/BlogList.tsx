@@ -108,7 +108,7 @@ const BlogList = () => {
   const regularPosts = filteredPosts.filter(post => post.id !== featuredPost?.id);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-green-50/30">
+    <section className="py-20 bg-gradient-to-b from-white to-emerald-50/30">
       <div className="container mx-auto px-4">
         {/* Header avec search */}
         <motion.div
@@ -118,7 +118,7 @@ const BlogList = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-green-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-emerald-900 mb-4">
             Explorez nos derniers articles
           </h2>
           <p className="text-black/80 mb-8 max-w-2xl mx-auto">
@@ -127,13 +127,13 @@ const BlogList = () => {
           
           {/* Barre de recherche */}
           <div className="relative max-w-md mx-auto mb-8">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Rechercher un article..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-green-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all"
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
             />
           </div>
         </motion.div>
@@ -157,7 +157,7 @@ const BlogList = () => {
                 className={`group relative px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 ${
                   activeCategory === category.id
                     ? 'bg-gradient-to-r from-black to-emerald-700 text-white shadow-lg'
-                    : 'bg-white/70 backdrop-blur-sm text-black hover:bg-green-50 border border-green-100 hover:border-green-200'
+                    : 'bg-white/70 backdrop-blur-sm text-black hover:bg-emerald-50 border border-emerald-100 hover:border-emerald-200'
                 }`}
               >
                 <IconComponent className="w-4 h-4" />
@@ -165,7 +165,7 @@ const BlogList = () => {
                 <span className={`text-xs px-2 py-0.5 rounded-full ${
                   activeCategory === category.id
                     ? 'bg-white/20 text-white'
-                    : 'bg-green-100 text-green-600'
+                    : 'bg-emerald-100 text-emerald-600'
                 }`}>
                   {category.count}
                 </span>
@@ -185,7 +185,7 @@ const BlogList = () => {
               transition={{ duration: 0.6 }}
               className="mb-20"
             >
-              <div className="relative bg-gradient-to-br from-green-800 via-black to-emerald-800 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative bg-gradient-to-br from-emerald-800 via-black to-emerald-800 rounded-2xl overflow-hidden shadow-2xl">
                 {/* Background pattern */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
@@ -201,12 +201,12 @@ const BlogList = () => {
                       height={400}
                       className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-green-800/20"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-emerald-800/20"></div>
                   </div>
                   
                   <div className="relative p-8 lg:p-12 flex flex-col justify-center">
                     <div className="flex items-center gap-3 mb-6">
-                      <span className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-semibold rounded-full shadow-lg">
+                      <span className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-500 text-white text-sm font-semibold rounded-full shadow-lg">
                         ⭐ Article vedette
                       </span>
                       <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs rounded-full">
@@ -218,11 +218,11 @@ const BlogList = () => {
                       {featuredPost.title}
                     </h2>
                     
-                    <p className="text-green-100 mb-8 text-lg leading-relaxed">
+                    <p className="text-emerald-100 mb-8 text-lg leading-relaxed">
                       {featuredPost.excerpt}
                     </p>
                     
-                    <div className="flex flex-wrap items-center gap-6 text-green-200 text-sm mb-8">
+                    <div className="flex flex-wrap items-center gap-6 text-emerald-200 text-sm mb-8">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                           <User size={16} />
@@ -252,7 +252,7 @@ const BlogList = () => {
                     
                     <Link 
                       href={`/blog/${featuredPost.id}`}
-                      className="group inline-flex items-center gap-3 bg-white text-green-800 px-8 py-4 rounded-xl font-semibold hover:bg-green-50 transition-all duration-300 hover:shadow-lg hover:scale-105 w-fit"
+                      className="group inline-flex items-center gap-3 bg-white text-emerald-800 px-8 py-4 rounded-xl font-semibold hover:bg-emerald-50 transition-all duration-300 hover:shadow-lg hover:scale-105 w-fit"
                     >
                       Lire l'article complet
                       <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -275,7 +275,7 @@ const BlogList = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-green-100/50 hover:border-green-200"
+                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-emerald-100/50 hover:border-emerald-200"
               >
                 <div className="relative overflow-hidden">
                   <Image
@@ -301,7 +301,7 @@ const BlogList = () => {
                 </div>
                 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-green-900 mb-3 line-clamp-2 group-hover:text-black transition-colors leading-tight">
+                  <h3 className="text-xl font-bold text-emerald-900 mb-3 line-clamp-2 group-hover:text-black transition-colors leading-tight">
                     {post.title}
                   </h3>
                   
@@ -309,9 +309,9 @@ const BlogList = () => {
                     {post.excerpt}
                   </p>
                   
-                  <div className="flex items-center gap-4 text-sm text-green-600 mb-6">
+                  <div className="flex items-center gap-4 text-sm text-emerald-600 mb-6">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
                         <User size={12} />
                       </div>
                       {post.author}
@@ -327,7 +327,7 @@ const BlogList = () => {
                       {post.tags.slice(0, 2).map((tag, tagIndex) => (
                         <span
                           key={tagIndex}
-                          className="px-2 py-1 bg-green-50 text-black text-xs rounded-lg font-medium"
+                          className="px-2 py-1 bg-emerald-50 text-black text-xs rounded-lg font-medium"
                         >
                           #{tag}
                         </span>
@@ -336,7 +336,7 @@ const BlogList = () => {
                     
                     <Link 
                       href={`/blog/${post.id}`}
-                      className="group/link inline-flex items-center gap-2 text-black font-semibold hover:text-green-600 transition-colors"
+                      className="group/link inline-flex items-center gap-2 text-black font-semibold hover:text-emerald-600 transition-colors"
                     >
                       Lire
                       <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1" />
@@ -355,17 +355,17 @@ const BlogList = () => {
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search className="w-12 h-12 text-green-600" />
+            <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Search className="w-12 h-12 text-emerald-600" />
             </div>
-            <h3 className="text-xl font-semibold text-green-900 mb-2">Aucun article trouvé</h3>
+            <h3 className="text-xl font-semibold text-emerald-900 mb-2">Aucun article trouvé</h3>
             <p className="text-black/80 mb-6">Essayez de modifier vos filtres ou votre recherche</p>
             <button
               onClick={() => {
                 setActiveCategory('all');
                 setSearchTerm('');
               }}
-              className="px-6 py-3 bg-black text-white rounded-lg hover:bg-green-600 transition-colors"
+              className="px-6 py-3 bg-black text-white rounded-lg hover:bg-emerald-600 transition-colors"
             >
               Réinitialiser les filtres
             </button>
@@ -381,7 +381,7 @@ const BlogList = () => {
             viewport={{ once: true }}
             className="text-center mt-16"
           >
-            <button className="group px-10 py-4 bg-gradient-to-r from-black to-emerald-700 text-white rounded-xl font-semibold hover:from-green-800 hover:to-emerald-800 transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center gap-3 mx-auto">
+            <button className="group px-10 py-4 bg-gradient-to-r from-black to-emerald-700 text-white rounded-xl font-semibold hover:from-emerald-800 hover:to-emerald-800 transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center gap-3 mx-auto">
               Charger plus d'articles
               <motion.div
                 animate={{ rotate: [0, 360] }}

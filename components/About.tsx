@@ -82,19 +82,19 @@ const About = () => {
       }}
     >
       {/* Animated background elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-white-500/5"></div>
-      <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-64 md:h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-white-500/5"></div>
+      <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-64 md:h-64 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-1/4 right-1/4 w-24 h-24 md:w-48 md:h-48 bg-white-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 relative z-10">
         
         {/* Hero Section */}
         <div className={`text-center mb-16 sm:mb-24 md:mb-32 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <div className="inline-flex items-center px-3 sm:px-4 md:px-6 py-2 bg-green-500/10 border border-green-500/20 text-green-400 rounded-full mb-6 sm:mb-8 text-xs sm:text-sm font-medium backdrop-blur-sm">
+          <div className="inline-flex items-center px-3 sm:px-4 md:px-6 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full mb-6 sm:mb-8 text-xs sm:text-sm font-medium backdrop-blur-sm">
             2002 → 2025 • 23 ans d'excellence
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight">
-            Notre <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-white-400">Histoire</span>
+            Notre <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-white-400">Histoire</span>
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-xs sm:max-w-lg md:max-w-3xl mx-auto leading-relaxed px-4">
             Découvrez l'évolution du Forum GENI INSEA à travers plus de deux décennies d'innovation et d'excellence
@@ -109,7 +109,7 @@ const About = () => {
               className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 md:p-6 text-center transform transition-all duration-700 hover:scale-105 hover:bg-white/10 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="flex justify-center mb-2 sm:mb-3 text-green-400">
+              <div className="flex justify-center mb-2 sm:mb-3 text-emerald-400">
                 {stat.icon}
               </div>
               <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">{stat.number}</div>
@@ -121,7 +121,7 @@ const About = () => {
         {/* Timeline */}
         <div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-white mb-8 sm:mb-12 md:mb-16 px-4">
-            Étapes <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-white-400">Clés</span>
+            Étapes <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-white-400">Clés</span>
           </h2>
           
           <div className="max-w-5xl mx-auto">
@@ -132,10 +132,10 @@ const About = () => {
                 style={{ transitionDelay: `${index * 200}ms` }}
               >
                 {/* Timeline Line - Hidden on mobile */}
-                <div className="hidden sm:block absolute left-6 md:left-8 top-12 md:top-16 w-0.5 h-full bg-gradient-to-b from-green-500/50 to-transparent"></div>
+                <div className="hidden sm:block absolute left-6 md:left-8 top-12 md:top-16 w-0.5 h-full bg-gradient-to-b from-emerald-500/50 to-transparent"></div>
                 
                 {/* Icon */}
-                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-white-600 rounded-full flex items-center justify-center text-white shadow-lg border-2 sm:border-4 border-slate-800 z-10 mb-4 sm:mb-0 mx-auto sm:mx-0">
+                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-emerald-500 to-white-600 rounded-full flex items-center justify-center text-white shadow-lg border-2 sm:border-4 border-slate-800 z-10 mb-4 sm:mb-0 mx-auto sm:mx-0">
                   {event.icon}
                 </div>
                 
@@ -152,13 +152,13 @@ const About = () => {
                   <div className="relative z-10">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2">
                       <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white leading-tight">{event.title}</h3>
-                      <span className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400 text-center sm:text-right">{event.year}</span>
+                      <span className="text-xl sm:text-2xl md:text-3xl font-bold text-emerald-400 text-center sm:text-right">{event.year}</span>
                     </div>
                     
                     <p className="text-gray-300 mb-4 leading-relaxed text-sm sm:text-base">{event.description}</p>
                     
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <span className="px-3 sm:px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full text-green-300 text-xs sm:text-sm font-medium text-center backdrop-blur-sm">
+                      <span className="px-3 sm:px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-emerald-300 text-xs sm:text-sm font-medium text-center backdrop-blur-sm">
                         {event.participants}
                       </span>
                       <ArrowRight className="text-gray-400 hidden sm:block" size={20} />
@@ -189,7 +189,7 @@ const About = () => {
             <p className="text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
               Participez à la prochaine édition et faites partie de cette histoire exceptionnelle
             </p>
-            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-500 to-white-600 text-white font-semibold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 text-sm sm:text-base">
+            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-white-600 text-white font-semibold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 text-sm sm:text-base">
               En Savoir Plus
             </button>
           </div>

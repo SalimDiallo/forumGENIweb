@@ -90,7 +90,7 @@ const CareerAdvice = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-green-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-emerald-900 mb-4">
             Conseils Carrière
           </h2>
           <p className="text-lg text-black/80 max-w-2xl mx-auto">
@@ -107,14 +107,14 @@ const CareerAdvice = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white rounded-xl p-6 border border-green-100 hover:shadow-lg transition-shadow"
+              className="bg-white rounded-xl p-6 border border-emerald-100 hover:shadow-lg transition-shadow"
             >
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
                   {tip.icon}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-green-900 mb-2">
+                  <h3 className="text-xl font-bold text-emerald-900 mb-2">
                     {tip.title}
                   </h3>
                   <p className="text-black/80 mb-4">
@@ -140,9 +140,9 @@ const CareerAdvice = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-white rounded-xl p-8 border border-green-100"
+          className="bg-white rounded-xl p-8 border border-emerald-100"
         >
-          <h3 className="text-2xl font-bold text-green-900 mb-6 text-center">
+          <h3 className="text-2xl font-bold text-emerald-900 mb-6 text-center">
             Ressources Gratuites
           </h3>
           
@@ -150,11 +150,11 @@ const CareerAdvice = () => {
             {resources.map((resource, index) => (
               <div
                 key={index}
-                className="border border-green-200 rounded-lg p-4 hover:border-green-400 transition-colors"
+                className="border border-emerald-200 rounded-lg p-4 hover:border-emerald-400 transition-colors"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-bold text-green-900">{resource.title}</h4>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                  <h4 className="font-bold text-emerald-900">{resource.title}</h4>
+                  <span className="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs rounded">
                     {resource.type}
                   </span>
                 </div>
@@ -163,7 +163,7 @@ const CareerAdvice = () => {
                 </p>
                 <Link
                   href={resource.link}
-                  className="inline-flex items-center gap-1 text-green-800 font-medium hover:text-black transition-colors"
+                  className="inline-flex items-center gap-1 text-emerald-800 font-medium hover:text-black transition-colors"
                 >
                   Télécharger
                   <ExternalLink size={14} />
@@ -181,15 +181,15 @@ const CareerAdvice = () => {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <div className="bg-green-800 rounded-xl p-8 text-white">
+          <div className="bg-emerald-800 rounded-xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">
               Besoin d'un accompagnement personnalisé ?
             </h3>
-            <p className="text-green-200 mb-6">
+            <p className="text-emerald-200 mb-6">
               Nos experts sont disponibles pour vous conseiller dans votre développement de carrière
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-3 bg-white text-green-800 rounded-lg font-medium hover:bg-green-50 transition-colors">
+              <button className="px-8 py-3 bg-white text-emerald-800 rounded-lg font-medium hover:bg-emerald-50 transition-colors">
                 Réserver un coaching
               </button>
               <button className="px-8 py-3 border border-white text-white rounded-lg font-medium hover:bg-white/10 transition-colors">
