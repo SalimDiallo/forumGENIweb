@@ -14,7 +14,7 @@ export default function Modal({
   title, 
   onClose, 
   children, 
-  size = "full" 
+  size = "large" 
 }: ModalProps) {
   if (!open) return null;
 
@@ -25,9 +25,9 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-8">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className={`relative bg-white rounded-lg border shadow-xl flex flex-col ${sizeClasses[size]}`}>
+      <div className={`relative bg-white rounded-lg border shadow-xl flex flex-col ${sizeClasses[size]} p-8`}>
         {/* Header */}
         <div className="flex items-center justify-between border-b px-6 py-4 flex-shrink-0 bg-white sticky top-0 z-10">
           <h3 className="text-xl font-semibold">{title}</h3>

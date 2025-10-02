@@ -8,16 +8,16 @@ const navItems = [
     { href: "/admin/blog/categories", label: "Catégories" },
     { href: "/admin/blog/tags", label: "Tags" },
   ]},
-  { href: "/admin/crm", label: "CRM", children: [
-    { href: "/admin/crm/contacts", label: "Contacts" },
-    { href: "/admin/crm/partnerships", label: "Partenariats" },
-  ]},
+  // { href: "/admin/crm", label: "CRM", children: [
+  //   { href: "/admin/crm/contacts", label: "Contacts" },
+  //   { href: "/admin/crm/partnerships", label: "Partenariats" },
+  // ]},
   { href: "/admin/events", label: "Événements" },
   { href: "/admin/jobs", label: "Jobs" },
-  { href: "/admin/media", label: "Médias" },
-  { href: "/admin/testimonials", label: "Témoignages" },
+  // { href: "/admin/media", label: "Médias" },
+  // { href: "/admin/testimonials", label: "Témoignages" },
   { href: "/admin/newsletter", label: "Newsletter" },
-  { href: "/admin/analytics", label: "Analytics" },
+  // { href: "/admin/analytics", label: "Analytics" },
 ];
 
 function AdminNav() {

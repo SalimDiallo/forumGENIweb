@@ -6,10 +6,22 @@ import { createEventSchema } from "@/lib/validations/events";
 import { useAction } from "next-safe-action/hooks";
 import { createEvent } from "./events.actions";
 import { useEffect, useState } from "react";
-import { FileText, Settings, UserCheck, Save, AlertCircle } from "lucide-react";
+import {
+  FileText,
+  Settings,
+  UserCheck,
+  Save,
+  AlertCircle,
+  Globe,
+  Image,
+  Calendar,
+  MapPin,
+  Users,
+  DollarSign,
+} from "lucide-react";
 import MarkdownEditor from "@/components/MardownEditor";
 
-type FormTab = "basic" | "details" | "registration";
+type FormTab = "basic" | "details" | "registration" | "seo";
 
 interface CreateEventFormProps {
   onSuccess?: () => void;
@@ -38,7 +50,14 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
 
   const create = useAction(createEvent);
 
-  const form = useForm<z.infer<typeof createEventSchema>>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    reset,
+  } = useForm<z.infer<typeof createEventSchema>>({
     resolver: zodResolver(createEventSchema),
     defaultValues: {
       title: "",
@@ -59,6 +78,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
       registrationStart: "",
       registrationEnd: "",
       maxParticipants: undefined,
+      metaTitle: "",
+      metaDescription: "",
+      location: "",
     },
   });
 
@@ -69,23 +91,26 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
   useEffect(() => {
     if (create.status === "hasSucceeded") {
       if (onSuccess) onSuccess();
-      form.reset();
+      reset();
       setActiveTab("basic");
     }
-  }, [create.status, onSuccess, form]);
+  }, [create.status, onSuccess, reset]);
 
-  const errors = form.formState.errors;
+  const tabs = [
+    { id: "basic" as FormTab, label: "Informations de base", icon: FileText },
+    { id: "details" as FormTab, label: "Détails", icon: Settings },
+    { id: "registration" as FormTab, label: "Inscription", icon: UserCheck },
+    { id: "seo" as FormTab, label: "SEO", icon: Globe },
+  ];
+
+  const descriptionValue = watch("description");
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="space-y-4">
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
-          {[
-            { id: "basic" as FormTab, label: "Informations de base", icon: FileText },
-            { id: "details" as FormTab, label: "Détails", icon: Settings },
-            { id: "registration" as FormTab, label: "Inscription", icon: UserCheck },
-          ].map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
@@ -113,7 +138,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   </label>
                   <input
                     id="title"
-                    {...form.register("title")}
+                    {...register("title")}
                     placeholder="Ex: Forum Entrepreneuriat 2025"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
@@ -128,7 +153,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   </label>
                   <input
                     id="slug"
-                    {...form.register("slug")}
+                    {...register("slug")}
                     placeholder="forum-entrepreneuriat-2025"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
@@ -143,7 +168,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   </label>
                   <select
                     id="eventType"
-                    {...form.register("eventType")}
+                    {...register("eventType")}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   >
                     {eventTypeOptions.map((opt) => (
@@ -163,7 +188,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   </label>
                   <select
                     id="status"
-                    {...form.register("status")}
+                    {...register("status")}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   >
                     {statusOptions.map((opt) => (
@@ -183,7 +208,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   </label>
                   <input
                     id="organizerName"
-                    {...form.register("organizerName")}
+                    {...register("organizerName")}
                     placeholder="FGE"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
@@ -198,7 +223,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   </label>
                   <input
                     id="featuredImage"
-                    {...form.register("featuredImage")}
+                    {...register("featuredImage")}
                     placeholder="https://..."
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
@@ -213,7 +238,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   </label>
                   <textarea
                     id="shortDescription"
-                    {...form.register("shortDescription")}
+                    {...register("shortDescription")}
                     placeholder="Résumé en une phrase"
                     rows={2}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
@@ -222,15 +247,18 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     <p className="text-red-600 text-sm mt-1">{errors.shortDescription.message}</p>
                   )}
                 </div>
-               
 
+                {/* Markdown input for description */}
                 <div className="col-span-2">
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                    Description complète (Markdown supporté)
+                  </label>
                   <MarkdownEditor
-                    value={form.watch("description") ?? ''}
-                    onChange={(value) => form.setValue("description", value)}
+                    value={descriptionValue || ""}
+                    onChange={(value) => setValue("description", value)}
                     placeholder="Description détaillée de l'événement en Markdown..."
                     error={errors.description?.message}
-                    label="Description complète"
+                    label=""
                     rows={8}
                   />
                 </div>
@@ -238,10 +266,221 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
             </div>
           )}
 
-          {/* ... reste du code identique pour les autres onglets ... */}
+          {activeTab === "details" && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                    Date de début *
+                  </label>
+                  <input
+                    id="startDate"
+                    type="datetime-local"
+                    {...register("startDate")}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.startDate && (
+                    <p className="text-red-600 text-sm mt-1">{errors.startDate.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                    Date de fin *
+                  </label>
+                  <input
+                    id="endDate"
+                    type="datetime-local"
+                    {...register("endDate")}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.endDate && (
+                    <p className="text-red-600 text-sm mt-1">{errors.endDate.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                    Lieu
+                  </label>
+                  <input
+                    id="location"
+                    {...register("location")}
+                    placeholder="Adresse ou lien"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.location && (
+                    <p className="text-red-600 text-sm mt-1">{errors.location.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="isVirtual" className="block text-sm font-medium text-gray-700 mb-1">
+                    Virtuel ?
+                  </label>
+                  <select
+                    id="isVirtual"
+                    {...register("isVirtual")}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  >
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
+                  </select>
+                  {errors.isVirtual && (
+                    <p className="text-red-600 text-sm mt-1">{errors.isVirtual.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="isFeatured" className="block text-sm font-medium text-gray-700 mb-1">
+                    Mettre en avant ?
+                  </label>
+                  <select
+                    id="isFeatured"
+                    {...register("isFeatured")}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  >
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
+                  </select>
+                  {errors.isFeatured && (
+                    <p className="text-red-600 text-sm mt-1">{errors.isFeatured.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "registration" && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="registrationStart" className="block text-sm font-medium text-gray-700 mb-1">
+                    Début des inscriptions
+                  </label>
+                  <input
+                    id="registrationStart"
+                    type="datetime-local"
+                    {...register("registrationStart")}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.registrationStart && (
+                    <p className="text-red-600 text-sm mt-1">{errors.registrationStart.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="registrationEnd" className="block text-sm font-medium text-gray-700 mb-1">
+                    Fin des inscriptions
+                  </label>
+                  <input
+                    id="registrationEnd"
+                    type="datetime-local"
+                    {...register("registrationEnd")}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.registrationEnd && (
+                    <p className="text-red-600 text-sm mt-1">{errors.registrationEnd.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="maxParticipants" className="block text-sm font-medium text-gray-700 mb-1">
+                    Nombre max. de participants
+                  </label>
+                  <input
+                    id="maxParticipants"
+                    type="number"
+                    min={0}
+                    {...register("maxParticipants", { valueAsNumber: true })}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.maxParticipants && (
+                    <p className="text-red-600 text-sm mt-1">{errors.maxParticipants.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="isFree" className="block text-sm font-medium text-gray-700 mb-1">
+                    Gratuit ?
+                  </label>
+                  <select
+                    id="isFree"
+                    {...register("isFree")}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  >
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
+                  </select>
+                  {errors.isFree && (
+                    <p className="text-red-600 text-sm mt-1">{errors.isFree.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+                    Prix (si payant)
+                  </label>
+                  <input
+                    id="price"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    {...register("price", { valueAsNumber: true })}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.price && (
+                    <p className="text-red-600 text-sm mt-1">{errors.price.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">
+                    Devise
+                  </label>
+                  <input
+                    id="currency"
+                    {...register("currency")}
+                    placeholder="MAD"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.currency && (
+                    <p className="text-red-600 text-sm mt-1">{errors.currency.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "seo" && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-1">
+                    Meta Title
+                  </label>
+                  <input
+                    id="metaTitle"
+                    {...register("metaTitle")}
+                    placeholder="Titre SEO"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.metaTitle && (
+                    <p className="text-red-600 text-sm mt-1">{errors.metaTitle.message}</p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                    Meta Description
+                  </label>
+                  <textarea
+                    id="metaDescription"
+                    {...register("metaDescription")}
+                    placeholder="Description SEO"
+                    rows={2}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.metaDescription && (
+                    <p className="text-red-600 text-sm mt-1">{errors.metaDescription.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Error message */}
+        {/* Error Messages */}
         {create.status === "hasErrored" && (
           <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
@@ -251,18 +490,16 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
           </div>
         )}
 
-        {/* Actions */}
+        {/* Action Buttons */}
         <div className="flex items-center justify-between pt-4 border-t">
-          {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              disabled={create.status === "executing"}
-            >
-              Annuler
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            disabled={create.status === "executing"}
+          >
+            Annuler
+          </button>
           <button
             type="submit"
             disabled={create.status === "executing"}

@@ -17,7 +17,9 @@ import {
   Heading2,
   Heading3,
   Minus,
-  Type
+  Image,
+  Video,
+  Youtube
 } from "lucide-react";
 import { markdownOptions } from "@/utils/mardown";
 
@@ -78,12 +80,61 @@ export default function MarkdownEditor({
   const formatItalic = () => insertText("*", "*", "texte italique");
   const formatUnderline = () => insertText("<u>", "</u>", "texte souligné");
   const formatCode = () => insertText("`", "`", "code");
+  
   const formatLink = () => {
     const url = prompt("Entrez l'URL du lien:");
     if (url) {
       insertText("[", `](${url})`, "lien");
     }
   };
+
+  const formatImage = () => {
+    const url = prompt("Entrez l'URL de l'image:");
+    const alt = prompt("Entrez le texte alternatif (description de l'image):") || "";
+    if (url) {
+      insertText("![", `](${url})`, alt);
+    }
+  };
+
+  const formatVideo = () => {
+    const url = prompt("Entrez l'URL de la vidéo:");
+    if (url) {
+      // Pour les vidéos, on utilise une balise HTML personnalisée
+      const videoHtml = `\n<video controls width="100%">\n  <source src="${url}" type="video/mp4">\n  Votre navigateur ne supporte pas la lecture de vidéos.\n</video>\n`;
+      
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      const start = textarea.selectionStart;
+      const newValue = value.substring(0, start) + videoHtml + value.substring(start);
+      onChange(newValue);
+
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + videoHtml.length, start + videoHtml.length);
+      }, 0);
+    }
+  };
+
+  const formatYouTube = () => {
+    const videoId = prompt("Entrez l'ID de la vidéo YouTube (ex: dQw4w9WgXcQ):");
+    if (videoId) {
+      const youtubeEmbed = `\n<div class="youtube-embed">\n  <iframe \n    width="100%" \n    height="400" \n    src="https://www.youtube.com/embed/${videoId}" \n    frameborder="0" \n    allowfullscreen>\n  </iframe>\n</div>\n`;
+      
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      const start = textarea.selectionStart;
+      const newValue = value.substring(0, start) + youtubeEmbed + value.substring(start);
+      onChange(newValue);
+
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + youtubeEmbed.length, start + youtubeEmbed.length);
+      }, 0);
+    }
+  };
+
   const formatQuote = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -97,10 +148,12 @@ export default function MarkdownEditor({
       textarea.setSelectionRange(start + 2, start + 2);
     }, 0);
   };
+
   const formatHeading = (level: number) => {
     const hashes = "#".repeat(level);
     insertText(hashes + " ", "", `Titre ${level}`);
   };
+
   const formatList = (ordered: boolean = false) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -115,6 +168,7 @@ export default function MarkdownEditor({
       textarea.setSelectionRange(start + prefix.length, start + prefix.length);
     }, 0);
   };
+
   const formatHorizontalRule = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -138,7 +192,9 @@ export default function MarkdownEditor({
     { syntax: "- élément", description: "Liste à puces" },
     { syntax: "1. élément", description: "Liste numérotée" },
     { syntax: "[lien](url)", description: "Lien hypertexte" },
+    { syntax: "![alt](url)", description: "Image" },
     { syntax: "> citation", description: "Bloc de citation" },
+    { syntax: "---", description: "Ligne horizontale" },
   ];
 
   const toolbarButtons = [
@@ -147,6 +203,9 @@ export default function MarkdownEditor({
     { icon: Underline, label: "Souligné", onClick: formatUnderline, shortcut: "Ctrl+U" },
     { icon: Code, label: "Code", onClick: formatCode },
     { icon: Link, label: "Lien", onClick: formatLink, shortcut: "Ctrl+K" },
+    { icon: Image, label: "Image", onClick: formatImage },
+    { icon: Video, label: "Vidéo", onClick: formatVideo },
+    { icon: Youtube, label: "YouTube", onClick: formatYouTube },
     { icon: Heading1, label: "Titre 1", onClick: () => formatHeading(1) },
     { icon: Heading2, label: "Titre 2", onClick: () => formatHeading(2) },
     { icon: Heading3, label: "Titre 3", onClick: () => formatHeading(3) },
@@ -272,7 +331,7 @@ export default function MarkdownEditor({
           
           <div className="flex items-center justify-between text-xs text-gray-500">
             <div className="flex items-center gap-4">
-              <span>Support complet : titres, listes, tableaux, code, liens</span>
+              <span>Support complet : texte, images, vidéos, YouTube, code, liens</span>
               <span className="hidden md:inline">Raccourcis: Ctrl+B (gras), Ctrl+I (italique), Ctrl+U (souligné)</span>
             </div>
             <span>{value.length} caractères</span>
