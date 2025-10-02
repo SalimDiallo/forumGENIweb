@@ -1,16 +1,11 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
-import { createEvent, deleteEvent, listEvents, updateEvent, listRegistrations, deleteRegistration } from "./actions";
+import { createEvent, deleteEvent, listEvents, updateEvent, listRegistrations, deleteRegistration } from "./events.actions";
 import { useEffect, useMemo, useState } from "react";
-import Modal from "@/components/admin/Modal";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createEventSchema, updateEventSchema } from "@/lib/validations/events";
-import { Calendar, MapPin, Users, Globe, DollarSign, Image, FileText, Settings, Trash2, Edit2, UserCheck, X, Plus, Save, AlertCircle } from "lucide-react";
-
-// Tabs pour organiser le formulaire
-type FormTab = "basic" | "details" | "registration" | "seo";
+import Modal from "@/components/Modal";
+import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, UserCheck, Plus } from "lucide-react";
+import CreateEventForm from "./CreateEventForm";
+import EditEventForm from "./EditEventForm";
 
 export default function AdminEventsPage() {
   const list = useAction(listEvents);
@@ -29,79 +24,11 @@ export default function AdminEventsPage() {
   const [openRegs, setOpenRegs] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [regEventId, setRegEventId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<FormTab>("basic");
-  const [markdownPreview, setMarkdownPreview] = useState(false);
-
-  const createForm = useForm<z.infer<typeof createEventSchema>>({
-    resolver: zodResolver(createEventSchema),
-    defaultValues: {
-      title: "",
-      slug: "",
-      eventType: "forum",
-      organizerName: "FGE",
-      startDate: new Date().toISOString().slice(0, 16), 
-      endDate: new Date().toISOString().slice(0, 16),
-      isFree: true,
-      price: 0,
-      currency: "MAD",
-      status: "draft",
-      isFeatured: false,
-      isVirtual: false,
-    },
-  });
 
   const editingItem = useMemo(
     () => list.result?.data?.events?.find((e: any) => e.id === editingId) ?? null,
     [editingId, list.result]
   );
-
-  const editForm = useForm<z.infer<typeof updateEventSchema>>({
-    resolver: zodResolver(updateEventSchema),
-    values: editingItem
-      ? {
-          id: editingItem.id,
-          title: editingItem.title,
-          slug: editingItem.slug,
-          description: editingItem.description ?? undefined,
-          shortDescription: editingItem.shortDescription ?? undefined,
-          featuredImage: editingItem.featuredImage ?? undefined,
-          eventType: editingItem.eventType,
-          location: editingItem.location ?? undefined,
-          isVirtual: editingItem.isVirtual,
-          virtualLink: editingItem.virtualLink ?? undefined,
-          startDate: new Date(editingItem.startDate).toISOString(),
-          endDate: new Date(editingItem.endDate).toISOString(),
-          registrationStart: editingItem.registrationStart
-            ? new Date(editingItem.registrationStart).toISOString()
-            : undefined,
-          registrationEnd: editingItem.registrationEnd
-            ? new Date(editingItem.registrationEnd).toISOString()
-            : undefined,
-          maxParticipants: editingItem.maxParticipants ?? undefined,
-          isFree: editingItem.isFree,
-          price: editingItem.price,
-          currency: editingItem.currency,
-          status: editingItem.status,
-          isFeatured: editingItem.isFeatured,
-          organizerName: editingItem.organizerName,
-          agenda: editingItem.agenda ?? undefined,
-          speakers: editingItem.speakers ?? undefined,
-          sponsors: editingItem.sponsors ?? undefined,
-          requirements: editingItem.requirements ?? undefined,
-          whatToBring: editingItem.whatToBring ?? undefined,
-          metaTitle: editingItem.metaTitle ?? undefined,
-          metaDescription: editingItem.metaDescription ?? undefined,
-        }
-      : undefined,
-  });
-
-  function onSubmitCreate(values: z.infer<typeof createEventSchema>) {
-    create.execute(values);
-  }
-
-  function onSubmitEdit(values: z.infer<typeof updateEventSchema>) {
-    upd.execute(values);
-  }
 
   async function onDelete(id: number) {
     if (confirm("Êtes-vous sûr de vouloir supprimer cet événement ?")) {
@@ -113,8 +40,6 @@ export default function AdminEventsPage() {
     if (create.status === "hasSucceeded") {
       list.execute();
       setOpenCreate(false);
-      createForm.reset();
-      setActiveTab("basic");
     }
   }, [create.status]);
 
@@ -123,7 +48,6 @@ export default function AdminEventsPage() {
       list.execute();
       setOpenEdit(false);
       setEditingId(null);
-      setActiveTab("basic");
     }
   }, [upd.status]);
 
@@ -156,447 +80,6 @@ export default function AdminEventsPage() {
     { value: "cancelled", label: "Annulé", color: "bg-red-100 text-red-800" },
   ];
 
-  const renderFormContent = (form: any, isEdit: boolean) => {
-    const tabs = [
-      { id: "basic", label: "Informations de base", icon: FileText },
-      { id: "details", label: "Détails", icon: Settings },
-      { id: "registration", label: "Inscription", icon: UserCheck },
-      { id: "seo", label: "SEO", icon: Globe },
-    ];
-
-    return (
-      <div className="space-y-4">
-        {/* Tabs */}
-        <div className="flex border-b border-gray-200">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id as FormTab)}
-              className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
-                activeTab === tab.id
-                  ? "border-b-2 border-emerald-600 text-emerald-600"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        <div className="max-h-[60vh] overflow-y-auto px-1">
-          {activeTab === "basic" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Titre de l'événement *
-                  </label>
-                  <input
-                    {...form.register("title")}
-                    placeholder="Ex: Forum Entrepreneuriat 2025"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {form.formState.errors.title && (
-                    <p className="text-red-600 text-sm mt-1">{form.formState.errors.title.message}</p>
-                  )}
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Slug (URL) *
-                  </label>
-                  <input
-                    {...form.register("slug")}
-                    placeholder="forum-entrepreneuriat-2025"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {form.formState.errors.slug && (
-                    <p className="text-red-600 text-sm mt-1">{form.formState.errors.slug.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type d'événement *
-                  </label>
-                  <select
-                    {...form.register("eventType")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  >
-                    {eventTypeOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.icon} {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Statut *</label>
-                  <select
-                    {...form.register("status")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  >
-                    {statusOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description courte
-                  </label>
-                  <textarea
-                    {...form.register("shortDescription")}
-                    placeholder="Résumé en une phrase"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Description complète (Markdown supporté)
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setMarkdownPreview(!markdownPreview)}
-                      className="text-sm text-emerald-600 hover:underline"
-                    >
-                      {markdownPreview ? "Éditer" : "Prévisualiser"}
-                    </button>
-                  </div>
-                  {markdownPreview ? (
-                    <div className="w-full border border-gray-300 rounded-lg px-4 py-2.5 min-h-[200px] prose prose-sm max-w-none bg-gray-50">
-                      {form.watch("description") || "Aucun contenu"}
-                    </div>
-                  ) : (
-                    <textarea
-                      {...form.register("description")}
-                      placeholder="Description détaillée de l'événement (supporte Markdown)"
-                      rows={8}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                    />
-                  )}
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Image principale (URL)
-                  </label>
-                  <input
-                    {...form.register("featuredImage")}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Organisateur *
-                  </label>
-                  <input
-                    {...form.register("organizerName")}
-                    placeholder="FGE"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="col-span-2 flex items-center gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      {...form.register("isFeatured")}
-                      className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Événement vedette</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      {...form.register("isVirtual")}
-                      className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Événement virtuel</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "details" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date de début *
-                  </label>
-                  <input
-                    type="datetime-local"
-                    {...form.register("startDate")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date de fin *
-                  </label>
-                  <input
-                    type="datetime-local"
-                    {...form.register("endDate")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-
-                {!form.watch("isVirtual") && (
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Lieu de l'événement
-                    </label>
-                    <input
-                      {...form.register("location")}
-                      placeholder="Ex: Salle des conférences, Rabat"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
-                  </div>
-                )}
-
-                {form.watch("isVirtual") && (
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Lien virtuel
-                    </label>
-                    <input
-                      {...form.register("virtualLink")}
-                      placeholder="https://zoom.us/..."
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
-                  </div>
-                )}
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Agenda (JSON)
-                  </label>
-                  <textarea
-                    {...form.register("agenda")}
-                    placeholder='[{"time": "09:00", "title": "Ouverture"}]'
-                    rows={4}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Intervenants (JSON)
-                  </label>
-                  <textarea
-                    {...form.register("speakers")}
-                    placeholder='[{"name": "Jean Dupont", "title": "CEO"}]'
-                    rows={4}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Sponsors (JSON)
-                  </label>
-                  <textarea
-                    {...form.register("sponsors")}
-                    placeholder='[{"name": "Entreprise X", "logo": "url"}]'
-                    rows={4}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Prérequis</label>
-                  <textarea
-                    {...form.register("requirements")}
-                    placeholder="Compétences ou matériel requis"
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    À apporter
-                  </label>
-                  <textarea
-                    {...form.register("whatToBring")}
-                    placeholder="Ce que les participants doivent apporter"
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "registration" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      {...form.register("isFree")}
-                      className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Événement gratuit</span>
-                  </label>
-                </div>
-
-                {!form.watch("isFree") && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Prix</label>
-                      <input
-                        type="number"
-                        {...form.register("price", { valueAsNumber: true })}
-                        placeholder="0"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Devise</label>
-                      <select
-                        {...form.register("currency")}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      >
-                        <option value="MAD">MAD (Dirham)</option>
-                        <option value="EUR">EUR (Euro)</option>
-                        <option value="USD">USD (Dollar)</option>
-                      </select>
-                    </div>
-                  </>
-                )}
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nombre maximum de participants
-                  </label>
-                  <input
-                    type="number"
-                    {...form.register("maxParticipants", { valueAsNumber: true })}
-                    placeholder="Illimité si vide"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Début des inscriptions
-                  </label>
-                  <input
-                    type="datetime-local"
-                    {...form.register("registrationStart")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Fin des inscriptions
-                  </label>
-                  <input
-                    type="datetime-local"
-                    {...form.register("registrationEnd")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "seo" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Meta Titre
-                  </label>
-                  <input
-                    {...form.register("metaTitle")}
-                    placeholder="Titre pour les moteurs de recherche"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">60 caractères max recommandé</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Meta Description
-                  </label>
-                  <textarea
-                    {...form.register("metaDescription")}
-                    placeholder="Description pour les moteurs de recherche"
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">160 caractères max recommandé</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t">
-          <button
-            type="button"
-            onClick={() => {
-              isEdit ? setOpenEdit(false) : setOpenCreate(false);
-              setActiveTab("basic");
-            }}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            disabled={
-              isEdit
-                ? upd.status === "executing"
-                : create.status === "executing"
-            }
-            className="flex items-center gap-2 bg-emerald-600 text-white rounded-lg px-6 py-2.5 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Save className="w-4 h-4" />
-            {isEdit
-              ? upd.status === "executing"
-                ? "Sauvegarde…"
-                : "Enregistrer"
-              : create.status === "executing"
-              ? "Création…"
-              : "Créer l'événement"}
-          </button>
-        </div>
-
-        {/* Error Messages */}
-        {(create.result?.serverError || upd.result?.serverError) && (
-          <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-red-600 text-sm">
-              {create.result?.serverError?.message || upd.result?.serverError?.message}
-            </p>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -620,9 +103,13 @@ export default function AdminEventsPage() {
 
       {/* Create Modal */}
       <Modal open={openCreate} title="Créer un événement" onClose={() => setOpenCreate(false)}>
-        <form onSubmit={createForm.handleSubmit(onSubmitCreate)}>
-          {renderFormContent(createForm, false)}
-        </form>
+        <CreateEventForm
+          onSuccess={() => {
+            setOpenCreate(false);
+            list.execute();
+          }}
+          onCancel={() => setOpenCreate(false)}
+        />
       </Modal>
 
       {/* Events List */}
@@ -749,12 +236,22 @@ export default function AdminEventsPage() {
         onClose={() => {
           setOpenEdit(false);
           setEditingId(null);
-          setActiveTab("basic");
         }}
       >
-        <form onSubmit={editForm.handleSubmit(onSubmitEdit)}>
-          {renderFormContent(editForm, true)}
-        </form>
+        {editingItem && (
+          <EditEventForm
+            defaultValues={editingItem}
+            onSubmit={(values) => upd.execute(values)}
+            onCancel={() => {
+              setOpenEdit(false);
+              setEditingId(null);
+            }}
+            statusOptions={statusOptions}
+            eventTypeOptions={eventTypeOptions}
+            isSubmitting={upd.status === "executing"}
+            serverError={upd.result?.serverError?.message}
+          />
+        )}
       </Modal>
 
       {/* Registrations Modal */}

@@ -2,7 +2,7 @@
 import { useAction } from "next-safe-action/hooks";
 import { createCategory, deleteCategory, listCategories } from "../actions";
 import { useEffect, useState } from "react";
-import Modal from "@/components/admin/Modal";
+import Modal from "@/components/Modal";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

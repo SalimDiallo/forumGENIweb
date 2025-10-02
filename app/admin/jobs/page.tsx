@@ -2,7 +2,7 @@
 import { useAction } from "next-safe-action/hooks";
 import { createJob, deleteJob, listJobs, updateJob } from "./actions";
 import { useEffect, useMemo, useState } from "react";
-import Modal from "@/components/admin/Modal";
+import Modal from "@/components/Modal";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
