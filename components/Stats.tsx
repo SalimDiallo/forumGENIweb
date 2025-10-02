@@ -99,7 +99,7 @@ const Stats = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg mb-6">
+          <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-900 px-4 py-2 rounded-lg mb-6">
             <Sparkles size={18} />
             <span className="font-medium">Notre Impact</span>
           </div>
@@ -126,7 +126,7 @@ const Stats = () => {
             >
               {/* Icône */}
               <div className="flex justify-center mb-4">
-                <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
+                <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-800">
                   {stat.icon}
                 </div>
               </div>
@@ -172,7 +172,7 @@ const Stats = () => {
                 className="text-center"
               >
                 <div className="flex justify-center mb-3">
-                  <div className="text-emerald-600">
+                  <div className="text-emerald-800">
                     {item.icon}
                   </div>
                 </div>

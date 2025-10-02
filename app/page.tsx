@@ -13,7 +13,7 @@ const TeamsMembres = lazy(() => import('@/components/TeamsMembres'));
 // Composant de loading simple
 const SimpleLoader = () => (
   <div className="flex justify-center items-center py-8">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-800"></div>
   </div>
 );
 
@@ -48,12 +48,12 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-bold text-emerald-900 mb-4">
             Dernières Actualités
           </h2>
-          <p className="text-lg text-emerald-700/80 mb-8">
+          <p className="text-lg text-emerald-900/80 mb-8">
             Restez informé des dernières tendances et actualités
           </p>
           <Link 
             href="/blog"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-800 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-800 text-white rounded-lg font-medium hover:bg-emerald-900 transition-colors"
           >
             Consulter le Blog
           </Link>

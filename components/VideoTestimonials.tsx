@@ -61,7 +61,7 @@ const VideoTestimonials = () => {
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-20 w-40 h-40 bg-emerald-400 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-emerald-600 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 right-10 w-24 h-24 bg-emerald-300 rounded-full blur-2xl"></div>
       </div>
 
@@ -75,7 +75,7 @@ const VideoTestimonials = () => {
           
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
             Témoignages de nos
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-500"> Membres</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-700"> Membres</span>
           </h2>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Découvrez comment l'association GENI transforme l'expérience étudiante et prépare aux défis de demain
@@ -98,7 +98,7 @@ const VideoTestimonials = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
-              className="group bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-400/40 transition-all duration-300 hover:scale-105"
+              className="group bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-600/40 transition-all duration-300 hover:scale-105"
             >
               {/* Video Thumbnail */}
               <div className="relative cursor-pointer overflow-hidden">
@@ -112,7 +112,7 @@ const VideoTestimonials = () => {
                 </div>
                 
                 {/* Achievement Badge */}
-                <div className="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute top-3 right-3 bg-emerald-700 text-white text-xs font-bold px-2 py-1 rounded-full">
                   {testimonial.achievement}
                 </div>
               </div>
@@ -120,7 +120,7 @@ const VideoTestimonials = () => {
               {/* Content */}
               <div className="p-6">
                 <div className="flex items-start gap-3 mb-4">
-                  <Quote className="text-emerald-400 flex-shrink-0 mt-1" size={20} />
+                  <Quote className="text-emerald-600 flex-shrink-0 mt-1" size={20} />
                   <p className="text-gray-300 text-sm leading-relaxed">
                     "{testimonial.quote}"
                   </p>
@@ -131,7 +131,7 @@ const VideoTestimonials = () => {
                   <p className="text-gray-400 text-sm">{testimonial.role}</p>
                   <p className="text-gray-400 text-sm font-medium">{testimonial.company}</p>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="text-emerald-400 text-xs font-semibold bg-emerald-400/10 px-2 py-1 rounded-full">
+                    <span className="text-emerald-600 text-xs font-semibold bg-emerald-600/10 px-2 py-1 rounded-full">
                       {testimonial.year}
                     </span>
                   </div>
@@ -149,13 +149,13 @@ const VideoTestimonials = () => {
           
           <div className="relative">
             <div className="text-center max-w-4xl mx-auto">
-              <Quote className="text-emerald-400 mx-auto mb-6" size={48} />
+              <Quote className="text-emerald-600 mx-auto mb-6" size={48} />
               <p className="text-gray-300 text-xl italic mb-8 leading-relaxed">
                 "{testimonials[currentTestimonial].quote}"
               </p>
               
               <div className="flex items-center justify-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-700 to-emerald-800 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-xl">
                     {testimonials[currentTestimonial].name.charAt(0)}
                   </span>
@@ -167,7 +167,7 @@ const VideoTestimonials = () => {
                   <p className="text-gray-400 text-sm">
                     {testimonials[currentTestimonial].role}
                   </p>
-                  <p className="text-emerald-400 text-sm font-medium">
+                  <p className="text-emerald-600 text-sm font-medium">
                     {testimonials[currentTestimonial].year}
                   </p>
                 </div>
@@ -190,7 +190,7 @@ const VideoTestimonials = () => {
                     onClick={() => setCurrentTestimonial(index)}
                     className={`w-3 h-3 rounded-full transition-all ${
                       index === currentTestimonial 
-                        ? 'bg-emerald-400' 
+                        ? 'bg-emerald-600' 
                         : 'bg-white/20 hover:bg-white/40'
                     }`}
                   />

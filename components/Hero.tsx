@@ -32,11 +32,11 @@ const Hero = () => {
             >
               <div className="relative">
                 <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full">
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600" />
                   <span className="text-white/90 font-medium text-xs sm:text-sm">Forum INSEA 2025</span>
-                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <div className="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-pulse"></div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-full blur-xl -z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-700/20 to-emerald-500/20 rounded-full blur-xl -z-10"></div>
               </div>
             </motion.div>
 
@@ -58,7 +58,7 @@ const Hero = () => {
                     priority
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-2xl blur-2xl -z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-700/10 to-emerald-500/10 rounded-2xl blur-2xl -z-10"></div>
               </div>
             </motion.div>
 
@@ -79,9 +79,9 @@ const Hero = () => {
                 </span>
               </h1>
               <div className="flex items-center justify-center gap-1 sm:gap-3 mt-1 sm:mt-3">
-                <div className="h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent w-6 sm:w-16"></div>
+                <div className="h-px bg-gradient-to-r from-transparent via-emerald-600 to-transparent w-6 sm:w-16"></div>
                 <p className="text-xs sm:text-base text-white/70 font-light tracking-wide">2025</p>
-                <div className="h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent w-6 sm:w-16"></div>
+                <div className="h-px bg-gradient-to-r from-transparent via-emerald-600 to-transparent w-6 sm:w-16"></div>
               </div>
             </motion.div>
 
@@ -106,11 +106,11 @@ const Hero = () => {
             >
               <Link href="/events" prefetch={true}>
                 <motion.button 
-                  className="group relative px-3 sm:px-5 py-1.5 sm:py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl overflow-hidden shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 text-xs sm:text-sm"
+                  className="group relative px-3 sm:px-5 py-1.5 sm:py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-semibold rounded-xl overflow-hidden shadow-2xl hover:shadow-emerald-700/25 transition-all duration-300 text-xs sm:text-sm"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center gap-1 sm:gap-2">
                     <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                     Rejoindre le Forum 2025
@@ -143,19 +143,19 @@ const Hero = () => {
                 icon: Calendar,
                 title: "3-5 Mai 2025",
                 subtitle: "Forum Annuel",
-                color: "from-emerald-500 to-teal-500"
+                color: "from-emerald-700 to-teal-500"
               },
               {
                 icon: Users,
                 title: "500+ Experts",
                 subtitle: "Réseau Premium",
-                color: "from-blue-500 to-cyan-500"
+                color: "from-emerald-500 to-cyan-500"
               },
               {
                 icon: Award,
                 title: "Excellence",
                 subtitle: "Depuis 2002",
-                color: "from-purple-500 to-pink-500"
+                color: "from-emerald-500 to-pink-500"
               },
               {
                 icon: Building,

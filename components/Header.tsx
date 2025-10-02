@@ -152,7 +152,7 @@ const Header = () => {
       >
         {/* Bande décorative supérieure avec animation */}
         {/* <motion.div 
-          className="h-1 bg-gradient-to-r from-emerald-500 via-purple-500 to-emerald-500 bg-[length:200%_100%]"
+          className="h-1 bg-gradient-to-r from-emerald-700 via-emerald-500 to-emerald-700 bg-[length:200%_100%]"
           animate={{ backgroundPosition: ['0% 50%', '200% 50%'] }}
           transition={{ duration: 8, ease: 'linear', repeat: Infinity }}
         /> */}
@@ -165,7 +165,7 @@ const Header = () => {
                 className={`relative transition-all duration-500 ${
                   scrolled 
                     ? 'p-3 bg-white/80 backdrop-blur-2xl rounded-2xl border border-white/30 shadow-lg' 
-                    : 'p-2 bg-white/80 backdrop-blur-2xl rounded-2xl shadow-emerald-500/10 shadow-lg'
+                    : 'p-2 bg-white/80 backdrop-blur-2xl rounded-2xl shadow-emerald-700/10 shadow-lg'
                 }`}
                 whileHover={{ 
                   scale: 1.05,
@@ -185,7 +185,7 @@ const Header = () => {
                 
                 {/* Glow effect */}
                 <motion.div 
-                  className={`absolute inset-0 rounded-2xl blur-xl transition-opacity duration-500 -z-10 ${scrolled ? 'bg-white/0' : 'bg-gradient-to-br from-emerald-500/20 to-blue-500/20 opacity-80'}`}
+                  className={`absolute inset-0 rounded-2xl blur-xl transition-opacity duration-500 -z-10 ${scrolled ? 'bg-white/0' : 'bg-gradient-to-br from-emerald-700/20 to-emerald-500/20 opacity-80'}`}
                   animate={scrolled ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -210,10 +210,10 @@ const Header = () => {
                         className={`relative group px-4 py-3 font-medium rounded-xl transition-all duration-300 flex items-center gap-2 ${
                           isActive(item.path)
                             ? scrolled 
-                              ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' 
-                              : 'text-white bg-emerald-500/10 border border-emerald-400/30'
+                              ? 'text-emerald-800 bg-emerald-50 border border-emerald-200' 
+                              : 'text-white bg-emerald-700/10 border border-emerald-600/30'
                             : scrolled 
-                              ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50/80' 
+                              ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50/80' 
                               : 'text-white/90 hover:text-white hover:bg-white/10'
                         }`}
                       >
@@ -229,7 +229,7 @@ const Header = () => {
                         {/* Active indicator */}
                         {isActive(item.path) && (
                           <motion.div
-                            className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-500 rounded-full"
+                            className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-700 rounded-full"
                             layoutId="activeTab"
                             initial={false}
                             style={{ x: '-50%' }}
@@ -262,14 +262,14 @@ const Header = () => {
                                     onClick={() => setActiveDropdown(null)}
                                   >
                                     <div>
-                                      <div className="font-medium text-gray-900 group-hover:text-emerald-600 transition-colors">
+                                      <div className="font-medium text-gray-900 group-hover:text-emerald-800 transition-colors">
                                         {dropdownItem.name}
                                       </div>
                                       <div className="text-sm text-gray-500 mt-0.5">
                                         {dropdownItem.description}
                                       </div>
                                     </div>
-                                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-500 transform group-hover:translate-x-1 transition-all duration-200" />
+                                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-700 transform group-hover:translate-x-1 transition-all duration-200" />
                                   </Link>
                                 </motion.div>
                               ))}
@@ -285,10 +285,10 @@ const Header = () => {
                       className={`relative group px-4 py-3 font-medium rounded-xl transition-all duration-300 flex items-center gap-2 ${
                         isActive(item.path)
                           ? scrolled 
-                            ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' 
-                            : 'text-white bg-emerald-500/10 border border-emerald-400/30'
+                            ? 'text-emerald-800 bg-emerald-50 border border-emerald-200' 
+                            : 'text-white bg-emerald-700/10 border border-emerald-600/30'
                           : scrolled 
-                            ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50/80' 
+                            ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50/80' 
                             : 'text-white/90 hover:text-white hover:bg-white/10'
                       }`}
                     >
@@ -298,7 +298,7 @@ const Header = () => {
                       {/* Active indicator */}
                       {isActive(item.path) && (
                         <motion.div
-                          className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-500 rounded-full"
+                          className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-700 rounded-full"
                           layoutId="activeTab"
                           initial={false}
                           style={{ x: '-50%' }}
@@ -319,7 +319,7 @@ const Header = () => {
             >
               <Link href="/events">
                 <motion.button
-                  className="relative px-6 py-3 bg-gradient-to-r from-emerald-500 via-emerald-600 to-blue-600 text-white font-semibold rounded-xl overflow-hidden shadow-lg hover:shadow-emerald-500/30 group"
+                  className="relative px-6 py-3 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold rounded-xl overflow-hidden shadow-lg hover:shadow-emerald-700/30 group"
                   whileHover={{ 
                     scale: 1.05, 
                     y: -2,
@@ -329,7 +329,7 @@ const Header = () => {
                 >
                   {/* Animated background */}
                   <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-emerald-500 to-blue-500 opacity-0 group-hover:opacity-100"
+                    className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-500 opacity-0 group-hover:opacity-100"
                     initial={false}
                     animate={{ x: ['-100%', '100%'] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
@@ -356,7 +356,7 @@ const Header = () => {
               onClick={toggleMenu}
               className={`lg:hidden p-3 transition-all duration-300 rounded-xl relative overflow-hidden ${
                 scrolled 
-                  ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50' 
+                  ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50' 
                   : 'text-white/90 hover:text-white hover:bg-slate-900/40'
               }`}
               aria-label="Menu"
@@ -423,7 +423,7 @@ const Header = () => {
               onClick={toggleMenu}
               className={`lg:hidden py-6 transition-all duration-300 rounded-xl relative overflow-hidden flex justify-end w-full px-8 ${
                 scrolled 
-                  ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50' 
+                  ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50' 
                   : 'text-white/90 hover:text-white hover:bg-slate-900/40'
               }`}
               aria-label="Menu"
@@ -473,24 +473,24 @@ const Header = () => {
                         prefetch={true}
                         className={`group flex items-center justify-between px-4 py-4 transition-all duration-300 rounded-xl ${
                           isActive(item.path)
-                            ? 'text-emerald-600 bg-emerald-50 border border-emerald-200'
-                            : 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50/50'
+                            ? 'text-emerald-800 bg-emerald-50 border border-emerald-200'
+                            : 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50/50'
                         }`}
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <div className="flex items-center gap-3">
                           {item.icon && (
                             <item.icon className={`w-5 h-5 ${
-                              isActive(item.path) ? 'text-emerald-600' : 'text-gray-400 group-hover:text-emerald-500'
+                              isActive(item.path) ? 'text-emerald-800' : 'text-gray-400 group-hover:text-emerald-700'
                             }`} />
                           )}
                           <span className="font-medium">{item.name}</span>
                         </div>
                         
                         {item.hasDropdown ? (
-                          <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-emerald-500 transition-colors" />
+                          <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-emerald-700 transition-colors" />
                         ) : (
-                          <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-500 transform group-hover:translate-x-1 transition-all duration-200" />
+                          <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-700 transform group-hover:translate-x-1 transition-all duration-200" />
                         )}
                       </Link>
                     </motion.div>
@@ -506,11 +506,11 @@ const Header = () => {
                 >
                   <Link href="/events" onClick={() => setIsMenuOpen(false)}>
                     <motion.button
-                      className="w-full py-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 relative overflow-hidden group"
+                      className="w-full py-4 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-700/30 transition-all duration-300 relative overflow-hidden group"
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <span className="relative flex items-center justify-center gap-2">
                         <Calendar className="w-5 h-5" />
                         Participer au Forum 2025
@@ -530,7 +530,7 @@ const Header = () => {
                     <p className="text-sm text-gray-500">
                       Forum GENI × INSEA
                     </p>
-                    <div className="flex items-center justify-center gap-2 text-sm font-medium text-emerald-600">
+                    <div className="flex items-center justify-center gap-2 text-sm font-medium text-emerald-800">
                       <Award className="w-4 h-4" />
                       <span>Excellence • Innovation • Leadership</span>
                     </div>

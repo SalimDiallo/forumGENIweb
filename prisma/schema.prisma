@@ -12,6 +12,150 @@ datasource db {
 }
 
 // =====================================
+// ENUMS
+// =====================================
+
+enum EventType {
+  forum
+  workshop
+  conference
+  networking
+  webinar
+  other
+}
+
+enum EventStatus {
+  draft
+  published
+  ongoing
+  completed
+  cancelled
+}
+
+enum BlogPostStatus {
+  draft
+  published
+  archived
+}
+
+enum JobType {
+  stage
+  cdi
+  cdd
+  freelance
+  alternance
+}
+
+enum JobStatus {
+  draft
+  published
+  closed
+  filled
+}
+
+enum ExperienceLevel {
+  none
+  beginner
+  intermediate
+  advanced
+  junior
+  senior
+  expert
+}
+
+enum EducationLevel {
+  bac
+  bac_plus_2
+  bac_plus_3
+  bac_plus_5
+  phd
+}
+
+enum SalaryPeriod {
+  hour
+  day
+  month
+  year
+}
+
+enum RegistrationStatus {
+  pending
+  confirmed
+  cancelled
+  attended
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  refunded
+  exempted
+}
+
+enum ContactCategory {
+  general
+  partnership
+  technical
+  press
+  event
+  career
+}
+
+enum MessageStatus {
+  new
+  in_progress
+  resolved
+  closed
+}
+
+enum Priority {
+  low
+  normal
+  high
+  urgent
+}
+
+enum PartnershipType {
+  sponsor
+  recruiter
+  speaker
+  mentor
+  other
+}
+
+enum PartnershipStatus {
+  pending
+  reviewing
+  approved
+  rejected
+  on_hold
+}
+
+enum CompanySize {
+  startup
+  pme
+  eti
+  grande_entreprise
+}
+
+enum MediaType {
+  image
+  video
+}
+
+enum NewsletterFrequency {
+  daily
+  weekly
+  monthly
+}
+
+enum AdminRole {
+  super_admin
+  admin
+  editor
+}
+
+// =====================================
 // BLOG MANAGEMENT
 // =====================================
 
@@ -33,27 +177,27 @@ model BlogCategory {
 }
 
 model BlogPost {
-  id                Int       @id @default(autoincrement())
+  id                Int              @id @default(autoincrement())
   title             String
-  slug              String    @unique
+  slug              String           @unique
   excerpt           String?
   content           String
   featuredImage     String?
   authorName        String
   authorPosition    String?
   categoryId        Int
-  status            String    @default("draft") // draft, published, archived
-  isFeatured        Boolean   @default(false)
-  readTimeMinutes   Int       @default(5)
-  viewsCount        Int       @default(0)
-  likesCount        Int       @default(0)
+  status            BlogPostStatus   @default(draft)
+  isFeatured        Boolean          @default(false)
+  readTimeMinutes   Int              @default(5)
+  viewsCount        Int              @default(0)
+  likesCount        Int              @default(0)
   metaTitle         String?
   metaDescription   String?
   publishedAt       DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
   
-  category          BlogCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  category          BlogCategory     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   tags              BlogPostTag[]
 
   @@index([slug])
@@ -95,37 +239,37 @@ model BlogPostTag {
 // =====================================
 
 model Event {
-  id                  Int       @id @default(autoincrement())
+  id                  Int           @id @default(autoincrement())
   title               String
-  slug                String    @unique
+  slug                String        @unique
   description         String?
   shortDescription    String?
   featuredImage       String?
-  eventType           String    // forum, workshop, conference, networking, webinar, other
+  eventType           EventType
   location            String?
-  isVirtual           Boolean   @default(false)
+  isVirtual           Boolean       @default(false)
   virtualLink         String?
   startDate           DateTime
   endDate             DateTime
   registrationStart   DateTime?
   registrationEnd     DateTime?
   maxParticipants     Int?
-  currentParticipants Int       @default(0)
-  isFree              Boolean   @default(true)
-  price               Float     @default(0)
-  currency            String    @default("MAD")
-  status              String    @default("draft") // draft, published, ongoing, completed, cancelled
-  isFeatured          Boolean   @default(false)
+  currentParticipants Int           @default(0)
+  isFree              Boolean       @default(true)
+  price               Float         @default(0)
+  currency            String        @default("MAD")
+  status              EventStatus   @default(draft)
+  isFeatured          Boolean       @default(false)
   organizerName       String
-  agenda              String?   // JSON string
-  speakers            String?   // JSON string
-  sponsors            String?   // JSON string
+  agenda              String?       // JSON string
+  speakers            String?       // JSON string
+  sponsors            String?       // JSON string
   requirements        String?
   whatToBring         String?
   metaTitle           String?
   metaDescription     String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
   
   registrations       EventRegistration[]
   media               MediaGallery[]
@@ -139,7 +283,7 @@ model Event {
 }
 
 model EventRegistration {
-  id                  Int       @id @default(autoincrement())
+  id                  Int                @id @default(autoincrement())
   eventId             Int
   firstName           String
   lastName            String
@@ -147,23 +291,23 @@ model EventRegistration {
   phone               String?
   organization        String?
   position            String?
-  experienceLevel     String    @default("beginner") // beginner, intermediate, advanced
+  experienceLevel     ExperienceLevel    @default(beginner)
   expectations        String?
   dietaryRestrictions String?
   specialNeeds        String?
-  newsletterConsent   Boolean   @default(false)
-  registrationStatus  String    @default("pending") // pending, confirmed, cancelled
-  paymentStatus       String    @default("pending") // pending, paid, refunded, exempted
+  newsletterConsent   Boolean            @default(false)
+  registrationStatus  RegistrationStatus @default(pending)
+  paymentStatus       PaymentStatus      @default(pending)
   paymentMethod       String?
   paymentReference    String?
   qrCode              String?
   ipAddress           String?
   userAgent           String?
-  registeredAt        DateTime  @default(now())
+  registeredAt        DateTime           @default(now())
   confirmedAt         DateTime?
   attendedAt          DateTime?
   
-  event               Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event               Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@index([eventId])
   @@index([email])
@@ -176,20 +320,20 @@ model EventRegistration {
 // =====================================
 
 model JobOffer {
-  id                  Int       @id @default(autoincrement())
+  id                  Int             @id @default(autoincrement())
   title               String
-  slug                String    @unique
+  slug                String          @unique
   companyName         String
   companyLogo         String?
   companyWebsite      String?
   industry            String?
-  jobType             String    // stage, cdi, cdd, freelance, alternance
+  jobType             JobType
   location            String?
-  isRemote            Boolean   @default(false)
+  isRemote            Boolean         @default(false)
   salaryMin           Float?
   salaryMax           Float?
-  salaryCurrency      String    @default("MAD")
-  salaryPeriod        String    @default("month") // hour, day, month, year
+  salaryCurrency      String          @default("MAD")
+  salaryPeriod        SalaryPeriod    @default(month)
   description         String
   requirements        String?
   benefits            String?
@@ -197,19 +341,19 @@ model JobOffer {
   applicationUrl      String?
   applicationPhone    String?
   applicationDeadline DateTime?
-  experienceRequired  String    @default("none") // none, junior, senior, expert
-  educationLevel      String    @default("bac+3") // bac, bac+2, bac+3, bac+5, phd
+  experienceRequired  ExperienceLevel @default(none)
+  educationLevel      EducationLevel  @default(bac_plus_3)
   contractDuration    String?
   startDate           DateTime?
-  skillsRequired      String?   // JSON string
-  languagesRequired   String?   // JSON string
-  status              String    @default("draft") // draft, published, closed, filled
-  isFeatured          Boolean   @default(false)
-  viewsCount          Int       @default(0)
+  skillsRequired      String?         // JSON string
+  languagesRequired   String?         // JSON string
+  status              JobStatus       @default(draft)
+  isFeatured          Boolean         @default(false)
+  viewsCount          Int             @default(0)
   publishedAt         DateTime?
   expiresAt           DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
 
   @@index([slug])
   @@index([jobType])
@@ -225,20 +369,20 @@ model JobOffer {
 // =====================================
 
 model ContactMessage {
-  id          Int       @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())
   name        String
   email       String
   phone       String?
   subject     String
   message     String
-  category    String    @default("general") // general, partnership, technical, press, event, career
-  status      String    @default("new") // new, in_progress, resolved, closed
-  priority    String    @default("normal") // low, normal, high, urgent
+  category    ContactCategory @default(general)
+  status      MessageStatus   @default(new)
+  priority    Priority        @default(normal)
   adminNotes  String?
   ipAddress   String?
   userAgent   String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   resolvedAt  DateTime?
 
   @@index([email])
@@ -249,28 +393,28 @@ model ContactMessage {
 }
 
 model PartnershipRequest {
-  id                  Int       @id @default(autoincrement())
-  companyName         String
-  industry            String?
-  companySize         String    // startup, pme, eti, grande_entreprise
-  website             String?
-  contactName         String
-  contactPosition     String?
-  contactEmail        String
-  contactPhone        String?
-  partnershipType     String    // sponsor, recruiter, speaker, mentor, other
-  budgetRange         String?
-  objectives          String?
+  id                   Int               @id @default(autoincrement())
+  companyName          String
+  industry             String?
+  companySize          CompanySize
+  website              String?
+  contactName          String
+  contactPosition      String?
+  contactEmail         String
+  contactPhone         String?
+  partnershipType      PartnershipType
+  budgetRange          String?
+  objectives           String?
   previousPartnerships String?
-  additionalInfo      String?
-  status              String    @default("pending") // pending, reviewing, approved, rejected, on_hold
-  rejectionReason     String?
-  adminNotes          String?
-  ipAddress           String?
-  userAgent           String?
-  submittedAt         DateTime  @default(now())
-  reviewedAt          DateTime?
-  approvedAt          DateTime?
+  additionalInfo       String?
+  status               PartnershipStatus @default(pending)
+  rejectionReason      String?
+  adminNotes           String?
+  ipAddress            String?
+  userAgent            String?
+  submittedAt          DateTime          @default(now())
+  reviewedAt           DateTime?
+  approvedAt           DateTime?
 
   @@index([status])
   @@index([partnershipType])
@@ -287,7 +431,7 @@ model MediaGallery {
   id             Int       @id @default(autoincrement())
   title          String
   description    String?
-  mediaType      String    // image, video
+  mediaType      MediaType
   fileUrl        String
   thumbnailUrl   String?
   fileSize       Int?
@@ -337,17 +481,17 @@ model VideoTestimonial {
 // =====================================
 
 model NewsletterSubscription {
-  id                Int       @id @default(autoincrement())
-  email             String    @unique
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
   name              String?
-  categories        String?   // JSON string
-  frequency         String    @default("weekly") // daily, weekly, monthly
-  isActive          Boolean   @default(true)
+  categories        String?             // JSON string
+  frequency         NewsletterFrequency @default(weekly)
+  isActive          Boolean             @default(true)
   confirmationToken String?
   confirmedAt       DateTime?
   source            String?
   ipAddress         String?
-  subscribedAt      DateTime  @default(now())
+  subscribedAt      DateTime            @default(now())
   unsubscribedAt    DateTime?
 
   @@index([email])
@@ -387,7 +531,7 @@ model AdminUser {
   email        String         @unique
   passwordHash String
   fullName     String
-  role         String         @default("editor") // super_admin, admin, editor
+  role         AdminRole      @default(editor)
   isActive     Boolean        @default(true)
   lastLogin    DateTime?
   createdAt    DateTime       @default(now())
@@ -402,11 +546,11 @@ model AdminUser {
 }
 
 model AdminSession {
-  id        String   @id
+  id        String    @id
   adminId   Int
   expiresAt DateTime
-  data      String?  // JSON string
-  createdAt DateTime @default(now())
+  data      String?   // JSON string
+  createdAt DateTime  @default(now())
   
   admin     AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
 

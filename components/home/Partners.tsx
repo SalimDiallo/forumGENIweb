@@ -170,7 +170,7 @@ const Partners = () => {
                 />
                 <div className="absolute top-0 right-0">
                   {partner.category === 'platinum' && (
-                    <div className="bg-gradient-to-r from-emerald-800 to-emerald-700 text-white text-xs font-bold px-2 py-1 rounded">
+                    <div className="bg-gradient-to-r from-emerald-800 to-emerald-900 text-white text-xs font-bold px-2 py-1 rounded">
                       PLATINUM
                     </div>
                   )}
@@ -185,7 +185,7 @@ const Partners = () => {
                     </div>
                   )}
                   {partner.category === 'academic' && (
-                    <div className="bg-gradient-to-r from-blue-700 to-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                    <div className="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white text-xs font-bold px-2 py-1 rounded">
                       ACADÉMIQUE
                     </div>
                   )}
@@ -199,7 +199,7 @@ const Partners = () => {
                 href={partner.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center text-emerald-800 hover:text-emerald-700 text-sm font-medium mt-auto"
+                className="flex items-center text-emerald-800 hover:text-emerald-900 text-sm font-medium mt-auto"
               >
                 Visiter le site
                 <ExternalLink size={14} className="ml-1" />

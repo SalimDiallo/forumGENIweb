@@ -67,7 +67,7 @@ const ContactForm = () => {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                       placeholder="Votre nom complet"
                     />
                   </div>
@@ -86,7 +86,7 @@ const ContactForm = () => {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                       placeholder="votre.email@exemple.com"
                     />
                   </div>
@@ -102,7 +102,7 @@ const ContactForm = () => {
                   name="type"
                   value={formData.type}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                 >
                   <option value="general">Question générale</option>
                   <option value="partnership">Partenariat</option>
@@ -123,7 +123,7 @@ const ContactForm = () => {
                   required
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                   placeholder="Sujet de votre message"
                 />
               </div>
@@ -141,7 +141,7 @@ const ContactForm = () => {
                     rows={6}
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                    className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent resize-none"
                     placeholder="Décrivez votre demande en détail..."
                   />
                 </div>
@@ -151,7 +151,7 @@ const ContactForm = () => {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-emerald-800 text-white py-4 px-6 rounded-lg font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-emerald-800 text-white py-4 px-6 rounded-lg font-medium hover:bg-emerald-900 transition-colors flex items-center justify-center gap-2"
               >
                 <Send size={20} />
                 Envoyer le message

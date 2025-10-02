@@ -28,8 +28,6 @@ const Gallery = () => {
       category: 'forums',
       title: 'Forum 2024 - Conférence principale',
       year: '2024',
-      views: 1240,
-      likes: 89,
       tags: ['conférence', 'innovation', 'technologie']
     },
     {
@@ -40,8 +38,7 @@ const Gallery = () => {
       category: 'workshops',
       title: 'Atelier Innovation et Entrepreneuriat',
       year: '2024',
-      views: 867,
-      likes: 56,
+   
       tags: ['atelier', 'entrepreneuriat', 'startup']
     },
     {
@@ -53,8 +50,7 @@ const Gallery = () => {
       category: 'forums',
       title: 'Highlights Forum 2024',
       year: '2024',
-      views: 2156,
-      likes: 145,
+    
       duration: '3:24',
       tags: ['highlights', 'résumé', 'moments forts']
     },
@@ -78,8 +74,7 @@ const Gallery = () => {
       category: 'ceremonies',
       title: 'Cérémonie de remise des prix',
       year: '2023',
-      views: 1567,
-      likes: 98,
+   
       tags: ['cérémonie', 'prix', 'récompenses']
     },
     {
@@ -90,8 +85,7 @@ const Gallery = () => {
       category: 'forums',
       title: 'Panel Discussion - Forum 2023',
       year: '2023',
-      views: 943,
-      likes: 67,
+  
       tags: ['panel', 'discussion', 'débat']
     },
     {
@@ -103,8 +97,7 @@ const Gallery = () => {
       category: 'networking',
       title: 'Témoignages participants',
       year: '2023',
-      views: 1823,
-      likes: 134,
+   
       duration: '5:12',
       tags: ['témoignages', 'participants', 'expériences']
     },
@@ -116,8 +109,7 @@ const Gallery = () => {
       category: 'workshops',
       title: 'Atelier Technologies Émergentes',
       year: '2023',
-      views: 692,
-      likes: 38,
+     
       tags: ['technologie', 'innovation', 'futur']
     },
     {
@@ -128,8 +120,7 @@ const Gallery = () => {
       category: 'ceremonies',
       title: 'Concours de Pitch Startups',
       year: '2024',
-      views: 1105,
-      likes: 76,
+    
       tags: ['startup', 'pitch', 'compétition']
     }
   ];
@@ -281,7 +272,7 @@ const Gallery = () => {
             </div>
           )}
 
-          <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={(e) => toggleLike(item.id, e)}
               className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
@@ -292,14 +283,14 @@ const Gallery = () => {
             >
               <Heart size={14} fill={likedItems.has(item.id) ? 'currentColor' : 'none'} />
             </button>
-          </div>
+          </div> */}
         </div>
         
         <div className="p-4">
           <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
             {item.title}
           </h3>
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          {/* <div className="flex items-center justify-between text-sm text-gray-500">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <Eye size={14} />
@@ -310,7 +301,7 @@ const Gallery = () => {
                 <span>{item.likes + (likedItems.has(item.id) ? 1 : 0)}</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </motion.div>
@@ -378,7 +369,7 @@ const Gallery = () => {
                 </div>
                 
                 {/* Stats */}
-                <div className="flex items-center gap-4 text-sm text-gray-500">
+                {/* <div className="flex items-center gap-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Eye size={14} />
                     <span className="hidden xs:inline">{item.views.toLocaleString()}</span>
@@ -388,12 +379,12 @@ const Gallery = () => {
                     <Heart size={14} />
                     <span>{item.likes + (likedItems.has(item.id) ? 1 : 0)}</span>
                   </div>
-                </div>
+                </div> */}
               </div>
               
               {/* Actions */}
               <div className="flex items-center gap-2 flex-shrink-0">
-                <button
+                {/* <button
                   onClick={(e) => toggleLike(item.id, e)}
                   className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
                     likedItems.has(item.id)
@@ -402,7 +393,7 @@ const Gallery = () => {
                   }`}
                 >
                   <Heart size={14} fill={likedItems.has(item.id) ? 'currentColor' : 'none'} />
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -435,7 +426,7 @@ const Gallery = () => {
                 placeholder="Rechercher..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700"
               />
             </div>
 
@@ -445,7 +436,7 @@ const Gallery = () => {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'grid' 
-                    ? 'bg-emerald-500 text-white' 
+                    ? 'bg-emerald-700 text-white' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
                 title="Vue grille"
@@ -456,7 +447,7 @@ const Gallery = () => {
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'list' 
-                    ? 'bg-emerald-500 text-white' 
+                    ? 'bg-emerald-700 text-white' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
                 title="Vue liste"
@@ -474,7 +465,7 @@ const Gallery = () => {
                 onClick={() => setActiveCategory(category.id)}
                 className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                   activeCategory === category.id
-                    ? 'bg-emerald-500 text-white'
+                    ? 'bg-emerald-700 text-white'
                     : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                 }`}
               >
@@ -511,7 +502,7 @@ const Gallery = () => {
                 setSearchQuery('');
                 setActiveCategory('all');
               }}
-              className="px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+              className="px-6 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors"
             >
               Réinitialiser les filtres
             </button>
@@ -610,15 +601,15 @@ const Gallery = () => {
                       <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
                         {filteredItems[selectedImage].year}
                       </span>
-                      <div className="flex items-center gap-1">
+                      {/* <div className="flex items-center gap-1">
                         <Eye size={16} />
                         <span className="hidden xs:inline">{filteredItems[selectedImage].views.toLocaleString()} vues</span>
                         <span className="xs:hidden">{(filteredItems[selectedImage].views / 1000).toFixed(0)}k vues</span>
-                      </div>
-                      <div className="flex items-center gap-1">
+                      </div> */}
+                      {/* <div className="flex items-center gap-1">
                         <Heart size={16} />
                         <span>{filteredItems[selectedImage].likes} likes</span>
-                      </div>
+                      </div> */}
                     </div>
                     
                     {/* Tags */}

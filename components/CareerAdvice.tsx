@@ -150,7 +150,7 @@ const CareerAdvice = () => {
             {resources.map((resource, index) => (
               <div
                 key={index}
-                className="border border-emerald-200 rounded-lg p-4 hover:border-emerald-400 transition-colors"
+                className="border border-emerald-200 rounded-lg p-4 hover:border-emerald-600 transition-colors"
               >
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-bold text-emerald-900">{resource.title}</h4>

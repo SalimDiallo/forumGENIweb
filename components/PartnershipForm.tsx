@@ -44,7 +44,7 @@ const PartnershipForm = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-emerald-900 mb-4">
               Devenir Partenaire
             </h2>
-            <p className="text-lg text-emerald-700/80">
+            <p className="text-lg text-emerald-900/80">
               Rejoignez notre réseau de partenaires et connectez-vous avec les talents de demain
             </p>
           </motion.div>
@@ -76,7 +76,7 @@ const PartnershipForm = () => {
                       required
                       value={formData.companyName}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                       placeholder="Nom de votre entreprise"
                     />
                   </div>
@@ -91,7 +91,7 @@ const PartnershipForm = () => {
                       required
                       value={formData.industry}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                     >
                       <option value="">Sélectionnez un secteur</option>
                       <option value="technology">Technologies</option>
@@ -110,14 +110,14 @@ const PartnershipForm = () => {
                     Site web
                   </label>
                   <div className="relative">
-                    <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-600" size={20} />
+                    <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-800" size={20} />
                     <input
                       type="url"
                       id="website"
                       name="website"
                       value={formData.website}
                       onChange={handleChange}
-                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                       placeholder="https://www.votreentreprise.com"
                     />
                   </div>
@@ -143,7 +143,7 @@ const PartnershipForm = () => {
                       required
                       value={formData.contactName}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                       placeholder="Nom et prénom"
                     />
                   </div>
@@ -153,7 +153,7 @@ const PartnershipForm = () => {
                       Email *
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-600" size={20} />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-800" size={20} />
                       <input
                         type="email"
                         id="email"
@@ -161,7 +161,7 @@ const PartnershipForm = () => {
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                         placeholder="contact@entreprise.com"
                       />
                     </div>
@@ -173,14 +173,14 @@ const PartnershipForm = () => {
                     Téléphone
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-600" size={20} />
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-800" size={20} />
                     <input
                       type="tel"
                       id="phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                       placeholder="+212 6 XX XX XX XX"
                     />
                   </div>
@@ -205,7 +205,7 @@ const PartnershipForm = () => {
                       required
                       value={formData.partnershipType}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                     >
                       <option value="">Sélectionnez un type</option>
                       <option value="platinum">Partenaire Platinum</option>
@@ -226,7 +226,7 @@ const PartnershipForm = () => {
                       name="budget"
                       value={formData.budget}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                     >
                       <option value="">Sélectionnez une fourchette</option>
                       <option value="5000-15000">5 000 - 15 000 DH</option>
@@ -252,7 +252,7 @@ const PartnershipForm = () => {
                     rows={4}
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent resize-none"
                     placeholder="Présentez votre entreprise, vos activités principales et vos valeurs..."
                   />
                 </div>
@@ -268,7 +268,7 @@ const PartnershipForm = () => {
                     rows={4}
                     value={formData.objectives}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent resize-none"
                     placeholder="Quels sont vos objectifs avec ce partenariat ? (recrutement, visibilité, innovation, etc.)"
                   />
                 </div>
@@ -278,13 +278,13 @@ const PartnershipForm = () => {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-emerald-800 text-white py-4 px-6 rounded-lg font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-emerald-800 text-white py-4 px-6 rounded-lg font-medium hover:bg-emerald-900 transition-colors flex items-center justify-center gap-2"
               >
                 <Send size={20} />
                 Envoyer la demande de partenariat
               </motion.button>
 
-              <p className="text-center text-sm text-emerald-600">
+              <p className="text-center text-sm text-emerald-800">
                 Nous vous recontacterons sous 48h pour étudier votre demande.
               </p>
             </form>

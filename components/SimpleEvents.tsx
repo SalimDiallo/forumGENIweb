@@ -10,7 +10,7 @@ const SimpleEvents = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-emerald-900 mb-6">
             Calendrier des Événements
           </h1>
-          <p className="text-xl text-emerald-700/80 max-w-3xl mx-auto">
+          <p className="text-xl text-emerald-900/80 max-w-3xl mx-auto">
             Découvrez tous nos événements à venir
           </p>
         </div>
@@ -18,19 +18,19 @@ const SimpleEvents = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-emerald-100">
             <h3 className="text-xl font-bold text-emerald-900 mb-2">Forum GENI INSEA 2025</h3>
-            <p className="text-emerald-600 mb-2">3-5 Mai 2025</p>
+            <p className="text-emerald-800 mb-2">3-5 Mai 2025</p>
             <p className="text-gray-600">INSEA Rabat</p>
           </div>
           
           <div className="bg-white rounded-xl shadow-lg p-6 border border-emerald-100">
             <h3 className="text-xl font-bold text-emerald-900 mb-2">Atelier Innovation</h3>
-            <p className="text-emerald-600 mb-2">15 Mars 2025</p>
+            <p className="text-emerald-800 mb-2">15 Mars 2025</p>
             <p className="text-gray-600">INSEA Rabat</p>
           </div>
           
           <div className="bg-white rounded-xl shadow-lg p-6 border border-emerald-100">
             <h3 className="text-xl font-bold text-emerald-900 mb-2">Conférence IA</h3>
-            <p className="text-emerald-600 mb-2">20 Avril 2025</p>
+            <p className="text-emerald-800 mb-2">20 Avril 2025</p>
             <p className="text-gray-600">En ligne</p>
           </div>
         </div>

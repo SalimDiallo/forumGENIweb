@@ -4,17 +4,27 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/admin/blog", label: "Gestion du Blog" },
-  { href: "/admin/requests", label: "Demandes & Partenariats" },
-  { href: "/admin/jobs", label: "Annonces de Jobs" },
-  { href: "/admin/testimonials", label: "Avis & Témoignages" },
+  { href: "/admin/blog", label: "Blog", children: [
+    { href: "/admin/blog/categories", label: "Catégories" },
+    { href: "/admin/blog/tags", label: "Tags" },
+  ]},
+  { href: "/admin/crm", label: "CRM", children: [
+    { href: "/admin/crm/contacts", label: "Contacts" },
+    { href: "/admin/crm/partnerships", label: "Partenariats" },
+  ]},
+  { href: "/admin/events", label: "Événements" },
+  { href: "/admin/jobs", label: "Jobs" },
+  { href: "/admin/media", label: "Médias" },
+  { href: "/admin/testimonials", label: "Témoignages" },
+  { href: "/admin/newsletter", label: "Newsletter" },
+  { href: "/admin/analytics", label: "Analytics" },
 ];
 
 function AdminNav() {
   const pathname = usePathname();
   return (
     <nav className="bg-gray-100 border-b border-gray-200">
-      <ul className="flex space-x-4 px-6 py-3">
+      <ul className="flex flex-wrap gap-2 px-6 py-3">
         {navItems.map((item) => (
           <li key={item.href}>
             <Link
@@ -30,6 +40,27 @@ function AdminNav() {
           </li>
         ))}
       </ul>
+      {/* Sub-navigation when inside a section */}
+      {navItems.map((parent) => (
+        pathname?.startsWith(parent.href + "/") && parent.children ? (
+          <ul key={parent.href+"/sub"} className="flex gap-2 px-6 pb-3">
+            {parent.children.map((child) => (
+              <li key={child.href}>
+                <Link
+                  href={child.href}
+                  className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                    pathname?.startsWith(child.href)
+                      ? "bg-gray-800 text-white"
+                      : "text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {child.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : null
+      ))}
     </nav>
   );
 }
