@@ -31,4 +31,18 @@ export const deleteJob = actionClient
     return { ok: true };
   });
 
+export const getJobsWithApplicationCount = actionClient.action(async () => {
+  const jobs = await prisma.jobOffer.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      _count: {
+        select: {
+          applications: true,
+        },
+      },
+    },
+  });
+  return { jobs };
+});
+
 

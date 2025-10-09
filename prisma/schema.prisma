@@ -352,6 +352,8 @@ model JobOffer {
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
+  applications        JobApplication[]
+
   @@index([slug])
   @@index([jobType])
   @@index([location])
@@ -359,6 +361,39 @@ model JobOffer {
   @@index([companyName])
   @@index([publishedAt])
   @@map("job_offers")
+}
+
+model JobApplication {
+  id                Int       @id @default(autoincrement())
+  jobOfferId        Int
+  firstName         String
+  lastName          String
+  email             String
+  phone             String?
+  resumeUrl         String?
+  coverLetter       String?
+  experience        String?
+  education         String?
+  skills            String?   // JSON string for skills
+  portfolioUrl      String?
+  linkedinUrl       String?
+  availability      String?
+  expectedSalary    String?
+  additionalInfo    String?
+  status            String    @default("pending") // pending, reviewed, accepted, rejected
+  appliedAt         DateTime  @default(now())
+  reviewedAt        DateTime?
+  notes             String?   // Admin notes
+  ipAddress         String?
+  userAgent         String?
+
+  jobOffer          JobOffer  @relation(fields: [jobOfferId], references: [id], onDelete: Cascade)
+
+  @@index([jobOfferId])
+  @@index([email])
+  @@index([status])
+  @@index([appliedAt])
+  @@map("job_applications")
 }
 
 // =====================================

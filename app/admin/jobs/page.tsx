@@ -1,6 +1,6 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
-import { createJob, deleteJob, listJobs, updateJob } from "./actions";
+import { createJob, deleteJob, listJobs, updateJob, getJobsWithApplicationCount } from "./actions";
 import { useEffect, useState, useMemo } from "react";
 import {
   Plus,
@@ -22,12 +22,15 @@ import {
   ListChecks,
   Clock,
   Home,
+  Users,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 import CreateJobModal from "./CreateJobs";
 import EditJobs from "./EditJobs";
 
 export default function AdminJobsPage() {
-  const list = useAction(listJobs);
+  const list = useAction(getJobsWithApplicationCount);
   const create = useAction(createJob);
   const del = useAction(deleteJob);
   const upd = useAction(updateJob);
@@ -109,13 +112,23 @@ export default function AdminJobsPage() {
               {list.result?.data?.jobs?.length || 0} annonce(s) au total
             </p>
           </div>
-          <button
-            onClick={() => setOpenCreate(true)}
-            className="flex items-center gap-2 bg-white text-blue-600 rounded-lg px-5 py-3 font-medium hover:bg-blue-50 transition-colors shadow-md"
-          >
-            <Plus className="w-5 h-5" />
-            Nouvelle annonce
-          </button>
+          <div className="flex gap-3">
+            <Link
+              href="/admin/jobs/applications"
+              className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg px-4 py-3 font-medium transition-colors shadow-md"
+            >
+              <Users className="w-5 h-5" />
+              Voir candidatures
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <button
+              onClick={() => setOpenCreate(true)}
+              className="flex items-center gap-2 bg-white text-blue-600 rounded-lg px-5 py-3 font-medium hover:bg-blue-50 transition-colors shadow-md"
+            >
+              <Plus className="w-5 h-5" />
+              Nouvelle annonce
+            </button>
+          </div>
         </div>
       </section>
 
@@ -180,6 +193,10 @@ export default function AdminJobsPage() {
                           Vedette
                         </span>
                       )}
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 flex items-center gap-1">
+                        <Users className="w-3 h-3" />
+                        {j._count?.applications || 0} candidature{(j._count?.applications || 0) > 1 ? 's' : ''}
+                      </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                       <span className="flex items-center gap-1">
@@ -266,6 +283,13 @@ export default function AdminJobsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    <Link
+                      href={`/admin/jobs/applications?jobId=${j.id}`}
+                      className="flex items-center gap-1.5 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Users className="w-4 h-4" />
+                      Candidatures
+                    </Link>
                     <button
                       onClick={() => {
                         setEditingId(j.id);

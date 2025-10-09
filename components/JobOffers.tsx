@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAction } from 'next-safe-action/hooks';
 import { 
   MapPin, 
   Clock, 
@@ -15,11 +16,15 @@ import {
   Award,
   Search,
   ChevronRight,
-  Share2
+  Share2,
+  Plus
 } from 'lucide-react';
+import { getPublicJobs } from '@/app/(sections)/careers/jobs.actions';
+import JobSubmissionModal from './JobSubmissionModal';
+import JobApplicationModal from './JobApplicationModal';
 
 // Types
-type JobType = "cdi" | 'cdd' | 'stage' | 'freelance';
+type JobType = "cdi" | 'cdd' | 'stage' | 'freelance' | 'alternance' | 'autre';
 type FilterType = JobType | 'all';
 
 interface Filter {
@@ -34,128 +39,94 @@ interface JobOffer {
   title: string;
   company: string;
   location: string;
-  type: JobType;
+  type: string; // Changed from JobType to string to match backend
   salary: string;
   postedDate: string;
   description: string;
   requirements: string[];
+  benefits?: string[];
+  skills?: string[];
   logo: string;
   featured: boolean;
   urgent: boolean;
   remote: boolean;
   rating: number;
   applicants: number;
+  applicationEmail?: string | null;
+  applicationUrl?: string | null;
+  applicationPhone?: string | null;
+  applicationDeadline?: string | null;
 }
 
 const JobOffers: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
   const [savedJobs, setSavedJobs] = useState<Set<number>>(new Set());
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [jobs, setJobs] = useState<JobOffer[]>([]);
+  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+  const [selectedJobForApplication, setSelectedJobForApplication] = useState<JobOffer | null>(null);
+  const [filterCounts, setFilterCounts] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+
+  const getJobsAction = useAction(getPublicJobs);
+
+  // Load jobs from backend
+  useEffect(() => {
+    loadJobs();
+  }, [selectedFilter, searchTerm]);
+
+  const loadJobs = () => {
+    setLoading(true);
+    getJobsAction.execute({
+      search: searchTerm || undefined,
+      jobType: selectedFilter === 'all' ? undefined : selectedFilter,
+      limit: 50,
+      offset: 0,
+    });
+  };
+
+  // Handle action result
+  useEffect(() => {
+    if (getJobsAction.status === "hasSucceeded" && getJobsAction.result?.data?.jobs) {
+      setJobs(getJobsAction.result.data.jobs);
+      updateFilterCounts(getJobsAction.result.data.jobs);
+      setLoading(false);
+    } else if (getJobsAction.status === "hasErrored") {
+      console.error('Erreur lors du chargement des offres:', getJobsAction.result?.serverError);
+      setLoading(false);
+    }
+  }, [getJobsAction.status, getJobsAction.result]);
+
+  const updateFilterCounts = (jobsList: JobOffer[]) => {
+    const counts: Record<string, number> = {
+      all: jobsList.length,
+      stage: 0,
+      cdi: 0,
+      cdd: 0,
+      freelance: 0,
+      alternance: 0,
+      autre: 0,
+    };
+
+    jobsList.forEach(job => {
+      if (job.type in counts) {
+        counts[job.type]++;
+      }
+    });
+
+    setFilterCounts(counts);
+  };
 
   const filters: Filter[] = [
-    { id: 'all', name: 'Toutes', count: 24, icon: Building },
-    { id: 'stage', name: 'Stages', count: 8, icon: Users },
-    { id: 'cdi', name: 'CDI', count: 12, icon: Award },
-    { id: 'cdd', name: 'CDD', count: 3, icon: Clock },
-    { id: 'freelance', name: 'Freelance', count: 1, icon: TrendingUp }
+    { id: 'all', name: 'Toutes', count: filterCounts.all || 0, icon: Building },
+    { id: 'stage', name: 'Stages', count: filterCounts.stage || 0, icon: Users },
+    { id: 'cdi', name: 'CDI', count: filterCounts.cdi || 0, icon: Award },
+    { id: 'cdd', name: 'CDD', count: filterCounts.cdd || 0, icon: Clock },
+    { id: 'freelance', name: 'Freelance', count: filterCounts.freelance || 0, icon: TrendingUp }
   ];
 
-  const jobOffers: JobOffer[] = [
-    {
-      id: 1,
-      title: "Data Scientist Senior",
-      company: "Groupe OCP",
-      location: "Casablanca",
-      type: "cdi",
-      salary: "Compétitif",
-      postedDate: "2025-01-05",
-      description: "Innovation data-driven dans l'industrie des phosphates.",
-      requirements: ["Master Data Science", "Python, R, SQL", "3+ ans"],
-      logo: "/partners/ocp-logo.png",
-      featured: true,
-      urgent: false,
-      remote: false,
-      rating: 4.8,
-      applicants: 45
-    },
-    {
-      id: 2,
-      title: "Consultant Digital",
-      company: "Attijariwafa Bank",
-      location: "Rabat",
-      type: "cdi",
-      salary: "À négocier",
-      postedDate: "2025-01-03",
-      description: "Transformation digitale et stratégies innovantes.",
-      requirements: ["École ingénieur", "Consulting", "Anglais"],
-      logo: "/partners/attijariwafa-logo.png",
-      featured: false,
-      urgent: true,
-      remote: true,
-      rating: 4.6,
-      applicants: 32
-    },
-    {
-      id: 3,
-      title: "Stage Chef de Projet",
-      company: "Maroc Telecom",
-      location: "Casablanca",
-      type: "stage",
-      salary: "4000 DH/mois",
-      postedDate: "2025-01-02",
-      description: "Déploiement solutions télécoms innovantes.",
-      requirements: ["Télécoms/Info", "Équipe", "Dynamisme"],
-      logo: "/partners/maroc-telecom-logo.png",
-      featured: false,
-      urgent: false,
-      remote: false,
-      rating: 4.4,
-      applicants: 78
-    },
-    {
-      id: 4,
-      title: "Développeur Full Stack",
-      company: "StartUp Tech",
-      location: "Remote",
-      type: "freelance",
-      salary: "350 DH/jour",
-      postedDate: "2024-12-28",
-      description: "Applications web modernes pour startup en croissance.",
-      requirements: ["React, Node.js", "MongoDB", "Portfolio"],
-      logo: "/partners/startup-logo.png",
-      featured: true,
-      urgent: false,
-      remote: true,
-      rating: 4.7,
-      applicants: 23
-    },
-    {
-      id: 5,
-      title: "Analyste Financier",
-      company: "BMCE Bank",
-      location: "Casablanca",
-      type: "cdd",
-      salary: "15-18k DH",
-      postedDate: "2024-12-25",
-      description: "Analyse marchés financiers et support trading.",
-      requirements: ["Master Finance", "Excel", "CFA+"],
-      logo: "/partners/bmce-logo.png",
-      featured: false,
-      urgent: false,
-      remote: false,
-      rating: 4.5,
-      applicants: 56
-    }
-  ];
-
-  const filteredJobs = jobOffers.filter(job => {
-    const matchesFilter = selectedFilter === 'all' || job.type === selectedFilter;
-    const matchesSearch = searchTerm === '' || 
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.location.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const filteredJobs = jobs; // Jobs are already filtered by the backend
 
   const toggleSaveJob = (jobId: number): void => {
     setSavedJobs(prev => {
@@ -169,24 +140,28 @@ const JobOffers: React.FC = () => {
     });
   };
 
-  const getTypeLabel = (type: JobType): string => {
-    const types: Record<JobType, string> = {
+  const getTypeLabel = (type: string): string => {
+    const types: Record<string, string> = {
       'cdi': 'CDI',
       'cdd': 'CDD', 
       'stage': 'Stage',
-      'freelance': 'Freelance'
+      'freelance': 'Freelance',
+      'alternance': 'Alternance',
+      'autre': 'Autre'
     };
-    return types[type];
+    return types[type] || type;
   };
 
-  const getTypeColor = (type: JobType): string => {
-    const colors: Record<JobType, string> = {
+  const getTypeColor = (type: string): string => {
+    const colors: Record<string, string> = {
       'cdi': 'bg-emerald-50 text-emerald-800 border-emerald-200',
       'cdd': 'bg-emerald-50 text-emerald-800 border-emerald-200',
-      'stage': 'bg-emerald-50 text-emerald-800 border-emerald-200',
-      'freelance': 'bg-orange-50 text-orange-600 border-orange-200'
+      'stage': 'bg-blue-50 text-blue-800 border-blue-200',
+      'freelance': 'bg-orange-50 text-orange-600 border-orange-200',
+      'alternance': 'bg-purple-50 text-purple-800 border-purple-200',
+      'autre': 'bg-gray-50 text-gray-800 border-gray-200'
     };
-    return colors[type];
+    return colors[type] || 'bg-gray-50 text-gray-800 border-gray-200';
   };
 
   const formatDate = (dateString: string): string => {
@@ -222,6 +197,17 @@ const JobOffers: React.FC = () => {
           <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed px-2">
             Opportunités exclusives de nos partenaires
           </p>
+          
+          {/* Bouton de soumission d'offre */}
+          <div className="mt-4">
+            <button
+              onClick={() => setIsSubmissionModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium"
+            >
+              <Plus className="w-4 h-4" />
+              Proposer une offre d'emploi
+            </button>
+          </div>
         </div>
 
         {/* Search Bar - Mobile optimized */}
@@ -269,9 +255,21 @@ const JobOffers: React.FC = () => {
           </div>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-8 sm:py-10">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">Chargement des offres...</h3>
+            <p className="text-gray-600 text-xs sm:text-sm">Veuillez patienter</p>
+          </div>
+        )}
+
         {/* Job List - Mobile optimized */}
-        <div className="space-y-3 sm:space-y-5 mb-8 sm:mb-10">
-          {filteredJobs.map((job) => (
+        {!loading && (
+          <div className="space-y-3 sm:space-y-5 mb-8 sm:mb-10">
+            {filteredJobs.map((job) => (
             <div
               key={job.id}
               className={`relative bg-white border-2 border-gray-200 rounded-2xl sm:rounded-3xl p-3 sm:p-5 hover:border-gray-300 hover:shadow transition-all duration-300 group ${
@@ -392,6 +390,10 @@ const JobOffers: React.FC = () => {
                 {/* Action Buttons - Mobile full width */}
                 <div className="flex flex-col gap-1 sm:gap-2 sm:items-end mt-2 sm:mt-0">
                   <button 
+                    onClick={() => {
+                      setSelectedJobForApplication(job);
+                      setIsApplicationModalOpen(true);
+                    }}
                     className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white rounded-xl sm:rounded-2xl font-semibold hover:shadow hover:shadow-emerald-200 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-2 group text-xs sm:text-sm"
                   >
                     <span className="sm:hidden">Postuler</span>
@@ -424,11 +426,12 @@ const JobOffers: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* No Results */}
-        {filteredJobs.length === 0 && (
+        {!loading && filteredJobs.length === 0 && (
           <div className="text-center py-8 sm:py-10">
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
               <Search className="w-7 h-7 sm:w-10 sm:h-10 text-gray-400" />
@@ -477,6 +480,36 @@ const JobOffers: React.FC = () => {
 
       {/* Animated Wave Effect - Hidden on mobile for performance */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-700 via-emerald-500 to-emerald-500 opacity-60 hidden sm:block" />
+      
+      {/* Job Submission Modal */}
+      <JobSubmissionModal
+        open={isSubmissionModalOpen}
+        onClose={() => setIsSubmissionModalOpen(false)}
+        onSuccess={() => {
+          // Recharger les offres après soumission
+          loadJobs();
+        }}
+      />
+
+      {/* Job Application Modal */}
+      {selectedJobForApplication && (
+        <JobApplicationModal
+          open={isApplicationModalOpen}
+          onClose={() => {
+            setIsApplicationModalOpen(false);
+            setSelectedJobForApplication(null);
+          }}
+          onSuccess={() => {
+            // Optionnel: recharger les données ou afficher un message de succès
+            console.log("Candidature envoyée avec succès !");
+          }}
+          jobOffer={{
+            id: selectedJobForApplication.id,
+            title: selectedJobForApplication.title,
+            company: selectedJobForApplication.company,
+          }}
+        />
+      )}
     </section>
   );
 };
