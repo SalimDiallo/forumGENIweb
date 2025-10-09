@@ -29,10 +29,10 @@ export default function AdminCrmPage() {
   async function onCreatePartnership(formData: FormData) {
     createP.execute({
       companyName: String(formData.get("companyName") || ""),
-      companySize: String(formData.get("companySize") || "startup"),
+      companySize: (formData.get("companySize") as "startup" | "pme" | "eti" | "grande_entreprise") || "startup",
       contactName: String(formData.get("contactName") || ""),
       contactEmail: String(formData.get("contactEmail") || ""),
-      partnershipType: String(formData.get("partnershipType") || "sponsor"),
+      partnershipType: (formData.get("partnershipType") as "sponsor" | "recruiter" | "speaker" | "mentor" | "other") || "sponsor",
     });
   }
 

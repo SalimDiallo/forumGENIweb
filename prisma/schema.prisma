@@ -324,28 +324,28 @@ model JobOffer {
   companyLogo         String?
   companyWebsite      String?
   industry            String?
-  jobType             JobType
+  jobType             String?         // Changed from JobType enum to optional string
   location            String?
-  isRemote            Boolean         @default(false)
+  isRemote            Boolean?        // Changed to optional
   salaryMin           Float?
   salaryMax           Float?
-  salaryCurrency      String          @default("MAD")
-  salaryPeriod        SalaryPeriod    @default(month)
-  description         String
-  requirements        String?
-  benefits            String?
+  salaryCurrency      String?         // Changed to optional
+  salaryPeriod        String?         // Changed from SalaryPeriod enum to optional string
+  description         String?         // Changed to optional
+  requirements        String?         // JSON string for tags
+  benefits            String?         // JSON string for tags
   applicationEmail    String?
   applicationUrl      String?
   applicationPhone    String?
   applicationDeadline DateTime?
-  experienceRequired  ExperienceLevel @default(none)
-  educationLevel      EducationLevel  @default(bac_plus_3)
+  experienceRequired  String?         // Changed from ExperienceLevel enum to optional string
+  educationLevel      String?         // Changed from EducationLevel enum to optional string
   contractDuration    String?
   startDate           DateTime?
-  skillsRequired      String?         // JSON string
-  languagesRequired   String?         // JSON string
-  status              JobStatus       @default(draft)
-  isFeatured          Boolean         @default(false)
+  skillsRequired      String?         // JSON string for tags
+  languagesRequired   String?         // JSON string for tags
+  status              String?         // Changed from JobStatus enum to optional string
+  isFeatured          Boolean?        // Changed to optional
   viewsCount          Int             @default(0)
   publishedAt         DateTime?
   expiresAt           DateTime?

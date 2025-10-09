@@ -2,6 +2,7 @@
 import { actionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jobs";
+import { z } from "zod";
 
 export const listJobs = actionClient.action(async () => {
   const jobs = await prisma.jobOffer.findMany({ orderBy: { createdAt: "desc" } });
@@ -24,7 +25,7 @@ export const updateJob = actionClient
   });
 
 export const deleteJob = actionClient
-  .schema(updateJobOfferSchema.pick({ id: true }))
+  .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
     await prisma.jobOffer.delete({ where: { id: parsedInput.id } });
     return { ok: true };

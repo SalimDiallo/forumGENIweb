@@ -123,11 +123,10 @@ export default function AdminJobsPage() {
       <CreateJobModal
         open={openCreate}
         onClose={() => setOpenCreate(false)}
-        create={create}
-        list={list}
-        jobTypeOptions={jobTypeOptions}
-        statusOptions={statusOptions}
-        educationLevelOptions={educationLevelOptions}
+        onCreated={() => {
+          list.execute();
+          setOpenCreate(false);
+        }}
       />
 
       {/* Jobs List */}
