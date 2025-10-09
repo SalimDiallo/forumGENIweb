@@ -1,17 +1,17 @@
 "use client";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { useAction } from "next-safe-action/hooks";
 import { submitJobApplication } from "@/app/(sections)/careers/application.actions";
 import Modal from "@/components/Modal";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  FileText, 
-  Briefcase, 
+import {
+  User,
+  Mail,
+  Phone,
+  FileText,
+  Briefcase,
   GraduationCap,
   Link,
   Calendar,
@@ -19,26 +19,79 @@ import {
   MessageSquare,
   Save,
   AlertCircle,
-  Upload
+  Upload,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 
-// Schema for the form
-const applicationFormSchema = z.object({
+// --- SCHEMA ---
+
+const personalDetailsSchema = z.object({
   firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
   lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   email: z.string().email("Email invalide"),
-  phone: z.string().optional(),
-  resumeUrl: z.string().url("URL de CV invalide").optional().or(z.literal("")),
-  coverLetter: z.string().optional(),
+  phone: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^(\+?\d{1,3}[- ]?)?\d{6,15}$/.test(val),
+      "Numéro de téléphone invalide"
+    ),
+});
+
+const documentsLinksSchema = z.object({
+  resumeUrl: z
+    .string()
+    .url("URL de CV invalide")
+    .optional()
+    .or(z.literal("")),
+  portfolioUrl: z
+    .string()
+    .url("URL de portfolio invalide")
+    .optional()
+    .or(z.literal("")),
+  linkedinUrl: z
+    .string()
+    .url("URL LinkedIn invalide")
+    .optional()
+    .or(z.literal("")),
+});
+
+const experienceSchema = z.object({
   experience: z.string().optional(),
   education: z.string().optional(),
   skills: z.string().optional(),
-  portfolioUrl: z.string().url("URL de portfolio invalide").optional().or(z.literal("")),
-  linkedinUrl: z.string().url("URL LinkedIn invalide").optional().or(z.literal("")),
+});
+
+const motivationSchema = z.object({
+  coverLetter: z.string().optional(),
+});
+
+const additionalSchema = z.object({
   availability: z.string().optional(),
-  expectedSalary: z.string().optional(),
+  expectedSalary: z
+    .string()
+    .optional()
+    .refine(
+      (val) =>
+        !val ||
+        /^(\d{1,3}(?:[.,]\d{3})*(?:\s*-\s*\d{1,3}(?:[.,]\d{3})*)?\s*(MAD|mad)?)?$/.test(
+          val
+        ),
+      "Format de salaire attendu invalide"
+    ),
   additionalInfo: z.string().optional(),
 });
+
+const applicationFormSchema = personalDetailsSchema
+  .merge(documentsLinksSchema)
+  .merge(experienceSchema)
+  .merge(motivationSchema)
+  .merge(additionalSchema);
+
+type ApplicationFormType = z.infer<typeof applicationFormSchema>;
+
+type FormTab = "personal" | "documents" | "experience" | "motivation" | "additional";
 
 interface JobApplicationModalProps {
   open: boolean;
@@ -51,16 +104,267 @@ interface JobApplicationModalProps {
   };
 }
 
-export default function JobApplicationModal({ 
-  open, 
-  onClose, 
+// --- SUBCOMPONENTS ---
+
+// FormField component with design inspired by CreateJobs.tsx
+function FormField({
+  label,
+  children,
+  error,
+  description,
+}: {
+  label: string;
+  children: React.ReactNode;
+  error?: string;
+  description?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="text-sm font-semibold text-gray-800">{label}</label>
+      {description && <span className="text-xs text-gray-500 mb-1">{description}</span>}
+      {children}
+      {error && <span className="text-xs text-red-500 mt-1">{error}</span>}
+    </div>
+  );
+}
+
+function PersonalDetailsFields() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ApplicationFormType>();
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FormField
+          label="Prénom *"
+          error={errors.firstName?.message}
+        >
+          <input
+            {...register("firstName")}
+            placeholder="Votre prénom"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            required
+          />
+        </FormField>
+
+        <FormField
+          label="Nom *"
+          error={errors.lastName?.message}
+        >
+          <input
+            {...register("lastName")}
+            placeholder="Votre nom"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            required
+          />
+        </FormField>
+
+        <FormField
+          label="Email *"
+          error={errors.email?.message}
+        >
+          <input
+            {...register("email")}
+            placeholder="votre@email.com"
+            type="email"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            required
+          />
+        </FormField>
+
+        <FormField
+          label="Téléphone"
+          error={errors.phone?.message}
+        >
+          <input
+            {...register("phone")}
+            placeholder="+212 6 XX XX XX XX"
+            type="tel"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          />
+        </FormField>
+      </div>
+    </div>
+  );
+}
+
+function DocumentsLinksFields() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ApplicationFormType>();
+  return (
+    <div className="space-y-4">
+      <FormField
+        label="CV (URL)"
+        error={errors.resumeUrl?.message}
+        description="Vous pouvez uploader votre CV sur Google Drive, Dropbox, etc."
+      >
+        <input
+          {...register("resumeUrl")}
+          placeholder="https://drive.google.com/..."
+          type="url"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </FormField>
+
+      <FormField
+        label="Portfolio"
+        error={errors.portfolioUrl?.message}
+      >
+        <input
+          {...register("portfolioUrl")}
+          placeholder="https://votre-portfolio.com"
+          type="url"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </FormField>
+
+      <FormField
+        label="LinkedIn"
+        error={errors.linkedinUrl?.message}
+      >
+        <input
+          {...register("linkedinUrl")}
+          placeholder="https://linkedin.com/in/votre-profil"
+          type="url"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </FormField>
+    </div>
+  );
+}
+
+function ExperienceFields() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ApplicationFormType>();
+  return (
+    <div className="space-y-4">
+      <FormField
+        label="Expérience professionnelle"
+        error={errors.experience?.message}
+      >
+        <textarea
+          {...register("experience")}
+          placeholder="Décrivez votre expérience professionnelle..."
+          rows={3}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </FormField>
+
+      <FormField
+        label="Formation"
+        error={errors.education?.message}
+      >
+        <textarea
+          {...register("education")}
+          placeholder="Vos diplômes et formations..."
+          rows={2}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </FormField>
+
+      <FormField
+        label="Compétences"
+        error={errors.skills?.message}
+        description="Séparez vos compétences par des virgules"
+      >
+        <input
+          {...register("skills")}
+          placeholder="React, Node.js, Python, SQL, etc."
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </FormField>
+    </div>
+  );
+}
+
+function MotivationFields() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ApplicationFormType>();
+  return (
+    <div className="space-y-4">
+      <FormField
+        label="Pourquoi souhaitez-vous ce poste ?"
+        error={errors.coverLetter?.message}
+        description="Expliquez votre motivation pour ce poste"
+      >
+        <textarea
+          {...register("coverLetter")}
+          placeholder="Expliquez votre motivation pour ce poste..."
+          rows={4}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </FormField>
+    </div>
+  );
+}
+
+function AdditionalFields() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ApplicationFormType>();
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FormField
+          label="Disponibilité"
+          error={errors.availability?.message}
+        >
+          <input
+            {...register("availability")}
+            placeholder="Immédiate, 1 mois, etc."
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          />
+        </FormField>
+
+        <FormField
+          label="Salaire attendu"
+          error={errors.expectedSalary?.message}
+        >
+          <input
+            {...register("expectedSalary")}
+            placeholder="15,000 - 20,000 MAD"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          />
+        </FormField>
+      </div>
+
+      <FormField
+        label="Informations complémentaires"
+        error={errors.additionalInfo?.message}
+      >
+        <textarea
+          {...register("additionalInfo")}
+          placeholder="Toute autre information que vous souhaitez partager..."
+          rows={3}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+        />
+      </FormField>
+    </div>
+  );
+}
+
+// --- MAIN COMPONENT ---
+
+export default function JobApplicationModal({
+  open,
+  onClose,
   onSuccess,
-  jobOffer 
+  jobOffer,
 }: JobApplicationModalProps) {
+  const [activeTab, setActiveTab] = useState<FormTab>("personal");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
   const submitApplication = useAction(submitJobApplication);
 
-  const form = useForm<z.infer<typeof applicationFormSchema>>({
+  const methods = useForm<ApplicationFormType>({
     resolver: zodResolver(applicationFormSchema),
     defaultValues: {
       firstName: "",
@@ -78,17 +382,29 @@ export default function JobApplicationModal({
       expectedSalary: "",
       additionalInfo: "",
     },
+    mode: "onTouched",
   });
 
-  const onSubmit = async (values: z.infer<typeof applicationFormSchema>) => {
+  const onSubmit = async (values: ApplicationFormType) => {
     setIsSubmitting(true);
+    setClientError(null);
     try {
+      const parsed = applicationFormSchema.safeParse(values);
+      if (!parsed.success) {
+        setClientError("Veuillez corriger les erreurs du formulaire.");
+        setIsSubmitting(false);
+        return;
+      }
       await submitApplication.execute({
         jobOfferId: jobOffer.id,
-        ...values,
+        ...parsed.data,
       });
-    } catch (error) {
-      console.error("Erreur lors de la soumission:", error);
+    } catch (error: any) {
+      setClientError(
+        error instanceof ZodError
+          ? error.issues.map((e: any) => e.message).join(", ")
+          : "Erreur lors de la soumission."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -98,289 +414,163 @@ export default function JobApplicationModal({
   if (submitApplication.status === "hasSucceeded") {
     if (onSuccess) onSuccess();
     onClose();
-    form.reset();
+    methods.reset();
+    setActiveTab("personal");
     return null;
   }
 
+  const tabs = [
+    { id: "personal" as FormTab, label: "Informations", icon: User },
+    { id: "documents" as FormTab, label: "Documents", icon: FileText },
+    { id: "experience" as FormTab, label: "Expérience", icon: Briefcase },
+    { id: "motivation" as FormTab, label: "Motivation", icon: MessageSquare },
+    { id: "additional" as FormTab, label: "Autres", icon: Calendar },
+  ];
+
+  const getTabContent = () => {
+    switch (activeTab) {
+      case "personal":
+        return <PersonalDetailsFields />;
+      case "documents":
+        return <DocumentsLinksFields />;
+      case "experience":
+        return <ExperienceFields />;
+      case "motivation":
+        return <MotivationFields />;
+      case "additional":
+        return <AdditionalFields />;
+      default:
+        return <PersonalDetailsFields />;
+    }
+  };
+
+  const canGoNext = () => {
+    const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+    return currentTabIndex < tabs.length - 1;
+  };
+
+  const canGoPrevious = () => {
+    const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+    return currentTabIndex > 0;
+  };
+
+  const goToNext = () => {
+    const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+    if (canGoNext()) {
+      setActiveTab(tabs[currentTabIndex + 1].id);
+    }
+  };
+
+  const goToPrevious = () => {
+    const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+    if (canGoPrevious()) {
+      setActiveTab(tabs[currentTabIndex - 1].id);
+    }
+  };
+
   return (
-    <Modal open={open} title={`Candidature - ${jobOffer.title}`} onClose={onClose}>
+    <Modal
+      open={open}
+      title={`Candidature - ${jobOffer.title}`}
+      onClose={onClose}
+    >
       <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
         <p className="text-emerald-800 text-sm">
-          <strong>Poste :</strong> {jobOffer.title} chez <strong>{jobOffer.company}</strong>
+          <strong>Poste :</strong> {jobOffer.title} chez{" "}
+          <strong>{jobOffer.company}</strong>
         </p>
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Informations personnelles */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <User className="w-5 h-5 text-emerald-600" />
-            Informations personnelles
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Prénom *
-              </label>
-              <input
-                {...form.register("firstName")}
-                placeholder="Votre prénom"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
-              />
-              {form.formState.errors.firstName && (
-                <p className="text-red-500 text-xs mt-1">
-                  {form.formState.errors.firstName.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom *
-              </label>
-              <input
-                {...form.register("lastName")}
-                placeholder="Votre nom"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
-              />
-              {form.formState.errors.lastName && (
-                <p className="text-red-500 text-xs mt-1">
-                  {form.formState.errors.lastName.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Mail className="w-4 h-4 inline mr-1" />
-                Email *
-              </label>
-              <input
-                {...form.register("email")}
-                placeholder="votre@email.com"
-                type="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
-              />
-              {form.formState.errors.email && (
-                <p className="text-red-500 text-xs mt-1">
-                  {form.formState.errors.email.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Phone className="w-4 h-4 inline mr-1" />
-                Téléphone
-              </label>
-              <input
-                {...form.register("phone")}
-                placeholder="+212 6 XX XX XX XX"
-                type="tel"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Documents et liens */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-emerald-600" />
-            Documents et liens
-          </h3>
-
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)} noValidate>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Upload className="w-4 h-4 inline mr-1" />
-                CV (URL)
-              </label>
-              <input
-                {...form.register("resumeUrl")}
-                placeholder="https://drive.google.com/..."
-                type="url"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Vous pouvez uploader votre CV sur Google Drive, Dropbox, etc.
-              </p>
+            {/* Mobile-friendly tabs */}
+            <div className="flex border-b border-gray-200 overflow-x-auto">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`flex items-center gap-1 px-3 py-2 -mb-px border-b-2 transition-colors whitespace-nowrap text-sm ${
+                    activeTab === tab.id
+                      ? "border-emerald-600 text-emerald-700 font-semibold"
+                      : "border-transparent text-gray-500 hover:text-emerald-600"
+                  }`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              ))}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Link className="w-4 h-4 inline mr-1" />
-                Portfolio
-              </label>
-              <input
-                {...form.register("portfolioUrl")}
-                placeholder="https://votre-portfolio.com"
-                type="url"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
+            {/* Tab Content */}
+            <div className="max-h-[50vh] overflow-y-auto px-1">
+              {getTabContent()}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Link className="w-4 h-4 inline mr-1" />
-                LinkedIn
-              </label>
-              <input
-                {...form.register("linkedinUrl")}
-                placeholder="https://linkedin.com/in/votre-profil"
-                type="url"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
+            {/* Error Messages */}
+            {(clientError || submitApplication.status === "hasErrored") && (
+              <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-red-600 text-sm">
+                  {clientError ||
+                    submitApplication.result?.serverError?.message ||
+                    "Erreur lors de l'envoi de votre candidature."}
+                </p>
+              </div>
+            )}
+
+            {/* Navigation and Action Buttons */}
+            <div className="flex items-center justify-between pt-4 border-t">
+              <div className="flex gap-2">
+                {canGoPrevious() && (
+                  <button
+                    type="button"
+                    onClick={goToPrevious}
+                    className="flex items-center gap-1 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline">Précédent</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+                  disabled={isSubmitting}
+                >
+                  Annuler
+                </button>
+
+                {canGoNext() ? (
+                  <button
+                    type="button"
+                    onClick={goToNext}
+                    className="flex items-center gap-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                  >
+                    <span className="hidden sm:inline">Suivant</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || submitApplication.status === "executing"}
+                    className="flex items-center gap-2 bg-emerald-600 text-white rounded-lg px-4 py-2 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  >
+                    <Save className="w-4 h-4" />
+                    {isSubmitting || submitApplication.status === "executing"
+                      ? "Envoi..."
+                      : "Envoyer"}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Expérience et compétences */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-emerald-600" />
-            Expérience et compétences
-          </h3>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Expérience professionnelle
-            </label>
-            <textarea
-              {...form.register("experience")}
-              placeholder="Décrivez votre expérience professionnelle..."
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <GraduationCap className="w-4 h-4 inline mr-1" />
-              Formation
-            </label>
-            <textarea
-              {...form.register("education")}
-              placeholder="Vos diplômes et formations..."
-              rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Compétences
-            </label>
-            <input
-              {...form.register("skills")}
-              placeholder="React, Node.js, Python, SQL, etc."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Séparez vos compétences par des virgules
-            </p>
-          </div>
-        </div>
-
-        {/* Lettre de motivation */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-emerald-600" />
-            Lettre de motivation
-          </h3>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Pourquoi souhaitez-vous ce poste ?
-            </label>
-            <textarea
-              {...form.register("coverLetter")}
-              placeholder="Expliquez votre motivation pour ce poste..."
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-
-        {/* Informations supplémentaires */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-emerald-600" />
-            Informations supplémentaires
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Disponibilité
-              </label>
-              <input
-                {...form.register("availability")}
-                placeholder="Immédiate, 1 mois, etc."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <DollarSign className="w-4 h-4 inline mr-1" />
-                Salaire attendu
-              </label>
-              <input
-                {...form.register("expectedSalary")}
-                placeholder="15,000 - 20,000 MAD"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Informations complémentaires
-            </label>
-            <textarea
-              {...form.register("additionalInfo")}
-              placeholder="Toute autre information que vous souhaitez partager..."
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-
-        {/* Messages d'erreur */}
-        {submitApplication.status === "hasErrored" && (
-          <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-red-600 text-sm">
-              {submitApplication.result?.serverError?.message || "Erreur lors de l'envoi de votre candidature."}
-            </p>
-          </div>
-        )}
-
-        {/* Boutons d'action */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            disabled={isSubmitting}
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting || submitApplication.status === "executing"}
-            className="flex items-center gap-2 bg-emerald-600 text-white rounded-lg px-6 py-2.5 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Save className="w-4 h-4" />
-            {isSubmitting || submitApplication.status === "executing" ? "Envoi..." : "Envoyer ma candidature"}
-          </button>
-        </div>
-      </form>
+        </form>
+      </FormProvider>
     </Modal>
   );
 }
