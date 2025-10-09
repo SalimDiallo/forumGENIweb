@@ -16,6 +16,23 @@ export const registerForEvent = actionClient
       throw new Error("Capacité atteinte");
     }
 
+    // Newsletter: si newsletter true, enregistrer l'email dans la table newsletter_subscriptions si pas déjà existant
+    if (parsedInput.newsletter) {
+      const existingSubscription = await prisma.newsletterSubscription.findUnique({
+        where: { email: parsedInput.email }
+      });
+      if (!existingSubscription) {
+        await prisma.newsletterSubscription.create({
+          data: {
+            email: parsedInput.email,
+            name: `${parsedInput.firstName} ${parsedInput.lastName}`.trim(),
+            source: `event_registration:${parsedInput.eventSlug}`,
+            isActive: true,
+          }
+        });
+      }
+    }
+
     const created = await prisma.eventRegistration.create({
       data: {
         eventId: event.id,
@@ -23,15 +40,16 @@ export const registerForEvent = actionClient
         lastName: parsedInput.lastName,
         email: parsedInput.email,
         phone: parsedInput.phone,
-        organization: parsedInput.organization,
-        position: parsedInput.position,
-        experienceLevel: parsedInput.experienceLevel,
-        expectations: parsedInput.expectations,
-        dietaryRestrictions: parsedInput.dietaryRestrictions,
-        specialNeeds: parsedInput.specialNeeds,
-        newsletterConsent: parsedInput.newsletterConsent,
+        // Champs étudiant
+        school: parsedInput.school,
+        cne: parsedInput.cne,
+        schoolYear: parsedInput.schoolYear,
+        level: parsedInput.level,
+        cycle: parsedInput.cycle,
+        // Champs communs
         registrationStatus: "pending",
         paymentStatus: event.isFree ? "exempted" : "pending",
+        newsletterConsent: !!parsedInput.newsletter,
       },
     });
 
@@ -43,5 +61,3 @@ export const registerForEvent = actionClient
 
     return { id: created.id };
   });
-
-

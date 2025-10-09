@@ -12,16 +12,10 @@ import {
   UserCheck,
   Save,
   AlertCircle,
-  Globe,
-  Image,
-  Calendar,
-  MapPin,
-  Users,
-  DollarSign,
 } from "lucide-react";
 import MarkdownEditor from "@/components/MardownEditor";
 
-type FormTab = "basic" | "details" | "registration" | "seo";
+type FormTab = "basic" | "details" | "registration";
 
 interface CreateEventFormProps {
   onSuccess?: () => void;
@@ -44,6 +38,17 @@ const eventTypeOptions = [
   { value: "webinar", label: "Webinaire" },
   { value: "other", label: "Autre" },
 ];
+
+// Utility function to generate slug from title
+function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .normalize("NFD") // Remove accents
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "")
+    .replace(/-+/g, "-");
+}
 
 export default function CreateEventForm({ onSuccess, onCancel }: CreateEventFormProps) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
@@ -78,11 +83,15 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
       registrationStart: "",
       registrationEnd: "",
       maxParticipants: undefined,
-      metaTitle: "",
-      metaDescription: "",
       location: "",
     },
   });
+
+  // Synchronize slug with title
+  const titleValue = watch("title");
+  useEffect(() => {
+    setValue("slug", slugify(titleValue || ""));
+  }, [titleValue, setValue]);
 
   function onSubmit(values: z.infer<typeof createEventSchema>) {
     create.execute(values);
@@ -100,10 +109,10 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
     { id: "basic" as FormTab, label: "Informations de base", icon: FileText },
     { id: "details" as FormTab, label: "Détails", icon: Settings },
     { id: "registration" as FormTab, label: "Inscription", icon: UserCheck },
-    { id: "seo" as FormTab, label: "SEO", icon: Globe },
   ];
 
   const descriptionValue = watch("description");
+  const slugValue = watch("slug");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -156,6 +165,8 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     {...register("slug")}
                     placeholder="forum-entrepreneuriat-2025"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    value={slugValue}
+                    readOnly
                   />
                   {errors.slug && (
                     <p className="text-red-600 text-sm mt-1">{errors.slug.message}</p>
@@ -437,42 +448,6 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   />
                   {errors.currency && (
                     <p className="text-red-600 text-sm mt-1">{errors.currency.message}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "seo" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                    Meta Title
-                  </label>
-                  <input
-                    id="metaTitle"
-                    {...register("metaTitle")}
-                    placeholder="Titre SEO"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.metaTitle && (
-                    <p className="text-red-600 text-sm mt-1">{errors.metaTitle.message}</p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-1">
-                    Meta Description
-                  </label>
-                  <textarea
-                    id="metaDescription"
-                    {...register("metaDescription")}
-                    placeholder="Description SEO"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.metaDescription && (
-                    <p className="text-red-600 text-sm mt-1">{errors.metaDescription.message}</p>
                   )}
                 </div>
               </div>

@@ -289,24 +289,21 @@ model EventRegistration {
   lastName            String
   email               String
   phone               String?
-  organization        String?
-  position            String?
-  experienceLevel     ExperienceLevel    @default(beginner)
-  expectations        String?
-  dietaryRestrictions String?
-  specialNeeds        String?
+  school              String?
+  cne                 String?
+  cycle               String?
+  level               String?
+  schoolYear          String?
   newsletterConsent   Boolean            @default(false)
   registrationStatus  RegistrationStatus @default(pending)
   paymentStatus       PaymentStatus      @default(pending)
   paymentMethod       String?
   paymentReference    String?
   qrCode              String?
-  ipAddress           String?
-  userAgent           String?
   registeredAt        DateTime           @default(now())
   confirmedAt         DateTime?
   attendedAt          DateTime?
-  
+
   event               Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@index([eventId])

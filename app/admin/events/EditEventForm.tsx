@@ -3,11 +3,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateEventSchema } from "@/lib/validations/events";
-import { Save, AlertCircle, Calendar, MapPin, Users, Globe, DollarSign, Image, FileText, Settings, UserCheck } from "lucide-react";
-import { useState } from "react";
+import { Save, AlertCircle, Settings, UserCheck, FileText } from "lucide-react";
+import { useState, useEffect } from "react";
 import MarkdownEditor from "@/components/MardownEditor";
 
-type FormTab = "basic" | "details" | "registration" | "seo";
+// Only three tabs: no SEO
+type FormTab = "basic" | "details" | "registration";
 
 interface EditEventFormProps {
   defaultValues: any;
@@ -46,8 +47,6 @@ function cleanDefaultValues<T extends Record<string, any>>(obj: T): T {
     "sponsors",
     "requirements",
     "whatToBring",
-    "metaTitle",
-    "metaDescription",
     "virtualLink",
   ];
   
@@ -62,6 +61,17 @@ function cleanDefaultValues<T extends Record<string, any>>(obj: T): T {
   if (cleaned.registrationStart) cleaned.registrationStart = cleaned.registrationStart ? new Date(cleaned.registrationStart).toISOString().slice(0, 16) : undefined;
   if (cleaned.registrationEnd) cleaned.registrationEnd = cleaned.registrationEnd ? new Date(cleaned.registrationEnd).toISOString().slice(0, 16) : undefined;
   return cleaned as T;
+}
+
+// Slugify helper
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove accents
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/--+/g, "-");
 }
 
 export default function EditEventForm({
@@ -89,14 +99,34 @@ export default function EditEventForm({
     defaultValues: cleanedDefaultValues,
   });
 
+  // Only three tabs: no SEO
   const tabs = [
     { id: "basic" as FormTab, label: "Informations de base", icon: FileText },
     { id: "details" as FormTab, label: "Détails", icon: Settings },
     { id: "registration" as FormTab, label: "Inscription", icon: UserCheck },
-    { id: "seo" as FormTab, label: "SEO", icon: Globe },
   ];
 
   const descriptionValue = watch("description");
+  const titleValue = watch("title");
+  const slugValue = watch("slug");
+
+  // Auto-generate slug from title if slug is empty or matches previous slugified title
+  useEffect(() => {
+    // If the user hasn't manually changed the slug, update it from the title
+    if (
+      typeof titleValue === "string" &&
+      titleValue.length > 0
+    ) {
+      const autoSlug = slugify(titleValue);
+      // If slug is empty or matches the previous auto-generated slug, update it
+      if (
+        (!slugValue || slugValue === "" || slugValue === slugify(cleanedDefaultValues.title || "")) &&
+        autoSlug !== slugValue
+      ) {
+        setValue("slug", autoSlug, { shouldValidate: true, shouldDirty: true });
+      }
+    }
+  }, [titleValue]); // eslint-disable-line
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -518,42 +548,6 @@ export default function EditEventForm({
                   />
                   {errors.currency && (
                     <p className="text-red-600 text-sm mt-1">{errors.currency.message}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "seo" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                    Meta Title
-                  </label>
-                  <input
-                    id="metaTitle"
-                    {...register("metaTitle")}
-                    placeholder="Titre SEO"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.metaTitle && (
-                    <p className="text-red-600 text-sm mt-1">{errors.metaTitle.message}</p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-1">
-                    Meta Description
-                  </label>
-                  <textarea
-                    id="metaDescription"
-                    {...register("metaDescription")}
-                    placeholder="Description SEO"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.metaDescription && (
-                    <p className="text-red-600 text-sm mt-1">{errors.metaDescription.message}</p>
                   )}
                 </div>
               </div>

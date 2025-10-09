@@ -4,12 +4,12 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-// const inter = Raleway(
-//   { subsets: ['latin'], variable: '--font-freeman' ,
-//     display: 'swap',
-//     weight: ['400'],
-//   }
-// );
+const raleway = Raleway(
+  { subsets: ['latin'], variable: '--font-freeman' ,
+    display: 'swap',
+    weight: ['400'],
+  }
+);
 
 export const metadata: Metadata = {
   title: 'Forum GENI Entreprises | INSEA',
@@ -28,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className="scroll-smooth">
-      <body className={` antialiased min-h-screen `}>
+      <body className={` antialiased min-h-screen ${raleway.className}`}>
         {children}
         <Footer />
       </body>

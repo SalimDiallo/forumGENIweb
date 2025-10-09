@@ -1,6 +1,7 @@
 "use client";
 import { markdownOptions } from "@/utils/mardown";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 interface MarkdownRendererProps {
   content: string;
@@ -77,7 +78,7 @@ export default function MarkdownRenderer({ content, className = "" }: MarkdownRe
       <ReactMarkdown 
         components={customComponents}
         remarkPlugins={markdownOptions.remarkPlugins}
-        rehypePlugins={markdownOptions.rehypePlugins}
+        rehypePlugins={[rehypeRaw, ...(markdownOptions.rehypePlugins || [])]}
       >
         {content}
       </ReactMarkdown>
