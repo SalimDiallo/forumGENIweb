@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { Users, Crown, Shield, Briefcase, Mail, Linkedin, MapPin, Calendar, Award, ChevronDown } from 'lucide-react';
 
-interface TeamMember {
+// Nouvelle structure : la clé est l'année où la personne est devenue membre du bureau
+interface BureauMember {
   id: number;
   name: string;
   role: string;
@@ -14,123 +15,150 @@ interface TeamMember {
   email: string;
   linkedin: string;
   specialty?: string;
-  joinDate?: string;
+  bureauYear: string; // Année d'entrée au bureau
 }
 
 interface MemberCardProps {
-  member: TeamMember;
+  member: BureauMember;
   variant: 'hero' | 'executive' | 'department';
 }
 
+type BureauByYear = {
+  [year: string]: BureauMember[];
+};
+
+// Les membres du bureau, regroupés par année d'entrée au bureau
+const bureauMembers: BureauMember[] = [
+  // 2025
+  {
+    id: 1,
+    name: "Achraf Tirary",
+    role: "Président",
+    description: "Président du bureau 2025.",
+    image: "/team/2025/AchrafTiraryP/achraf.JPG",
+    level: 1,
+    icon: Crown,
+    email: "achraf@forum.com",
+    linkedin: "https://linkedin.com/in/achraf2025",
+    specialty: "Management",
+    bureauYear: "2025"
+  },
+  {
+    id: 2,
+    name: "Sophia",
+    role: "Vice-Présidente",
+    description: "Vice-Présidente du bureau 2025.",
+    image: "/team/2025/sophia.jpg",
+    level: 2,
+    icon: Shield,
+    email: "sophia@forum.com",
+    linkedin: "https://linkedin.com/in/sophia2025",
+    bureauYear: "2025"
+  },
+  {
+    id: 3,
+    name: "Karim Idrissi",
+    role: "Secrétaire Général",
+    description: "Secrétaire Général du bureau 2025.",
+    image: "/team/2025/karim_idrissi.jpg",
+    level: 2,
+    icon: Briefcase,
+    email: "karim.idrissi@forum.com",
+    linkedin: "https://linkedin.com/in/karimidrissi2025",
+    bureauYear: "2025"
+  },
+  {
+    id: 4,
+    name: "Yasmine Tazi",
+    role: "Trésorière",
+    description: "Trésorière du bureau 2025.",
+    image: "/team/2025/yasmine_tazi.jpg",
+    level: 2,
+    icon: Shield,
+    email: "yasmine.tazi@forum.com",
+    linkedin: "https://linkedin.com/in/yasminetazi2025",
+    bureauYear: "2025"
+  },
+  {
+    id: 5,
+    name: "Omar Bensouda",
+    role: "Responsable Communication",
+    description: "Responsable Communication du bureau 2025.",
+    image: "/team/2025/omar_bensouda.jpg",
+    level: 3,
+    icon: Users,
+    email: "omar.bensouda@forum.com",
+    linkedin: "https://linkedin.com/in/omarbensouda2025",
+    bureauYear: "2025"
+  },
+  {
+    id: 6,
+    name: "Leila Chraibi",
+    role: "Responsable Événements",
+    description: "Responsable Événements du bureau 2025.",
+    image: "/team/2025/leila_chraibi.jpg",
+    level: 3,
+    icon: Calendar,
+    email: "leila.chraibi@forum.com",
+    linkedin: "https://linkedin.com/in/leilachraibi2025",
+    bureauYear: "2025"
+  },
+  {
+    id: 7,
+    name: "Mehdi Alaoui",
+    role: "Responsable Partenariats",
+    description: "Responsable Partenariats du bureau 2025.",
+    image: "/team/2025/mehdi_alaoui.jpg",
+    level: 3,
+    icon: Award,
+    email: "mehdi.alaoui@forum.com",
+    linkedin: "https://linkedin.com/in/mehdialaoui2025",
+    bureauYear: "2025"
+  },
+  {
+    id: 8,
+    name: "Nadia Berrada",
+    role: "Responsable Technique",
+    description: "Responsable Technique du bureau 2025.",
+    image: "/team/2025/nadia_berrada.jpg",
+    level: 3,
+    icon: Shield,
+    email: "nadia.berrada@forum.com",
+    linkedin: "https://linkedin.com/in/nadiaberrada2025",
+    bureauYear: "2025"
+  },
+
+  // 2021 par exemple
+  {
+    id: 108,
+    name: "Nadia Berrada",
+    role: "Responsable Technique",
+    description: "Responsable Technique du bureau 2021.",
+    image: "/team/2021/nadia_berrada.jpg",
+    level: 3,
+    icon: Shield,
+    email: "nadia.berrada@forum.com",
+    linkedin: "https://linkedin.com/in/nadiaberrada2021",
+    bureauYear: "2021"
+  },
+  // Ajoutez d'autres années/membres ici si besoin
+];
+
+// Regrouper les membres du bureau par année d'entrée au bureau
+const bureauByYear: BureauByYear = bureauMembers.reduce((acc, member) => {
+  const year = member.bureauYear || 'Autre';
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(member);
+  return acc;
+}, {} as BureauByYear);
+
+const sortedYears = Object.keys(bureauByYear).sort((a, b) => b.localeCompare(a)); // Descendant
+
 const TeamsMembres = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<string>(sortedYears[0]);
 
-  const teamMembers: TeamMember[] = [
-    {
-      id: 1,
-      name: "Achraf",
-      role: "Président",
-      description: "Leader visionnaire qui guide l'association vers l'excellence et l'innovation.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
-      level: 1,
-      icon: Crown,
-      email: "achraf@association.com",
-      linkedin: "#",
-      specialty: "Leadership & Stratégie",
-      joinDate: "2020"
-    },
-    {
-      id: 2,
-      name: "Sophia",
-      role: "Vice-Présidente",
-      description: "Experte en coordination stratégique et développement organisationnel.",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-      level: 2,
-      icon: Shield,
-      email: "sophia@association.com",
-      linkedin: "#",
-      // specialty: "Management",
-      joinDate: "2021"
-    },
-    {
-      id: 3,
-      name: "Karim Idrissi",
-      role: "Secrétaire Général",
-      description: "Pilote l'administration avec rigueur et efficacité.",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
-      level: 2,
-      icon: Briefcase,
-      email: "karim@association.com",
-      linkedin: "#",
-      // specialty: "Administration",
-      joinDate: "2021"
-    },
-    {
-      id: 4,
-      name: "Yasmine Tazi",
-      role: "Trésorière",
-      description: "Gère les finances avec transparence et expertise comptable.",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-      level: 2,
-      icon: Shield,
-      email: "yasmine@association.com",
-      linkedin: "#",
-      // specialty: "Finance",
-      joinDate: "2021"
-    },
-    {
-      id: 5,
-      name: "Omar Bensouda",
-      role: "Responsable Communication",
-      description: "Architecte de notre présence digitale et stratégie de communication.",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face",
-      level: 3,
-      icon: Users,
-      email: "omar@association.com",
-      linkedin: "#",
-      // specialty: "Digital Marketing",
-      joinDate: "2022"
-    },
-    {
-      id: 6,
-      name: "Leila Chraibi",
-      role: "Responsable Événements",
-      description: "Créatrice d'expériences mémorables et coordinatrice exceptionnelle.",
-      image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=300&h=300&fit=crop&crop=face",
-      level: 3,
-      icon: Calendar,
-      email: "leila@association.com",
-      linkedin: "#",
-      // specialty: "Event Management",
-      joinDate: "2022"
-    },
-    {
-      id: 7,
-      name: "Mehdi Alaoui",
-      role: "Responsable Partenariats",
-      description: "Développe notre réseau et forge des alliances stratégiques.",
-      image: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=300&h=300&fit=crop&crop=face",
-      level: 3,
-      icon: Award,
-      email: "mehdi@association.com",
-      linkedin: "#",
-      // specialty: "Business Development",
-      joinDate: "2022"
-    },
-    {
-      id: 8,
-      name: "Nadia Berrada",
-      role: "Responsable Technique",
-      description: "Pionnière de l'innovation technologique au service de nos missions.",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop&crop=face",
-      level: 3,
-      icon: Shield,
-      email: "nadia@association.com",
-      linkedin: "#",
-      // specialty: "Technology & Innovation",
-      joinDate: "2022"
-    }
-  ];
+  const teamMembers = bureauByYear[selectedYear] || [];
 
   const MemberCard: React.FC<MemberCardProps> = ({ member, variant }) => {
     const IconComponent = member.icon;
@@ -321,6 +349,25 @@ const TeamsMembres = () => {
         </div>
       </section>
 
+      {/* Navigation par année */}
+      <section className="py-6 bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 md:px-8 flex flex-wrap justify-center gap-3">
+          {sortedYears.map((year) => (
+            <button
+              key={year}
+              className={`px-5 py-2 rounded-full font-semibold transition-colors duration-200 ${
+                selectedYear === year
+                  ? 'bg-gray-800 text-white shadow'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              onClick={() => setSelectedYear(year)}
+            >
+              {year}
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* President Section */}
       <section className="py-16 -mt-8">
         <div className="container mx-auto px-4 md:px-8">
@@ -365,12 +412,12 @@ const TeamsMembres = () => {
         <div className="container mx-auto px-4 md:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-700 mb-2">8</div>
+              <div className="text-3xl font-bold text-gray-700 mb-2">{teamMembers.length}</div>
               <div className="text-sm text-gray-600">Membres de Direction</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-700 mb-2">5+</div>
-              <div className="text-sm text-gray-600">Années d'Expérience</div>
+              <div className="text-3xl font-bold text-gray-700 mb-2">{sortedYears.length}</div>
+              <div className="text-sm text-gray-600">Années d'Équipes</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-gray-700 mb-2">100%</div>
