@@ -1,12 +1,30 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
 import { createJob, deleteJob, listJobs, updateJob } from "./actions";
-import { useEffect, useMemo, useState } from "react";
-import Modal from "@/components/Modal";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jobs";
+import { useEffect, useState, useMemo } from "react";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Briefcase,
+  Building2,
+  MapPin,
+  DollarSign,
+  Star,
+  Globe,
+  Link2,
+  Calendar,
+  Phone,
+  Mail,
+  BookOpen,
+  Award,
+  Languages,
+  ListChecks,
+  Clock,
+  Home,
+} from "lucide-react";
+import CreateJobModal from "./CreateJobs";
+import EditJobs from "./EditJobs";
 
 export default function AdminJobsPage() {
   const list = useAction(listJobs);
@@ -22,67 +40,22 @@ export default function AdminJobsPage() {
   const [openEdit, setOpenEdit] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  const createForm = useForm<z.infer<typeof createJobOfferSchema>>({
-    resolver: zodResolver(createJobOfferSchema),
-    defaultValues: {
-      title: "", slug: "", companyName: "", jobType: "stage", description: "",
-      salaryCurrency: "MAD", salaryPeriod: "month", status: "draft", isFeatured: false,
-    },
-  });
-
-  const editingItem = useMemo(() => list.result?.data?.jobs?.find((j: any) => j.id === editingId) ?? null, [editingId, list.result]);
-  const editForm = useForm<z.infer<typeof updateJobOfferSchema>>({
-    resolver: zodResolver(updateJobOfferSchema),
-    values: editingItem ? {
-      id: editingItem.id,
-      title: editingItem.title,
-      slug: editingItem.slug,
-      companyName: editingItem.companyName,
-      companyLogo: editingItem.companyLogo ?? undefined,
-      companyWebsite: editingItem.companyWebsite ?? undefined,
-      industry: editingItem.industry ?? undefined,
-      jobType: editingItem.jobType,
-      location: editingItem.location ?? undefined,
-      isRemote: editingItem.isRemote,
-      salaryMin: editingItem.salaryMin ?? undefined,
-      salaryMax: editingItem.salaryMax ?? undefined,
-      salaryCurrency: editingItem.salaryCurrency,
-      salaryPeriod: editingItem.salaryPeriod,
-      description: editingItem.description,
-      requirements: editingItem.requirements ?? undefined,
-      benefits: editingItem.benefits ?? undefined,
-      applicationEmail: editingItem.applicationEmail ?? undefined,
-      applicationUrl: editingItem.applicationUrl ?? undefined,
-      applicationPhone: editingItem.applicationPhone ?? undefined,
-      applicationDeadline: editingItem.applicationDeadline ? new Date(editingItem.applicationDeadline).toISOString() : undefined,
-      experienceRequired: editingItem.experienceRequired,
-      educationLevel: editingItem.educationLevel,
-      contractDuration: editingItem.contractDuration ?? undefined,
-      startDate: editingItem.startDate ? new Date(editingItem.startDate).toISOString() : undefined,
-      skillsRequired: editingItem.skillsRequired ?? undefined,
-      languagesRequired: editingItem.languagesRequired ?? undefined,
-      status: editingItem.status,
-      isFeatured: editingItem.isFeatured,
-    } : undefined,
-  });
-
-  function onSubmitCreate(values: z.infer<typeof createJobOfferSchema>) {
-    create.execute(values);
-  }
-
-  const onSubmitEdit = (values: z.infer<typeof updateJobOfferSchema>) => {
-    upd.execute(values);
-  };
+  // Find the job being edited
+  const editingItem = useMemo(
+    () => list.result?.data?.jobs?.find((j: any) => j.id === editingId) ?? null,
+    [editingId, list.result]
+  );
 
   async function onDelete(id: number) {
-    del.execute({ id });
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette annonce ?")) {
+      del.execute({ id });
+    }
   }
 
   useEffect(() => {
     if (create.status === "hasSucceeded") {
       list.execute();
       setOpenCreate(false);
-      createForm.reset();
     }
   }, [create.status]);
 
@@ -100,81 +73,281 @@ export default function AdminJobsPage() {
     }
   }, [del.status]);
 
+  // Options for select fields (should be kept in sync with CreateJobs.tsx and EditJobs.tsx)
+  const jobTypeOptions = [
+    { value: "stage", label: "Stage", color: "bg-blue-100 text-blue-800" },
+    { value: "cdi", label: "CDI", color: "bg-emerald-100 text-emerald-800" },
+    { value: "cdd", label: "CDD", color: "bg-yellow-100 text-yellow-800" },
+    { value: "freelance", label: "Freelance", color: "bg-purple-100 text-purple-800" },
+    { value: "alternance", label: "Alternance", color: "bg-pink-100 text-pink-800" },
+    { value: "autre", label: "Autre", color: "bg-gray-100 text-gray-800" },
+  ];
+
+  const statusOptions = [
+    { value: "draft", label: "Brouillon", color: "bg-gray-100 text-gray-800" },
+    { value: "published", label: "Publié", color: "bg-emerald-100 text-emerald-800" },
+    { value: "archived", label: "Archivé", color: "bg-red-100 text-red-800" },
+  ];
+
+  const educationLevelOptions = [
+    { value: "aucun", label: "Aucun" },
+    { value: "bac", label: "Bac" },
+    { value: "bac+2", label: "Bac+2" },
+    { value: "bac+3", label: "Bac+3" },
+    { value: "bac+5", label: "Bac+5" },
+    { value: "doctorat", label: "Doctorat" },
+  ];
+
   return (
     <div className="space-y-6">
-      <section className="p-4 bg-white rounded-md border">
+      {/* Header */}
+      <section className="bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-xl p-6 shadow-lg">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Annonces</h2>
-          <button onClick={() => setOpenCreate(true)} className="bg-gray-900 text-white rounded px-3 py-2">Nouvelle annonce</button>
+          <div>
+            <h1 className="text-2xl font-bold mb-2">Gestion des Annonces d'emploi</h1>
+            <p className="text-blue-100">
+              {list.result?.data?.jobs?.length || 0} annonce(s) au total
+            </p>
+          </div>
+          <button
+            onClick={() => setOpenCreate(true)}
+            className="flex items-center gap-2 bg-white text-blue-600 rounded-lg px-5 py-3 font-medium hover:bg-blue-50 transition-colors shadow-md"
+          >
+            <Plus className="w-5 h-5" />
+            Nouvelle annonce
+          </button>
         </div>
       </section>
 
-      <Modal open={openCreate} title="Créer une annonce" onClose={() => setOpenCreate(false)}>
-        <form onSubmit={createForm.handleSubmit(onSubmitCreate)} className="grid grid-cols-1 gap-3">
-          <input {...createForm.register("title")} placeholder="Titre" className="border rounded px-3 py-2" />
-          <input {...createForm.register("slug")} placeholder="Slug" className="border rounded px-3 py-2" />
-          <input {...createForm.register("companyName")} placeholder="Entreprise" className="border rounded px-3 py-2" />
-          <input {...createForm.register("jobType")} placeholder="Type (stage, cdi, ...)" className="border rounded px-3 py-2" />
-          <textarea {...createForm.register("description")} placeholder="Description" className="border rounded px-3 py-2" />
-          <div className="grid grid-cols-2 gap-3">
-            <input {...createForm.register("salaryCurrency")} placeholder="Devise" className="border rounded px-3 py-2" />
-            <input {...createForm.register("salaryPeriod")} placeholder="Période (month)" className="border rounded px-3 py-2" />
-          </div>
-          <div className="flex items-center justify-end gap-2 mt-2">
-            <button type="button" onClick={() => setOpenCreate(false)} className="px-3 py-2">Annuler</button>
-            <button type="submit" className="bg-gray-900 text-white rounded px-3 py-2" disabled={create.status === "executing"}>
-              {create.status === "executing" ? "Création…" : "Créer"}
-            </button>
-          </div>
-          {create.result?.serverError && (
-            <p className="text-red-600">{create.result.serverError.message}</p>
-          )}
-        </form>
-      </Modal>
+      {/* Create Modal */}
+      <CreateJobModal
+        open={openCreate}
+        onClose={() => setOpenCreate(false)}
+        create={create}
+        list={list}
+        jobTypeOptions={jobTypeOptions}
+        statusOptions={statusOptions}
+        educationLevelOptions={educationLevelOptions}
+      />
 
-      <section className="p-4 bg-white rounded-md border">
-        <h2 className="text-lg font-semibold mb-3">Annonces</h2>
-        {list.status === "executing" && <p>Chargement…</p>}
-        <ul className="divide-y">
-          {list.result?.data?.jobs?.map((j: any) => (
-            <li key={j.id} className="flex items-center justify-between py-2">
-              <div>
-                <p className="font-medium">{j.title}</p>
-                <p className="text-sm text-gray-600">{j.companyName} — {j.jobType}</p>
+      {/* Jobs List */}
+      <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        {list.status === "executing" && (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        )}
+
+        {list.result?.data?.jobs?.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            <Briefcase className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+            <p className="text-lg font-medium">Aucune annonce</p>
+            <p className="text-sm">Commencez par créer votre première annonce</p>
+          </div>
+        )}
+
+        <div className="divide-y divide-gray-200">
+          {list.result?.data?.jobs?.map((j: any) => {
+            const jobTypeOpt = jobTypeOptions.find((opt) => opt.value === j.jobType);
+            const statusOpt = statusOptions.find((opt) => opt.value === j.status);
+            return (
+              <div
+                key={j.id}
+                className="p-6 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">
+                        {j.title}
+                      </h3>
+                      {jobTypeOpt && (
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${jobTypeOpt.color}`}
+                        >
+                          {jobTypeOpt.label}
+                        </span>
+                      )}
+                      {statusOpt && (
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${statusOpt.color}`}
+                        >
+                          {statusOpt.label}
+                        </span>
+                      )}
+                      {j.isFeatured && (
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 flex items-center gap-1">
+                          <Star className="w-3 h-3" />
+                          Vedette
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <Building2 className="w-4 h-4" />
+                        {j.companyName}
+                      </span>
+                      {j.companyLogo && (
+                        <img src={j.companyLogo} alt="Logo" className="w-6 h-6 rounded bg-white border ml-2" />
+                      )}
+                      {j.companyWebsite && (
+                        <a href={j.companyWebsite} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
+                          <Globe className="w-4 h-4" />
+                          Site
+                        </a>
+                      )}
+                      {j.industry && (
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="w-4 h-4" />
+                          {j.industry}
+                        </span>
+                      )}
+                      {j.location && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-4 h-4" />
+                          {j.location}
+                        </span>
+                      )}
+                      {j.isRemote && (
+                        <span className="flex items-center gap-1">
+                          <Home className="w-4 h-4" />
+                          Télétravail
+                        </span>
+                      )}
+                      {(j.salaryMin || j.salaryMax) && (
+                        <span className="flex items-center gap-1">
+                          <DollarSign className="w-4 h-4" />
+                          {j.salaryMin && j.salaryMax
+                            ? `${j.salaryMin} - ${j.salaryMax}`
+                            : j.salaryMin
+                            ? `${j.salaryMin}`
+                            : j.salaryMax
+                            ? `${j.salaryMax}`
+                            : ""}
+                          {j.salaryCurrency && ` ${j.salaryCurrency}`}
+                          {j.salaryPeriod && ` /${j.salaryPeriod}`}
+                        </span>
+                      )}
+                      {j.experienceRequired && (
+                        <span className="flex items-center gap-1">
+                          <Award className="w-4 h-4" />
+                          {j.experienceRequired}
+                        </span>
+                      )}
+                      {j.educationLevel && (
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="w-4 h-4" />
+                          {j.educationLevel}
+                        </span>
+                      )}
+                      {j.contractDuration && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {j.contractDuration}
+                        </span>
+                      )}
+                      {j.startDate && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          Début: {new Date(j.startDate).toLocaleDateString()}
+                        </span>
+                      )}
+                      {j.skillsRequired && (
+                        <span className="flex items-center gap-1">
+                          <ListChecks className="w-4 h-4" />
+                          {j.skillsRequired}
+                        </span>
+                      )}
+                      {j.languagesRequired && (
+                        <span className="flex items-center gap-1">
+                          <Languages className="w-4 h-4" />
+                          {j.languagesRequired}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingId(j.id);
+                        setOpenEdit(true);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Éditer
+                    </button>
+                    <button
+                      onClick={() => onDelete(j.id)}
+                      className="flex items-center gap-1.5 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-2 text-sm text-gray-700 line-clamp-2">
+                  {j.description}
+                </div>
+                {j.requirements && (
+                  <div className="mt-1 text-xs text-gray-500">
+                    <span className="font-semibold">Exigences: </span>{j.requirements}
+                  </div>
+                )}
+                {j.benefits && (
+                  <div className="mt-1 text-xs text-gray-500">
+                    <span className="font-semibold">Avantages: </span>{j.benefits}
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2 mt-2 text-xs">
+                  {j.applicationEmail && (
+                    <span className="flex items-center gap-1">
+                      <Mail className="w-3 h-3" />
+                      {j.applicationEmail}
+                    </span>
+                  )}
+                  {j.applicationUrl && (
+                    <a href={j.applicationUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
+                      <Link2 className="w-3 h-3" />
+                      Candidater
+                    </a>
+                  )}
+                  {j.applicationPhone && (
+                    <span className="flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      {j.applicationPhone}
+                    </span>
+                  )}
+                  {j.applicationDeadline && (
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      Limite: {new Date(j.applicationDeadline).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button onClick={() => { setEditingId(j.id); setOpenEdit(true); }} className="text-emerald-600 hover:underline">Éditer</button>
-                <button onClick={() => onDelete(j.id)} className="text-red-600 hover:underline">Supprimer</button>
-              </div>
-            </li>
-          ))}
-        </ul>
+            );
+          })}
+        </div>
       </section>
 
-      <Modal open={openEdit && !!editingItem} title="Modifier l'annonce" onClose={() => { setOpenEdit(false); setEditingId(null); }}>
-        <form onSubmit={editForm.handleSubmit(onSubmitEdit)} className="grid grid-cols-1 gap-3">
-          <input {...editForm.register("title")} placeholder="Titre" className="border rounded px-3 py-2" />
-          <input {...editForm.register("slug")} placeholder="Slug" className="border rounded px-3 py-2" />
-          <input {...editForm.register("companyName")} placeholder="Entreprise" className="border rounded px-3 py-2" />
-          <input {...editForm.register("jobType")} placeholder="Type" className="border rounded px-3 py-2" />
-          <textarea {...editForm.register("description")} placeholder="Description" className="border rounded px-3 py-2" />
-          <div className="grid grid-cols-2 gap-3">
-            <input {...editForm.register("salaryMin", { valueAsNumber: true })} placeholder="Salaire min" className="border rounded px-3 py-2" />
-            <input {...editForm.register("salaryMax", { valueAsNumber: true })} placeholder="Salaire max" className="border rounded px-3 py-2" />
-          </div>
-          <div className="flex items-center justify-end gap-2 mt-2">
-            <button type="button" onClick={() => { setOpenEdit(false); setEditingId(null); }} className="px-3 py-2">Annuler</button>
-            <button type="submit" className="bg-gray-900 text-white rounded px-3 py-2" disabled={upd.status === "executing"}>
-              {upd.status === "executing" ? "Sauvegarde…" : "Enregistrer"}
-            </button>
-          </div>
-          {upd.result?.serverError && (
-            <p className="text-red-600">{upd.result.serverError.message}</p>
-          )}
-        </form>
-      </Modal>
+      {/* Edit Modal */}
+      <EditJobs
+        open={openEdit && !!editingItem}
+        onClose={() => {
+          setOpenEdit(false);
+          setEditingId(null);
+        }}
+        editingId={editingId}
+        jobs={list.result?.data?.jobs || []}
+        onSubmitEdit={(values) => upd.execute(values)}
+        upd={upd}
+        jobTypeOptions={jobTypeOptions}
+        statusOptions={statusOptions}
+        educationLevelOptions={educationLevelOptions}
+        setEditingId={setEditingId}
+        setOpenEdit={setOpenEdit}
+      />
     </div>
   );
 }
-
-
