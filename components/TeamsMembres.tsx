@@ -45,10 +45,10 @@ const bureauMembers: BureauMember[] = [
   },
   {
     id: 2,
-    name: "Sophia",
-    role: "Vice-Présidente",
+    name: "Lbarrah Yassine",
+    role: "Vice-Président",
     description: "Vice-Présidente du bureau 2025.",
-    image: "/team/2025/sophia.jpg",
+    image: "/team/2025/LbarrahyassineVP/yassine.JPG",
     level: 2,
     icon: Shield,
     email: "sophia@forum.com",

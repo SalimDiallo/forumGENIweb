@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useRef, useEffect } from "react";
+import { ReactNode, useRef, useEffect, useState } from "react";
 
 type ModalProps = {
   open: boolean;
@@ -14,28 +14,36 @@ export default function Modal({
   title,
   onClose,
   children,
-  size = "large"
+  size = "full"
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const titleId = "modal-title";
+  const [isClient, setIsClient] = useState(false);
+
+  // Hydration: Vérifier qu'on est côté client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Focus le bouton de fermeture à l'ouverture du modal
   useEffect(() => {
-    if (open) {
-      // Focus sur le bouton close par défaut (mais pourrait supporter focus trap)
-      closeBtnRef.current?.focus();
-      // Empêcher le scroll en arrière-plan
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "";
-      }
-    }
-  }, [open]);
+    if (!isClient || !open) return;
+    
+    // Focus sur le bouton close par défaut
+    closeBtnRef.current?.focus();
+    // Empêcher le scroll en arrière-plan
+    document.body.style.overflow = "hidden";
+    
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open, isClient]);
 
   // Fermeture du modal avec la touche Escape
   useEffect(() => {
-    if (!open) return;
+    if (!isClient || !open) return;
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.stopPropagation();
@@ -59,12 +67,18 @@ export default function Modal({
         }
       }
     };
+    
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+  }, [open, onClose, isClient]);
 
-  if (!open) return null;
+  // Ne pas rendre le portail avant hydration côté client
+  if (!isClient) {
+    return null;
+  }
 
+  // Rendre le DOM même si fermé pour éviter l'hydration mismatch
+  // Utiliser display: none ou opacity: 0 pour cacher
   const sizeClasses = {
     full: "w-full h-full max-h-screen mx-0",
     large: "w-full h-5/6 max-w-6xl mx-4",
@@ -73,20 +87,25 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-8"
+      className={`fixed inset-0 z-50 flex items-center justify-center p-8 transition-all duration-200 ${
+        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
+      aria-hidden={!open}
     >
       {/* backdrop, non-focusable, click ferme le modal */}
       <div
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/40 transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
       <div
         ref={modalRef}
-        className={`relative bg-white rounded-lg border shadow-xl flex flex-col ${sizeClasses[size]} p-8`}
+        className={`relative bg-white rounded-lg border shadow-xl flex flex-col ${sizeClasses[size]} p-8 transition-transform duration-200 ${
+          open ? "scale-100" : "scale-95"
+        }`}
         tabIndex={-1}
       >
         {/* Header (toujours sticky & identifiable par ID accessible) */}
@@ -99,7 +118,8 @@ export default function Modal({
             onClick={onClose}
             className="text-gray-600 hover:text-gray-900 text-2xl p-1 hover:bg-gray-100 rounded transition-colors w-8 h-8 flex items-center justify-center"
             aria-label="Fermer la boîte de dialogue"
-            autoFocus
+            autoFocus={open}
+            disabled={!open}
           >
             <span aria-hidden="true">✕</span>
           </button>

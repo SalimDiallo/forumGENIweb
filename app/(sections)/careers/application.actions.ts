@@ -58,8 +58,6 @@ export const submitJobApplication = actionClient
         portfolioUrl: parsedInput.portfolioUrl || undefined,
         linkedinUrl: parsedInput.linkedinUrl || undefined,
         // Add metadata if available
-        ipAddress: metadata?.ipAddress,
-        userAgent: metadata?.userAgent,
       },
     });
 
