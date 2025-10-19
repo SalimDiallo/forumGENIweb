@@ -79,8 +79,6 @@ export const updateEventRegistrationSchema = createEventRegistrationSchema.parti
 // TYPES INFERENCE
 // =====================================
 
-export type CreateEventInput = z.infer<typeof createEventSchema>;
-export type UpdateEventInput = z.infer<typeof updateEventSchema>;
 export type CreateEventRegistrationInput = z.infer<typeof createEventRegistrationSchema>;
 export type UpdateEventRegistrationInput = z.infer<typeof updateEventRegistrationSchema>;
 

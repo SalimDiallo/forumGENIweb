@@ -36,17 +36,26 @@ export const markdownComponents = {
       </pre>
     );
   },
-  // Tableaux
+  // Tableaux - avec un style amélioré
   table: ({ node, ...props }: any) => (
-    <div className="overflow-x-auto my-4">
-      <table className="min-w-full divide-y divide-gray-200" {...props} />
+    <div className="overflow-x-auto my-6">
+      <table className="min-w-full divide-y divide-gray-300 border border-gray-300 rounded-lg" {...props} />
     </div>
   ),
+  thead: ({ node, ...props }: any) => (
+    <thead className="bg-emerald-50" {...props} />
+  ),
+  tbody: ({ node, ...props }: any) => (
+    <tbody className="bg-white divide-y divide-gray-200" {...props} />
+  ),
+  tr: ({ node, ...props }: any) => (
+    <tr className="hover:bg-gray-50 transition-colors" {...props} />
+  ),
   th: ({ node, ...props }: any) => (
-    <th className="px-4 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-900" {...props} />
+    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b-2 border-emerald-500" {...props} />
   ),
   td: ({ node, ...props }: any) => (
-    <td className="px-4 py-2 border-t border-gray-200 text-sm" {...props} />
+    <td className="px-4 py-3 text-sm text-gray-700 border-b border-gray-200" {...props} />
   ),
   // Liens
   a: ({ node, ...props }: any) => (
@@ -108,6 +117,6 @@ export const markdownComponents = {
 export const markdownOptions = {
   components: markdownComponents,
   // Les plugins sont à ajouter dans le composant d'appel si besoin
-remarkPlugins: [],
-rehypePlugins: [],
+  remarkPlugins: [],
+  rehypePlugins: [],
 };

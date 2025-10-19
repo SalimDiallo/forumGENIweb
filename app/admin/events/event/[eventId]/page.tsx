@@ -1,162 +1,491 @@
-import { Calendar, MapPin, Users, Globe, DollarSign } from "lucide-react";
+import { Calendar, MapPin, Users, Globe, DollarSign, Edit, UserCheck, XCircle, Mail, Clock, Tag, Building, AlertCircle, Download, Share2, Bell } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { statusOptions } from "@/lib/utils";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
+import BackButton from "@/components/BackButton";
 
 export default async function EventDetailsPage(props: { params: Promise<{ eventId: string }> }) {
   const params = await props.params;
-  const eventId = Number(params.eventId);
+  const eventId = parseInt(params.eventId, 10);
 
   let event = null;
-  if (eventId) {
+  let registrations: any[] = [];
+  if (eventId && !isNaN(eventId)) {
     event = await prisma.event.findUnique({
-      where: { id: eventId }
+      where: { id: eventId },
+      include: {
+        registrations: true,
+        media: true,
+      }
     });
-    if (!event) {
+    if (event) {
+      registrations = event.registrations ?? [];
+    } else {
       return (
-        <div className="container py-12 text-center text-red-600">
-          Événement introuvable.
+        <div className="container py-12 text-center">
+          <AlertCircle className="w-16 h-16 mx-auto text-red-500 mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Événement introuvable</h2>
+          <p className="text-gray-600 mb-6">L'événement que vous recherchez n'existe pas ou a été supprimé.</p>
+          <Link href="/admin/events" className="inline-flex items-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-6 py-3 font-semibold transition">
+            Retour à la liste des événements
+          </Link>
         </div>
       );
     }
   } else {
     return (
-      <div className="container py-12 text-center text-red-600">
-        Événement introuvable.
+      <div className="container py-12 text-center">
+        <AlertCircle className="w-16 h-16 mx-auto text-red-500 mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Événement introuvable</h2>
+        <p className="text-gray-600 mb-6">L'événement que vous recherchez n'existe pas ou a été supprimé.</p>
+        <Link href="/admin/events" className="inline-flex items-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-6 py-3 font-semibold transition">
+          Retour à la liste des événements
+        </Link>
       </div>
     );
   }
 
   const statusOption = statusOptions.find((s) => s.value === event.status);
+  const confirmedCount = registrations.filter(r => r.registrationStatus === "confirmed").length;
+  const pendingCount = registrations.filter(r => r.registrationStatus === "pending").length;
+  const cancelledCount = registrations.filter(r => r.registrationStatus === "cancelled").length;
 
   return (
-    <div className="space-y-6 py-10 max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-2">
-        <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${statusOption?.color}`}
-        >
-          {statusOption?.label}
-        </span>
-        {event.isFeatured && (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-            ⭐ Vedette
-          </span>
-        )}
-      </div>
-      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-6">
-        <span className="flex items-center gap-1">
-          <Calendar className="w-4 h-4" />
-          {event.startDate
-            ? new Date(event.startDate).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "Date inconnue"}
-        </span>
-        <span className="flex items-center gap-1">
-          {event.isVirtual ? (
-            <>
-              <Globe className="w-4 h-4" />
-              Virtuel
-            </>
-          ) : (
-            <>
-              <MapPin className="w-4 h-4" />
-              {event.location || "Lieu non défini"}
-            </>
-          )}
-        </span>
-        {typeof event.currentParticipants === "number" && (
-          <span className="flex items-center gap-1">
-            <Users className="w-4 h-4" />
-            {event.currentParticipants}
-            {event.maxParticipants ? `/${event.maxParticipants}` : ""} inscrits
-          </span>
-        )}
-        {!event.isFree && (
-          <span className="flex items-center gap-1">
-            <DollarSign className="w-4 h-4" />
-            {event.price} {event.currency}
-          </span>
-        )}
-      </div>
-
-      {/* Image */}
-      {event.featuredImage && (
-        <div className="mb-6">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={event.featuredImage}
-            alt={event.title}
-            className="rounded-lg w-full max-h-96 object-cover shadow border"
-          />
-        </div>
-      )}
-
-      {/* Descriptions */}
-      {event.shortDescription && (
-        <p className="text-lg mb-2 text-gray-700">{event.shortDescription}</p>
-      )}
-      {event.description && (
-        <div className="prose max-w-none mb-8">{event.description}</div>
-      )}
-
-    
-
-      {/* Registration/card */}
-      <div className="bg-white border rounded-lg shadow-sm p-6">
-        <h3 className="font-semibold text-lg mb-4">Participer / S'inscrire</h3>
-        <ul className="space-y-2 text-gray-700">
-          <li>
-            <span className="font-medium">Statut:</span> {event.status}
-          </li>
-          {event.registrationStart && (
-            <li>
-              <span className="font-medium">Début des inscriptions :</span>{" "}
-              {new Date(event.registrationStart).toLocaleString("fr-FR")}
-            </li>
-          )}
-          {event.registrationEnd && (
-            <li>
-              <span className="font-medium">Fin des inscriptions :</span>{" "}
-              {new Date(event.registrationEnd).toLocaleString("fr-FR")}
-            </li>
-          )}
-          {event.maxParticipants && (
-            <li>
-              <span className="font-medium">Participants maxi :</span> {event.maxParticipants}
-            </li>
-          )}
-          {event.virtualLink && (
-            <li>
-              <span className="font-medium">Lien virtuel:</span>{" "}
-              <a
-                href={event.virtualLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-emerald-600 underline"
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Header avec navigation */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <Link
+              href="/admin/events"
+              className="inline-flex items-center text-gray-600 hover:text-emerald-600 transition group"
+            >
+              <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Retour aux événements
+            </Link>
+            <div className="flex gap-2">
+              <button className="inline-flex items-center gap-2 border border-gray-300 text-gray-700 font-medium rounded-lg px-4 py-2.5 hover:bg-gray-50 transition shadow-sm">
+                <Share2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Partager</span>
+              </button>
+              <button className="inline-flex items-center gap-2 border border-gray-300 text-gray-700 font-medium rounded-lg px-4 py-2.5 hover:bg-gray-50 transition shadow-sm">
+                <Download className="w-4 h-4" />
+                <span className="hidden sm:inline">Exporter</span>
+              </button>
+              <Link
+                href={`/admin/events/event/${eventId}/edit`}
+                className="inline-flex items-center gap-2 bg-emerald-600 text-white font-semibold rounded-lg px-4 py-2.5 hover:bg-emerald-700 transition shadow-sm"
               >
-                {event.virtualLink}
-              </a>
-            </li>
-          )}
-        </ul>
-      </div>
+                <Edit className="w-4 h-4" />
+                Modifier
+              </Link>
+            </div>
+          </div>
 
-      <div className="mt-8">
-        <Link
-          href="/admin/events"
-          className="inline-block bg-emerald-600 text-white rounded-lg px-6 py-3 font-medium shadow hover:bg-emerald-700 transition"
-        >
-          Retour à la liste des événements
-        </Link>
+          {/* Titre et badges */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex flex-wrap items-start gap-3 mb-4">
+              <h1 className="text-4xl font-bold text-gray-900 flex-1">{event.title}</h1>
+              <div className="flex gap-2 items-center">
+                <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${statusOption?.color} shadow-sm`}>
+                  {statusOption?.label}
+                </span>
+                {event.isFeatured && (
+                  <span className="px-3 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-sm">
+                    ⭐ Événement vedette
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Informations clés en cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg p-4 border border-blue-200">
+                <div className="flex items-center gap-2 text-blue-700 mb-2">
+                  <Calendar className="w-5 h-5" />
+                  <span className="font-semibold text-sm">Dates</span>
+                </div>
+                <p className="text-sm text-blue-900 font-medium">
+                  {event.startDate ? new Date(event.startDate).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                </p>
+                <p className="text-xs text-blue-700">
+                  {event.startDate ? new Date(event.startDate).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : ""}
+                  {event.endDate && ` - ${new Date(event.endDate).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-lg p-4 border border-purple-200">
+                <div className="flex items-center gap-2 text-purple-700 mb-2">
+                  {event.isVirtual ? <Globe className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
+                  <span className="font-semibold text-sm">Lieu</span>
+                </div>
+                <p className="text-sm text-purple-900 font-medium">
+                  {event.isVirtual ? "Événement virtuel" : (event.location || "Non défini")}
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-lg p-4 border border-emerald-200">
+                <div className="flex items-center gap-2 text-emerald-700 mb-2">
+                  <Users className="w-5 h-5" />
+                  <span className="font-semibold text-sm">Participants</span>
+                </div>
+                <p className="text-sm text-emerald-900 font-medium">
+                  {typeof event.currentParticipants === "number" ? event.currentParticipants : 0}
+                  {event.maxParticipants ? ` / ${event.maxParticipants}` : ""}
+                </p>
+                <p className="text-xs text-emerald-700">
+                  {event.maxParticipants ? `${Math.round((event.currentParticipants / event.maxParticipants) * 100)}% rempli` : "Sans limite"}
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-lg p-4 border border-amber-200">
+                <div className="flex items-center gap-2 text-amber-700 mb-2">
+                  <DollarSign className="w-5 h-5" />
+                  <span className="font-semibold text-sm">Tarif</span>
+                </div>
+                <p className="text-sm text-amber-900 font-medium">
+                  {event.isFree ? "Gratuit" : `${event.price} ${event.currency}`}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Image principale */}
+        {event.featuredImage && (
+          <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={event.featuredImage}
+              alt={event.title}
+              className="w-full h-[400px] object-cover"
+            />
+          </div>
+        )}
+
+        {/* Galerie photos */}
+        {event.media && event.media.length > 1 && (
+          <div className="mb-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Galerie photos
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {event.media
+                .filter((m: any) => m.fileUrl !== event.featuredImage)
+                .map((media: any) => (
+                  <img
+                    key={media.id}
+                    src={media.fileUrl}
+                    alt={media.altText || event.title}
+                    className="rounded-lg w-full h-32 object-cover border border-gray-200 hover:scale-105 transition-transform cursor-pointer shadow-sm"
+                  />
+                ))}
+            </div>
+          </div>
+        )}
+
+        {/* Description */}
+        <div className="mb-8 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          {event.shortDescription && (
+            <div className="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg">
+              <p className="text-lg text-emerald-900 font-medium">{event.shortDescription}</p>
+            </div>
+          )}
+          {event.description && (
+            <div className="prose max-w-none prose-emerald">
+              <MarkdownRenderer content={event.description} />
+            </div>
+          )}
+        </div>
+
+        {/* Informations détaillées en onglets visuels */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Détails de l'événement */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="font-bold text-xl mb-6 flex items-center gap-2 text-gray-900">
+              <Tag className="w-5 h-5 text-emerald-600" />
+              Détails de l'événement
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="text-gray-400 mt-0.5">
+                  <Building className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-600">Organisateur</p>
+                  <p className="text-gray-900 font-semibold">{event.organizerName || "—"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="text-gray-400 mt-0.5">
+                  <Tag className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-600">Type d'événement</p>
+                  <p className="text-gray-900 font-semibold capitalize">{event.eventType || "—"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="text-gray-400 mt-0.5">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-600">Créé le</p>
+                  <p className="text-gray-900">{event.createdAt ? new Date(event.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—"}</p>
+                </div>
+              </div>
+              {event.virtualLink && (
+                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="text-blue-600 mt-0.5">
+                    <Globe className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-blue-900">Lien virtuel</p>
+                    <a href={event.virtualLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium underline break-all">
+                      Rejoindre l'événement
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Inscription */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="font-bold text-xl mb-6 flex items-center gap-2 text-gray-900">
+              <Bell className="w-5 h-5 text-emerald-600" />
+              Inscription
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="text-gray-400 mt-0.5">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-600">Ouverture des inscriptions</p>
+                  <p className="text-gray-900">{event.registrationStart ? new Date(event.registrationStart).toLocaleString("fr-FR") : "—"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="text-gray-400 mt-0.5">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-600">Clôture des inscriptions</p>
+                  <p className="text-gray-900">{event.registrationEnd ? new Date(event.registrationEnd).toLocaleString("fr-FR") : "—"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="text-gray-400 mt-0.5">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-600">Limite de participants</p>
+                  <p className="text-gray-900 font-semibold">{event.maxParticipants || "Sans limite"}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sections additionnelles */}
+        {(event.agenda || event.speakers || event.sponsors) && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {event.agenda && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h4 className="font-bold text-lg mb-3 text-gray-900">📋 Agenda</h4>
+                <div className="text-sm text-gray-700 whitespace-pre-wrap">{event.agenda}</div>
+              </div>
+            )}
+            {event.speakers && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h4 className="font-bold text-lg mb-3 text-gray-900">🎤 Intervenants</h4>
+                <div className="text-sm text-gray-700 whitespace-pre-wrap">{event.speakers}</div>
+              </div>
+            )}
+            {event.sponsors && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h4 className="font-bold text-lg mb-3 text-gray-900">🤝 Sponsors</h4>
+                <div className="text-sm text-gray-700 whitespace-pre-wrap">{event.sponsors}</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Pré-requis et à apporter */}
+        {(event.requirements || event.whatToBring) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {event.requirements && (
+              <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
+                <h4 className="font-bold text-lg mb-3 text-blue-900 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5" />
+                  Pré-requis
+                </h4>
+                <p className="text-blue-800">{event.requirements}</p>
+              </div>
+            )}
+            {event.whatToBring && (
+              <div className="bg-amber-50 rounded-xl border border-amber-200 p-6">
+                <h4 className="font-bold text-lg mb-3 text-amber-900 flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                  À apporter
+                </h4>
+                <p className="text-amber-800">{event.whatToBring}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Statistiques des inscriptions */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <h3 className="font-bold text-xl mb-6 flex items-center gap-2">
+            <Users className="w-6 h-6 text-emerald-600" />
+            Statistiques des inscriptions
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg border border-emerald-200">
+              <p className="text-3xl font-bold text-emerald-700">{registrations.length}</p>
+              <p className="text-sm text-emerald-600 font-medium mt-1">Total</p>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
+              <p className="text-3xl font-bold text-green-700">{confirmedCount}</p>
+              <p className="text-sm text-green-600 font-medium mt-1">Confirmés</p>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+              <p className="text-3xl font-bold text-orange-700">{pendingCount}</p>
+              <p className="text-sm text-orange-600 font-medium mt-1">En attente</p>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-lg border border-red-200">
+              <p className="text-3xl font-bold text-red-700">{cancelledCount}</p>
+              <p className="text-sm text-red-600 font-medium mt-1">Annulés</p>
+            </div>
+          </div>
+        </div>
+
+        {/* TABLEAU DES INSCRITS - Version améliorée */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-xl flex items-center gap-2">
+                <Users className="w-6 h-6 text-emerald-600" />
+                Liste des participants ({registrations.length})
+              </h3>
+              <button className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-4 py-2 text-sm font-semibold transition shadow-sm">
+                <Download className="w-4 h-4" />
+                Exporter la liste
+              </button>
+            </div>
+          </div>
+          
+          {registrations.length === 0 ? (
+            <div className="p-12 text-center">
+              <Users className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-500 text-lg font-medium">Aucun participant inscrit pour le moment</p>
+              <p className="text-gray-400 text-sm mt-2">Les inscriptions apparaîtront ici dès qu'elles seront enregistrées</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Participant</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Contact</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Statut</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Paiement</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Inscrit le</th>
+                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {registrations.map((r: any) => (
+                    <tr key={r.id} className="hover:bg-emerald-50/50 transition">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 flex-shrink-0">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-sm shadow">
+                              {r.firstName?.[0]}{r.lastName?.[0]}
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-semibold text-gray-900">{r.firstName} {r.lastName}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <a 
+                          href={`mailto:${r.email}`} 
+                          className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline transition"
+                        >
+                          <Mail className="w-4 h-4" />
+                          {r.email}
+                        </a>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          r.registrationStatus === "confirmed" ? "bg-green-100 text-green-800" :
+                          r.registrationStatus === "pending" ? "bg-orange-100 text-orange-800" :
+                          "bg-red-100 text-red-800"
+                        }`}>
+                          {r.registrationStatus === "confirmed" ? "✓ Confirmé" :
+                           r.registrationStatus === "pending" ? "⏳ En attente" :
+                           "✕ Annulé"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          r.paymentStatus === "paid" ? "bg-emerald-100 text-emerald-800" :
+                          r.paymentStatus === "pending" ? "bg-amber-100 text-amber-800" :
+                          "bg-gray-100 text-gray-800"
+                        }`}>
+                          {r.paymentStatus === "paid" ? "💳 Payé" :
+                           r.paymentStatus === "pending" ? "⏳ En attente" :
+                           "—"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {r.registeredAt ? new Date(r.registeredAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : "—"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition shadow-sm ${
+                              r.registrationStatus === "confirmed" 
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
+                                : "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"
+                            }`}
+                            title="Confirmer la participation"
+                            disabled={r.registrationStatus === "confirmed"}
+                          >
+                            <UserCheck className="w-3.5 h-3.5" />
+                            Confirmer
+                          </button>
+                          <button
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition shadow-sm"
+                            title="Annuler l'inscription"
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                            Annuler
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
 }
-

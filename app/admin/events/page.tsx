@@ -1,5 +1,5 @@
 
-import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, UserCheck, Plus } from "lucide-react";
+import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, UserCheck, Plus, Eye } from "lucide-react";
 import Link from "next/link";
 import { statusOptions } from "@/lib/utils";
 import { prisma } from "@/lib/db";
@@ -113,6 +113,13 @@ export default async function AdminEventsPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
+                  <Link
+                      href={`/admin/events/event/${e.id}`}
+                      className="flex items-center gap-1.5 px-3 py-2 text-blue-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                    >
+                      <Eye className="w-4 h-4" />
+                      Voir
+                    </Link>
                     <Link
                       href={`/admin/events/event/${e.id}/edit`}
                       className="flex items-center gap-1.5 px-3 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
