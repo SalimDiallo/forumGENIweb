@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { z, ZodError } from "zod";
-import { useAction } from "next-safe-action/hooks";
+import { useMutation } from "@tanstack/react-query";
 import { submitJobApplication } from "@/app/(sections)/careers/application.actions";
 import Modal from "@/components/Modal";
 import {
@@ -14,20 +14,25 @@ import {
   MessageSquare,
   Save,
   AlertCircle,
-  XCircle,
 } from "lucide-react";
 
-// SCHEMA ZOD unique avec validation sur chaque élément
+import {
+  Form,
+  FormField,
+  FormLabel,
+  FormDescription,
+  FormMessage,
+  FormItem,
+  FormControl,
+} from "@/components/ui/form";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Button } from "./ui/button";
+
 const applicationFormSchema = z.object({
-  firstName: z
-    .string()
-    .min(2, "Le prénom doit contenir au moins 2 caractères"),
-  lastName: z
-    .string()
-    .min(2, "Le nom doit contenir au moins 2 caractères"),
-  email: z
-    .string()
-    .email("Email invalide"),
+  firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
+  lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  email: z.string().email("Email invalide"),
   phone: z
     .string()
     .optional()
@@ -40,9 +45,17 @@ const applicationFormSchema = z.object({
     .optional()
     .or(z.literal(""))
     .refine(
-      (val) => !val || val === "" || (() => {
-        try { new URL(val); return true; } catch { return false; }
-      })(),
+      (val) =>
+        !val ||
+        val === "" ||
+        (() => {
+          try {
+            new URL(val);
+            return true;
+          } catch {
+            return false;
+          }
+        })(),
       "URL de CV invalide"
     ),
   portfolioUrl: z
@@ -50,9 +63,17 @@ const applicationFormSchema = z.object({
     .optional()
     .or(z.literal(""))
     .refine(
-      (val) => !val || val === "" || (() => {
-        try { new URL(val); return true; } catch { return false; }
-      })(),
+      (val) =>
+        !val ||
+        val === "" ||
+        (() => {
+          try {
+            new URL(val);
+            return true;
+          } catch {
+            return false;
+          }
+        })(),
       "URL de portfolio invalide"
     ),
   linkedinUrl: z
@@ -60,26 +81,24 @@ const applicationFormSchema = z.object({
     .optional()
     .or(z.literal(""))
     .refine(
-      (val) => !val || val === "" || (() => {
-        try { new URL(val); return true; } catch { return false; }
-      })(),
+      (val) =>
+        !val ||
+        val === "" ||
+        (() => {
+          try {
+            new URL(val);
+            return true;
+          } catch {
+            return false;
+          }
+        })(),
       "URL LinkedIn invalide"
     ),
-  experience: z
-    .string()
-    .optional(),
-  education: z
-    .string()
-    .optional(),
-  skills: z
-    .string()
-    .optional(),
-  coverLetter: z
-    .string()
-    .optional(),
-  availability: z
-    .string()
-    .optional(),
+  experience: z.string().optional(),
+  education: z.string().optional(),
+  skills: z.string().optional(),
+  coverLetter: z.string().optional(),
+  availability: z.string().optional(),
   expectedSalary: z
     .string()
     .optional()
@@ -91,9 +110,7 @@ const applicationFormSchema = z.object({
         ),
       "Format de salaire attendu invalide"
     ),
-  additionalInfo: z
-    .string()
-    .optional(),
+  additionalInfo: z.string().optional(),
 });
 
 type ApplicationFormType = z.infer<typeof applicationFormSchema>;
@@ -109,56 +126,42 @@ interface JobApplicationModalProps {
   };
 }
 
-// UTILITY pour messages d'erreur
-function getErrorMessage(
-  errors: Partial<Record<keyof ApplicationFormType, { message?: string }>>,
-  key: keyof ApplicationFormType
-): string | undefined {
-  const err = errors[key];
-  if (!err) return undefined;
-  if (typeof err.message === "string") return err.message;
-  return undefined;
-}
-
-// Champ de formulaire individuel avec gestion erreur
-function FormField({
-  label,
-  children,
-  error,
-  description,
-  required,
-  inputName,
+function ErrorsPanel({
+  hasErrors,
+  errorsMessages,
+  mutation,
+  clientError,
 }: {
-  label: string;
-  children: React.ReactNode;
-  error?: string;
-  description?: string;
-  required?: boolean;
-  inputName?: string;
+  hasErrors: boolean;
+  errorsMessages: string[];
+  mutation: any;
+  clientError: string | null;
 }) {
-  const errorId = inputName ? `${inputName}-error` : undefined;
-
+  if (!hasErrors) return null;
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputName} className="text-xs sm:text-sm font-semibold text-gray-800">
-        {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </label>
-      {description && (
-        <span className="text-[10px] sm:text-xs text-gray-500">{description}</span>
-      )}
-      {children}
-      {error && (
-        <div id={errorId} className="flex items-start gap-1 mt-0.5">
-          <XCircle className="w-3 h-3 text-red-500 flex-shrink-0 mt-0.5" />
-          <span className="text-[10px] sm:text-xs text-red-600 leading-tight">{error}</span>
-        </div>
-      )}
+    <div className="mb-3 p-2.5 sm:p-3 bg-red-50 border border-red-200 rounded-lg">
+      <div className="flex items-start gap-2 mb-2">
+        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <p className="text-xs sm:text-sm font-semibold text-red-800">
+          Veuillez corriger les erreurs suivantes :
+        </p>
+      </div>
+      <ul className="space-y-1 ml-6">
+        {Array.from(new Set([...errorsMessages, clientError].filter(Boolean))).map(
+          (msg, idx) => (
+            <li key={idx} className="text-xs sm:text-sm text-red-700 list-disc">
+              {msg ||
+                (mutation.isError &&
+                  typeof mutation.error === "object" &&
+                  (mutation.error as any)?.message)}
+            </li>
+          )
+        )}
+      </ul>
     </div>
   );
 }
 
-// Composant principal
 export default function JobApplicationModal({
   open,
   onClose,
@@ -166,9 +169,8 @@ export default function JobApplicationModal({
   jobOffer,
 }: JobApplicationModalProps) {
   const [clientError, setClientError] = useState<string | null>(null);
-  const submitApplication = useAction(submitJobApplication);
 
-  const methods = useForm<ApplicationFormType>({
+  const form = useForm<ApplicationFormType>({
     resolver: zodResolver(applicationFormSchema),
     defaultValues: {
       firstName: "",
@@ -186,54 +188,54 @@ export default function JobApplicationModal({
       expectedSalary: "",
       additionalInfo: "",
     },
-    mode: "onTouched",
+    mode: "onBlur",
   });
 
-  const {
-    register,
-    formState: { errors, isLoading, touchedFields }
-  } = methods;
-
-  console.log(errors.email?.message);
-  
-
-  // gestion de la soumission avec validation zod via react-hook-form
-  const onSubmit = async (values: ApplicationFormType) => {
-    setClientError(null);
-    try {
-      await submitApplication.execute({
+  const mutation = useMutation({
+    mutationFn: async (values: ApplicationFormType) => {
+      return await submitJobApplication({
         jobOfferId: jobOffer.id,
         ...values,
       });
-    } catch (error: any) {
+    },
+    onSuccess: () => {
+      if (onSuccess) onSuccess();
+      onClose();
+      form.reset();
+    },
+    onError: (error: any) => {
       setClientError(
         error instanceof ZodError
           ? error.issues[0].message
-          : "Erreur lors de la soumission."
+          : error?.message || "Erreur lors de la soumission."
       );
-    }
-  };
+    },
+  });
 
-  // gestion succès submit, reset
-  if (submitApplication.status === "hasSucceeded") {
-    if (onSuccess) onSuccess();
-    onClose();
-    methods.reset();
-    return null;
-  }
-
-  // Récupère tous les messages d'erreur uniques actuels
-  const allErrorMessages = Object.values(errors)
-    .map((err: any) => (typeof err?.message === "string" ? err.message : undefined))
+  const allErrorMessages: string[] = Object.values(form.formState.errors)
+    .map((err: any) =>
+      typeof err?.message === "string" ? err.message : undefined
+    )
     .filter(Boolean);
 
   const hasErrors =
-    allErrorMessages.length > 0 ||
-    clientError ||
-    submitApplication.status === "hasErrored";
+    allErrorMessages.length > 0 || clientError || mutation.isError;
+
+  const onSubmit = async (values: ApplicationFormType) => {
+    setClientError(null);
+    mutation.mutate(values);
+  };
+
+  if (mutation.isSuccess) {
+    return null;
+  }
 
   return (
-    <Modal open={open} title={`Candidature - ${jobOffer.title}`} onClose={onClose}>
+    <Modal
+      open={open}
+      title={`Candidature - ${jobOffer.title}`}
+      onClose={onClose}
+    >
       <div className="mb-3 p-2.5 sm:p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
         <p className="text-emerald-800 text-xs sm:text-sm">
           <strong>Poste :</strong> {jobOffer.title}{" "}
@@ -242,34 +244,15 @@ export default function JobApplicationModal({
           </span>
         </p>
       </div>
-
-      {/* Affichage global des erreurs */}
-      {hasErrors && (
-        <div className="mb-3 p-2.5 sm:p-3 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-start gap-2 mb-2">
-            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-xs sm:text-sm font-semibold text-red-800">
-              Veuillez corriger les erreurs suivantes :
-            </p>
-          </div>
-          <ul className="space-y-1 ml-6">
-            {Array.from(
-              new Set([...allErrorMessages, clientError].filter(Boolean))
-            ).map((msg, idx) => (
-              <li key={idx} className="text-xs sm:text-sm text-red-700 list-disc">
-                {msg ||
-                  (submitApplication.status === "hasErrored" &&
-                    submitApplication.result?.serverError?.message)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)} noValidate>
+      <ErrorsPanel
+        hasErrors={Boolean(hasErrors)}
+        errorsMessages={allErrorMessages}
+        mutation={mutation}
+        clientError={clientError}
+      />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="max-h-[55vh] sm:max-h-[60vh] overflow-y-auto px-1">
-            {/* ===== Début rendu direct des champs du formulaire ===== */}
             <div className="space-y-6 sm:space-y-8">
               {/* Informations personnelles */}
               <div>
@@ -281,85 +264,75 @@ export default function JobApplicationModal({
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <FormField
-                    label="Prénom"
-                    error={getErrorMessage(errors, "firstName")}
-                    required
-                    inputName="firstName"
-                  >
-                    <input
-                      {...register("firstName")}
-                      id="firstName"
-                      placeholder="Votre prénom"
-                      aria-invalid={!!errors.firstName}
-                      aria-describedby={errors.firstName ? "firstName-error" : undefined}
-                      className={`w-full border ${
-                        errors.firstName
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                      required
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Prénom</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="firstName"
+                            placeholder="Votre prénom"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
-                    label="Nom"
-                    error={getErrorMessage(errors, "lastName")}
-                    required
-                    inputName="lastName"
-                  >
-                    <input
-                      {...register("lastName")}
-                      id="lastName"
-                      placeholder="Votre nom"
-                      aria-invalid={!!errors.lastName}
-                      aria-describedby={errors.lastName ? "lastName-error" : undefined}
-                      className={`w-full border ${
-                        errors.lastName
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                      required
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="lastName"
+                            placeholder="Votre nom"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
-                    label="Email"
-                    error={getErrorMessage(errors, "email")}
-                    required
-                    inputName="email"
-                  >
-                    <input
-                      {...register("email")}
-                      id="email"
-                      placeholder="votre@email.com"
-                      type="email"
-                      aria-invalid={!!errors.email}
-                      aria-describedby={errors.email ? "email-error" : undefined}
-                      className={`w-full border ${
-                        errors.email
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                      required
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="email"
+                            type="email"
+                            placeholder="votre@email.com"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
-                    label="Téléphone"
-                    error={getErrorMessage(errors, "phone")}
-                    inputName="phone"
-                  >
-                    <input
-                      {...register("phone")}
-                      id="phone"
-                      placeholder="+212 6XX XX XX XX"
-                      type="tel"
-                      aria-invalid={!!errors.phone}
-                      aria-describedby={errors.phone ? "phone-error" : undefined}
-                      className={`w-full border ${
-                        errors.phone
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Téléphone</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="phone"
+                            type="tel"
+                            placeholder="+212 6XX XX XX XX"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
               {/* Documents & liens */}
@@ -372,67 +345,62 @@ export default function JobApplicationModal({
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <FormField
-                    label="CV (URL)"
-                    error={getErrorMessage(errors, "resumeUrl")}
-                    description="Uploadez votre CV sur Google Drive, Dropbox, etc."
-                    inputName="resumeUrl"
-                  >
-                    <input
-                      {...register("resumeUrl")}
-                      id="resumeUrl"
-                      placeholder="https://drive.google.com/..."
-                      type="url"
-                      aria-invalid={!!errors.resumeUrl}
-                      aria-describedby={errors.resumeUrl ? "resumeUrl-error" : undefined}
-                      className={`w-full border ${
-                        errors.resumeUrl
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="resumeUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CV (URL)</FormLabel>
+                        <FormDescription>
+                          Uploadez votre CV sur Google Drive, Dropbox, etc.
+                        </FormDescription>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="resumeUrl"
+                            type="url"
+                            placeholder="https://drive.google.com/..."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
-                    label="Portfolio"
-                    error={getErrorMessage(errors, "portfolioUrl")}
-                    inputName="portfolioUrl"
-                  >
-                    <input
-                      {...register("portfolioUrl")}
-                      id="portfolioUrl"
-                      placeholder="https://votre-portfolio.com"
-                      type="url"
-                      aria-invalid={!!errors.portfolioUrl}
-                      aria-describedby={
-                        errors.portfolioUrl ? "portfolioUrl-error" : undefined
-                      }
-                      className={`w-full border ${
-                        errors.portfolioUrl
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="portfolioUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Portfolio</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="portfolioUrl"
+                            type="url"
+                            placeholder="https://votre-portfolio.com"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
-                    label="LinkedIn"
-                    error={getErrorMessage(errors, "linkedinUrl")}
-                    inputName="linkedinUrl"
-                  >
-                    <input
-                      {...register("linkedinUrl")}
-                      id="linkedinUrl"
-                      placeholder="https://linkedin.com/in/..."
-                      type="url"
-                      aria-invalid={!!errors.linkedinUrl}
-                      aria-describedby={
-                        errors.linkedinUrl ? "linkedinUrl-error" : undefined
-                      }
-                      className={`w-full border ${
-                        errors.linkedinUrl
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="linkedinUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>LinkedIn</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="linkedinUrl"
+                            type="url"
+                            placeholder="https://linkedin.com/in/..."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
               {/* Expérience et formation */}
@@ -445,62 +413,61 @@ export default function JobApplicationModal({
                 </div>
                 <div className="space-y-3 sm:space-y-4">
                   <FormField
-                    label="Expérience professionnelle"
-                    error={getErrorMessage(errors, "experience")}
-                    inputName="experience"
-                  >
-                    <textarea
-                      {...register("experience")}
-                      id="experience"
-                      placeholder="Décrivez votre expérience..."
-                      rows={3}
-                      aria-invalid={!!errors.experience}
-                      aria-describedby={errors.experience ? "experience-error" : undefined}
-                      className={`w-full border ${
-                        errors.experience
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent resize-none`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="experience"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Expérience professionnelle</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            id="experience"
+                            placeholder="Décrivez votre expérience..."
+                            rows={3}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
-                    label="Formation"
-                    error={getErrorMessage(errors, "education")}
-                    inputName="education"
-                  >
-                    <textarea
-                      {...register("education")}
-                      id="education"
-                      placeholder="Vos diplômes et formations..."
-                      rows={2}
-                      aria-invalid={!!errors.education}
-                      aria-describedby={errors.education ? "education-error" : undefined}
-                      className={`w-full border ${
-                        errors.education
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent resize-none`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="education"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Formation</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            id="education"
+                            placeholder="Vos diplômes et formations..."
+                            rows={2}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
-                    label="Compétences"
-                    error={getErrorMessage(errors, "skills")}
-                    description="Séparez par des virgules"
-                    inputName="skills"
-                  >
-                    <input
-                      {...register("skills")}
-                      id="skills"
-                      placeholder="React, Node.js, Python..."
-                      aria-invalid={!!errors.skills}
-                      aria-describedby={errors.skills ? "skills-error" : undefined}
-                      className={`w-full border ${
-                        errors.skills
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="skills"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Compétences</FormLabel>
+                        <FormDescription>
+                          Séparez par des virgules
+                        </FormDescription>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="skills"
+                            placeholder="React, Node.js, Python..."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
               {/* Motivation */}
@@ -512,27 +479,26 @@ export default function JobApplicationModal({
                   </span>
                 </div>
                 <FormField
-                  label="Pourquoi ce poste ?"
-                  error={getErrorMessage(errors, "coverLetter")}
-                  description="Expliquez votre motivation"
-                  inputName="coverLetter"
-                >
-                  <textarea
-                    {...register("coverLetter")}
-                    id="coverLetter"
-                    placeholder="Expliquez votre motivation..."
-                    rows={4}
-                    aria-invalid={!!errors.coverLetter}
-                    aria-describedby={
-                      errors.coverLetter ? "coverLetter-error" : undefined
-                    }
-                    className={`w-full border ${
-                      errors.coverLetter
-                        ? "border-red-400 focus:ring-red-400"
-                        : "border-gray-300 focus:ring-emerald-500"
-                    } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent resize-none`}
-                  />
-                </FormField>
+                  control={form.control}
+                  name="coverLetter"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Pourquoi ce poste ?</FormLabel>
+                      <FormDescription>
+                        Expliquez votre motivation
+                      </FormDescription>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          id="coverLetter"
+                          placeholder="Expliquez votre motivation..."
+                          rows={4}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
               {/* Informations additionnelles */}
               <div>
@@ -544,97 +510,84 @@ export default function JobApplicationModal({
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <FormField
-                    label="Disponibilité"
-                    error={getErrorMessage(errors, "availability")}
-                    inputName="availability"
-                  >
-                    <input
-                      {...register("availability")}
-                      id="availability"
-                      placeholder="Immédiate, 1 mois..."
-                      aria-invalid={!!errors.availability}
-                      aria-describedby={
-                        errors.availability ? "availability-error" : undefined
-                      }
-                      className={`w-full border ${
-                        errors.availability
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="availability"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Disponibilité</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="availability"
+                            placeholder="Immédiate, 1 mois..."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
-                    label="Salaire attendu"
-                    error={getErrorMessage(errors, "expectedSalary")}
-                    inputName="expectedSalary"
-                  >
-                    <input
-                      {...register("expectedSalary")}
-                      id="expectedSalary"
-                      placeholder="15,000 - 20,000 MAD"
-                      aria-invalid={!!errors.expectedSalary}
-                      aria-describedby={
-                        errors.expectedSalary ? "expectedSalary-error" : undefined
-                      }
-                      className={`w-full border ${
-                        errors.expectedSalary
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="expectedSalary"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Salaire attendu</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="expectedSalary"
+                            placeholder="15,000 - 20,000 MAD"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
                 <div className="mt-3">
                   <FormField
-                    label="Informations complémentaires"
-                    error={getErrorMessage(errors, "additionalInfo")}
-                    inputName="additionalInfo"
-                  >
-                    <textarea
-                      {...register("additionalInfo")}
-                      id="additionalInfo"
-                      placeholder="Toute autre information..."
-                      rows={3}
-                      aria-invalid={!!errors.additionalInfo}
-                      aria-describedby={
-                        errors.additionalInfo ? "additionalInfo-error" : undefined
-                      }
-                      className={`w-full border ${
-                        errors.additionalInfo
-                          ? "border-red-400 focus:ring-red-400"
-                          : "border-gray-300 focus:ring-emerald-500"
-                      } rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent resize-none`}
-                    />
-                  </FormField>
+                    control={form.control}
+                    name="additionalInfo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Informations complémentaires</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            id="additionalInfo"
+                            placeholder="Toute autre information..."
+                            rows={3}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
             </div>
-            {/* ===== Fin rendu direct des champs du formulaire ===== */}
           </div>
-
-          {/* Boutons */}
           <div className="flex items-center justify-end pt-3 mt-3 border-t gap-2 sm:gap-4">
-            <button
+            <Button
               type="button"
               onClick={onClose}
+              variant="secondary"
               className="px-3 sm:px-4 py-1.5 sm:py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLoading}
+              disabled={mutation.isPending}
             >
               Annuler
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={isLoading}
               className="flex items-center gap-1.5 bg-emerald-600 text-white rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
+              disabled={mutation.isPending}
             >
               <Save className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              {isLoading 
-                ? "Envoi..."
-                : "Envoyer"}
-            </button>
+              {mutation.isPending ? "Envoi..." : "Envoyer"}
+            </Button>
           </div>
         </form>
-      </FormProvider>
+      </Form>
     </Modal>
   );
 }

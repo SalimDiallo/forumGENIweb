@@ -8,7 +8,7 @@ export const EventTypeEnum = z.enum(["forum", "workshop", "conference", "network
 export const EventStatusEnum = z.enum(["draft", "published", "ongoing", "completed", "cancelled"]);
 
 // Fonction utilitaire pour convertir les dates
-const dateSchema = z.string().transform((str, ctx) => {
+export const dateSchema = z.string().transform((str, ctx) => {
   // Si c'est déjà une date ISO, on la garde
   if (str.includes('T') && str.includes(':')) {
     const date = new Date(str);

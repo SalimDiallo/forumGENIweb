@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { Freeman, Raleway } from 'next/font/google';
+import { Raleway } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Providers from './Providers';
 
 const raleway = Raleway(
   { subsets: ['latin'], variable: '--font-freeman' ,
@@ -26,11 +26,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <html lang="fr" className="scroll-smooth">
       <body className={` antialiased min-h-screen ${raleway.className}`}>
+      <Providers>
+        <>
         {children}
         <Footer />
+        </>
+      </Providers>
       </body>
     </html>
   );

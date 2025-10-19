@@ -2,10 +2,8 @@
 import { useAction } from "next-safe-action/hooks";
 import { createEvent, deleteEvent, listEvents, updateEvent, listRegistrations, deleteRegistration } from "./events.actions";
 import { useEffect, useMemo, useState } from "react";
-import Modal from "@/components/Modal";
 import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, UserCheck, Plus } from "lucide-react";
-import CreateEventForm from "./CreateEventForm";
-import EditEventForm from "./EditEventForm";
+import Link from "next/link";
 
 export default function AdminEventsPage() {
   const list = useAction(listEvents);
@@ -25,10 +23,10 @@ export default function AdminEventsPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [regEventId, setRegEventId] = useState<number | null>(null);
 
-  const editingItem = useMemo(
-    () => list.result?.data?.events?.find((e: any) => e.id === editingId) ?? null,
-    [editingId, list.result]
-  );
+  // const editingItem = useMemo(
+  //   () => list.result?.data?.events?.find((e: any) => e.id === editingId) ?? null,
+  //   [editingId, list.result]
+  // );
 
   async function onDelete(id: number) {
     if (confirm("Êtes-vous sûr de vouloir supprimer cet événement ?")) {
@@ -36,41 +34,33 @@ export default function AdminEventsPage() {
     }
   }
 
-  useEffect(() => {
-    if (create.status === "hasSucceeded") {
-      list.execute();
-      setOpenCreate(false);
-    }
-  }, [create.status]);
+  // useEffect(() => {
+  //   if (create.status === "hasSucceeded") {
+  //     list.execute();
+  //     setOpenCreate(false);
+  //   }
+  // }, [create.status]);
 
-  useEffect(() => {
-    if (upd.status === "hasSucceeded") {
-      list.execute();
-      setOpenEdit(false);
-      setEditingId(null);
-    }
-  }, [upd.status]);
+  // useEffect(() => {
+  //   if (upd.status === "hasSucceeded") {
+  //     list.execute();
+  //     setOpenEdit(false);
+  //     setEditingId(null);
+  //   }
+  // }, [upd.status]);
 
-  useEffect(() => {
-    if (del.status === "hasSucceeded") {
-      list.execute();
-    }
-  }, [del.status]);
+  // useEffect(() => {
+  //   if (del.status === "hasSucceeded") {
+  //     list.execute();
+  //   }
+  // }, [del.status]);
 
-  useEffect(() => {
-    if (delReg.status === "hasSucceeded" && regEventId) {
-      regs.execute({ id: regEventId });
-    }
-  }, [delReg.status]);
+  // useEffect(() => {
+  //   if (delReg.status === "hasSucceeded" && regEventId) {
+  //     regs.execute({ id: regEventId });
+  //   }
+  // }, [delReg.status]);
 
-  const eventTypeOptions = [
-    { value: "forum", label: "Forum", icon: "💼" },
-    { value: "workshop", label: "Workshop", icon: "🛠️" },
-    { value: "conference", label: "Conférence", icon: "🎤" },
-    { value: "networking", label: "Networking", icon: "🤝" },
-    { value: "webinar", label: "Webinaire", icon: "💻" },
-    { value: "other", label: "Autre", icon: "📌" },
-  ];
 
   const statusOptions = [
     { value: "draft", label: "Brouillon", color: "bg-gray-100 text-gray-800" },
@@ -91,26 +81,17 @@ export default function AdminEventsPage() {
               {list.result?.data?.events?.length || 0} événement(s) au total
             </p>
           </div>
-          <button
-            onClick={() => setOpenCreate(true)}
+          <Link
+          href={"/admin/events/event/create"}
             className="flex items-center gap-2 bg-white text-emerald-600 rounded-lg px-5 py-3 font-medium hover:bg-emerald-50 transition-colors shadow-md"
           >
             <Plus className="w-5 h-5" />
             Nouvel événement
-          </button>
+          </Link>
         </div>
       </section>
 
-      {/* Create Modal */}
-      <Modal open={openCreate} title="Créer un événement" onClose={() => setOpenCreate(false)}>
-        <CreateEventForm
-          onSuccess={() => {
-            setOpenCreate(false);
-            list.execute();
-          }}
-          onCancel={() => setOpenCreate(false)}
-        />
-      </Modal>
+    
 
       {/* Events List */}
       <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -230,32 +211,10 @@ export default function AdminEventsPage() {
       </section>
 
       {/* Edit Modal */}
-      <Modal
-        open={openEdit && !!editingItem}
-        title="Modifier l'événement"
-        onClose={() => {
-          setOpenEdit(false);
-          setEditingId(null);
-        }}
-      >
-        {editingItem && (
-          <EditEventForm
-            defaultValues={editingItem}
-            onSubmit={(values) => upd.execute(values)}
-            onCancel={() => {
-              setOpenEdit(false);
-              setEditingId(null);
-            }}
-            statusOptions={statusOptions}
-            eventTypeOptions={eventTypeOptions}
-            isSubmitting={upd.status === "executing"}
-            serverError={upd.result?.serverError?.message}
-          />
-        )}
-      </Modal>
+      
 
       {/* Registrations Modal */}
-      <Modal
+      {/* <Modal
         open={openRegs && regEventId != null}
         title="Inscriptions à l'événement"
         onClose={() => {
@@ -383,7 +342,7 @@ export default function AdminEventsPage() {
             </div>
           )}
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

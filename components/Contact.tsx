@@ -3,6 +3,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import dynamic from 'next/dynamic';
+const Map = dynamic(() => import("../components/Map"), {
+  ssr: false,
+});
 
 const Contact = () => {
   const contactInfo = [
@@ -115,13 +119,14 @@ const Contact = () => {
             </div>
             <div className="bg-emerald-100 flex items-center justify-center p-8">
               {/* Ici vous pourriez intégrer une vraie carte Google Maps */}
-              <div className="w-full h-64 bg-emerald-200 rounded-lg flex items-center justify-center">
+              <Map />
+              {/* <div className="w-full h-64 bg-emerald-200 rounded-lg flex items-center justify-center">
                 <div className="text-center">
                   <MapPin className="text-black mx-auto mb-2" size={32} />
                   <p className="text-emerald-800 font-medium">Carte interactive</p>
                   <p className="text-black text-sm">INSEA, Rabat</p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </motion.div>

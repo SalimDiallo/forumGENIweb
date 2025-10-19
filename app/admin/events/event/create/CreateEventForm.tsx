@@ -1,19 +1,17 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createEventSchema } from "@/lib/validations/events";
-import { useAction } from "next-safe-action/hooks";
-import { createEvent } from "./events.actions";
-import { useEffect, useState } from "react";
-import {
-  FileText,
-  Settings,
-  UserCheck,
-  Save,
-  AlertCircle,
-} from "lucide-react";
 import MarkdownEditor from "@/components/MardownEditor";
+import { FileText, Settings, UserCheck, Save, AlertCircle } from "lucide-react";
+import {
+  eventTypeOptions,
+  slugify,
+  statusOptions,
+} from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { createEventSchema } from "./event.create.sheme";
+import { doCreateEvent } from "./event.create.action";
 
 type FormTab = "basic" | "details" | "registration";
 
@@ -22,38 +20,9 @@ interface CreateEventFormProps {
   onCancel?: () => void;
 }
 
-const statusOptions = [
-  { value: "draft", label: "Brouillon" },
-  { value: "published", label: "Publié" },
-  { value: "ongoing", label: "En cours" },
-  { value: "completed", label: "Terminé" },
-  { value: "cancelled", label: "Annulé" },
-];
-
-const eventTypeOptions = [
-  { value: "forum", label: "Forum" },
-  { value: "workshop", label: "Atelier" },
-  { value: "conference", label: "Conférence" },
-  { value: "networking", label: "Networking" },
-  { value: "webinar", label: "Webinaire" },
-  { value: "other", label: "Autre" },
-];
-
-// Utility function to generate slug from title
-function slugify(str: string) {
-  return str
-    .toLowerCase()
-    .normalize("NFD") // Remove accents
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "")
-    .replace(/-+/g, "-");
-}
-
-export default function CreateEventForm({ onSuccess, onCancel }: CreateEventFormProps) {
+export default function CreateEventForm({
+}: CreateEventFormProps) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
-
-  const create = useAction(createEvent);
 
   const {
     register,
@@ -62,7 +31,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
     watch,
     setValue,
     reset,
-  } = useForm<z.infer<typeof createEventSchema>>({
+  } = useForm<createEventSchema>({
     resolver: zodResolver(createEventSchema),
     defaultValues: {
       title: "",
@@ -87,29 +56,40 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
     },
   });
 
-  // Synchronize slug with title
   const titleValue = watch("title");
+
   useEffect(() => {
     setValue("slug", slugify(titleValue || ""));
   }, [titleValue, setValue]);
 
-  function onSubmit(values: z.infer<typeof createEventSchema>) {
-    create.execute(values);
-  }
 
-  useEffect(() => {
-    if (create.status === "hasSucceeded") {
-      if (onSuccess) onSuccess();
-      reset();
-      setActiveTab("basic");
+  const createEventMutation = useMutation({
+    mutationFn: async (data: createEventSchema) => {
+      const result = await doCreateEvent(data);
+      
+      if (result.serverError) {
+        console.log(result.serverError);
+        throw new Error("Failed to create event");
+      }
     }
-  }, [create.status, onSuccess, reset]);
+  });
+
+  const onSubmit = (data: createEventSchema) => {
+    createEventMutation.mutate(data);
+  };
 
   const tabs = [
     { id: "basic" as FormTab, label: "Informations de base", icon: FileText },
     { id: "details" as FormTab, label: "Détails", icon: Settings },
     { id: "registration" as FormTab, label: "Inscription", icon: UserCheck },
   ];
+
+  // Affichage de toutes les erreurs du formulaire pour le debug
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log("Erreurs du formulaire :", errors);
+    }
+  }, [errors]);
 
   const descriptionValue = watch("description");
   const slugValue = watch("slug");
@@ -152,7 +132,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.title && (
-                    <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.title.message as string}
+                    </p>
                   )}
                 </div>
 
@@ -169,7 +151,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     readOnly
                   />
                   {errors.slug && (
-                    <p className="text-red-600 text-sm mt-1">{errors.slug.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.slug.message as string}
+                    </p>
                   )}
                 </div>
 
@@ -189,7 +173,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     ))}
                   </select>
                   {errors.eventType && (
-                    <p className="text-red-600 text-sm mt-1">{errors.eventType.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.eventType.message as string}
+                    </p>
                   )}
                 </div>
 
@@ -209,7 +195,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     ))}
                   </select>
                   {errors.status && (
-                    <p className="text-red-600 text-sm mt-1">{errors.status.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.status.message as string}
+                    </p>
                   )}
                 </div>
 
@@ -224,7 +212,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.organizerName && (
-                    <p className="text-red-600 text-sm mt-1">{errors.organizerName.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.organizerName.message as string}
+                    </p>
                   )}
                 </div>
 
@@ -239,7 +229,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.featuredImage && (
-                    <p className="text-red-600 text-sm mt-1">{errors.featuredImage.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.featuredImage.message as string}
+                    </p>
                   )}
                 </div>
 
@@ -255,7 +247,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.shortDescription && (
-                    <p className="text-red-600 text-sm mt-1">{errors.shortDescription.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.shortDescription.message as string}
+                    </p>
                   )}
                 </div>
 
@@ -268,7 +262,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     value={descriptionValue || ""}
                     onChange={(value) => setValue("description", value)}
                     placeholder="Description détaillée de l'événement en Markdown..."
-                    error={errors.description?.message}
+                    error={errors.description?.message as string}
                     label=""
                     rows={8}
                   />
@@ -291,7 +285,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.startDate && (
-                    <p className="text-red-600 text-sm mt-1">{errors.startDate.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.startDate.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -305,7 +301,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.endDate && (
-                    <p className="text-red-600 text-sm mt-1">{errors.endDate.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.endDate.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -319,7 +317,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.location && (
-                    <p className="text-red-600 text-sm mt-1">{errors.location.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.location.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -328,14 +328,18 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                   </label>
                   <select
                     id="isVirtual"
-                    {...register("isVirtual")}
+                    {...register("isVirtual", {setValueAs(value) {
+                      return Boolean(value)
+                    },})}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   >
                     <option value="true">Oui</option>
                     <option value="false">Non</option>
                   </select>
                   {errors.isVirtual && (
-                    <p className="text-red-600 text-sm mt-1">{errors.isVirtual.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.isVirtual.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -351,7 +355,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     <option value="false">Non</option>
                   </select>
                   {errors.isFeatured && (
-                    <p className="text-red-600 text-sm mt-1">{errors.isFeatured.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.isFeatured.message as string}
+                    </p>
                   )}
                 </div>
               </div>
@@ -372,7 +378,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.registrationStart && (
-                    <p className="text-red-600 text-sm mt-1">{errors.registrationStart.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.registrationStart.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -386,7 +394,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.registrationEnd && (
-                    <p className="text-red-600 text-sm mt-1">{errors.registrationEnd.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.registrationEnd.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -401,7 +411,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.maxParticipants && (
-                    <p className="text-red-600 text-sm mt-1">{errors.maxParticipants.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.maxParticipants.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -417,7 +429,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     <option value="false">Non</option>
                   </select>
                   {errors.isFree && (
-                    <p className="text-red-600 text-sm mt-1">{errors.isFree.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.isFree.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -433,7 +447,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.price && (
-                    <p className="text-red-600 text-sm mt-1">{errors.price.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.price.message as string}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -447,7 +463,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.currency && (
-                    <p className="text-red-600 text-sm mt-1">{errors.currency.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.currency.message as string}
+                    </p>
                   )}
                 </div>
               </div>
@@ -456,35 +474,30 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
         </div>
 
         {/* Error Messages */}
-        {create.status === "hasErrored" && (
+        {createEventMutation.error && (
           <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-red-600 text-sm">
-              {create.result?.serverError?.message || "Erreur lors de la création de l'événement."}
+              {
+                "Erreur lors de la création de l'événement."}
             </p>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            disabled={create.status === "executing"}
-          >
-            Annuler
-          </button>
-          <button
+      
+      </div>
+      <div className="flex items-center justify-end pt-4 border-t">
+      <button
             type="submit"
-            disabled={create.status === "executing"}
+            disabled={createEventMutation.isPending}
             className="flex items-center gap-2 bg-emerald-600 text-white rounded-lg px-6 py-2.5 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4" />
-            {create.status === "executing" ? "Enregistrement..." : "Créer l'événement"}
+            {createEventMutation.isPending ? "Enregistrement..." : "Créer l'événement"}
           </button>
-        </div>
       </div>
+     
     </form>
   );
 }
