@@ -2,28 +2,26 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateEventSchema } from "@/lib/validations/events";
 import { Save, AlertCircle, Settings, UserCheck, FileText } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import MarkdownEditor from "@/components/MardownEditor";
+import { eventTypeOptions, slugify, statusOptions } from "@/lib/utils";
+import { Event } from "@/lib/generated/prisma";
+import { updateEventSchema } from "./event.edit.sheme";
+import { useMutation } from "@tanstack/react-query";
+import { doEditEvent } from "./event.edit.action";
+import { useRouter } from "next/navigation";
 
-// Only three tabs: no SEO
+
 type FormTab = "basic" | "details" | "registration";
 
-interface EditEventFormProps {
-  defaultValues: any;
-  onSubmit: (values: z.infer<typeof updateEventSchema>) => void;
-  onCancel: () => void;
-  statusOptions: { value: string; label: string; color: string }[];
-  eventTypeOptions: { value: string; label: string; icon: string }[];
-  isSubmitting?: boolean;
-  serverError?: string;
-}
+type EditEventFormProps = {
+  event: Event;
+};
 
-// Helper to convert nulls to undefined for string fields
 function cleanDefaultValues<T extends Record<string, any>>(obj: T): T {
   const cleaned: Record<string, any> = { ...obj };
-  // List of fields that should be string | undefined
+
   const stringFields = [
     "title",
     "slug",
@@ -49,87 +47,107 @@ function cleanDefaultValues<T extends Record<string, any>>(obj: T): T {
     "whatToBring",
     "virtualLink",
   ];
-  
   for (const key of stringFields) {
     if (key in cleaned && cleaned[key] === null) {
       cleaned[key] = undefined;
     }
   }
-  // Dates: convert to ISO string for input[type=datetime-local]
-  if (cleaned.startDate) cleaned.startDate = new Date(cleaned.startDate).toISOString().slice(0, 16);
-  if (cleaned.endDate) cleaned.endDate = new Date(cleaned.endDate).toISOString().slice(0, 16);
-  if (cleaned.registrationStart) cleaned.registrationStart = cleaned.registrationStart ? new Date(cleaned.registrationStart).toISOString().slice(0, 16) : undefined;
-  if (cleaned.registrationEnd) cleaned.registrationEnd = cleaned.registrationEnd ? new Date(cleaned.registrationEnd).toISOString().slice(0, 16) : undefined;
+  if (cleaned.startDate)
+    cleaned.startDate = new Date(cleaned.startDate).toISOString().slice(0, 16);
+  if (cleaned.endDate)
+    cleaned.endDate = new Date(cleaned.endDate).toISOString().slice(0, 16);
+  if (cleaned.registrationStart)
+    cleaned.registrationStart = cleaned.registrationStart
+      ? new Date(cleaned.registrationStart).toISOString().slice(0, 16)
+      : undefined;
+  if (cleaned.registrationEnd)
+    cleaned.registrationEnd = cleaned.registrationEnd
+      ? new Date(cleaned.registrationEnd).toISOString().slice(0, 16)
+      : undefined;
   return cleaned as T;
 }
 
-// Slugify helper
-function slugify(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Remove accents
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/--+/g, "-");
-}
-
-export default function EditEventForm({
-  defaultValues,
-  onSubmit,
-  onCancel,
-  statusOptions,
-  eventTypeOptions,
-  isSubmitting,
-  serverError,
-}: EditEventFormProps) {
+export default function EditEventForm({ event }: EditEventFormProps) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
-
-  // Clean nulls to undefined for react-hook-form compatibility
-  const cleanedDefaultValues = cleanDefaultValues(defaultValues);
-
+  const cleanedDefaultValues = cleanDefaultValues(event);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
     setValue,
-  } = useForm<z.infer<typeof updateEventSchema>>({
+  } = useForm<updateEventSchema>({
     resolver: zodResolver(updateEventSchema),
-    defaultValues: cleanedDefaultValues,
+    defaultValues: {
+      id: cleanedDefaultValues.id,
+      title: cleanedDefaultValues.title,
+      slug: cleanedDefaultValues.slug,
+      eventType: cleanedDefaultValues.eventType,
+      organizerName: cleanedDefaultValues.organizerName,
+      startDate: new Date(cleanedDefaultValues.startDate).toISOString().slice(0, 16),
+      endDate: new Date(cleanedDefaultValues.endDate).toISOString().slice(0, 16),
+      isFree: cleanedDefaultValues.isFree,
+      price: cleanedDefaultValues.price,
+      currency: cleanedDefaultValues.currency,
+      status: cleanedDefaultValues.status,
+      isFeatured: cleanedDefaultValues.isFeatured,
+      isVirtual: cleanedDefaultValues.isVirtual,
+      shortDescription: cleanedDefaultValues.shortDescription ?? "",
+      description: cleanedDefaultValues.description ?? "",
+      featuredImage: cleanedDefaultValues.featuredImage ?? "",
+      registrationStart: cleanedDefaultValues.registrationStart ? new Date(cleanedDefaultValues.registrationStart).toISOString().slice(0, 16) : undefined,
+      registrationEnd:cleanedDefaultValues.registrationEnd ? new Date(cleanedDefaultValues.registrationEnd).toISOString().slice(0, 16) : undefined,
+      maxParticipants: cleanedDefaultValues.maxParticipants ?? undefined,
+      location: cleanedDefaultValues.location ?? undefined,
+    },
   });
 
-  // Only three tabs: no SEO
+  const editEventMutation = useMutation({
+    mutationFn: async (data: updateEventSchema) => {
+      const result = await doEditEvent(data);
+      if (result.serverError) {
+        console.log(result.serverError);
+        throw new Error("Failed to create event");
+      }else{
+        router.push("/admin/events")
+      }
+
+    }
+  });
+
+  const descriptionValue = watch("description");
+  const titleValue = watch("title");
+  const slugValue = watch("slug");
+
+  const initialTitleRef = useRef<string | undefined>(cleanedDefaultValues?.title);
+
+  useEffect(() => {
+    if (typeof titleValue !== "string") return;
+    const autoSlug = slugify(titleValue);
+    if (
+      (!slugValue ||
+        slugValue === "" ||
+        slugValue === slugify(initialTitleRef.current || "")) &&
+      autoSlug !== slugValue
+    ) {
+      setValue("slug", autoSlug, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [titleValue]);
+
   const tabs = [
     { id: "basic" as FormTab, label: "Informations de base", icon: FileText },
     { id: "details" as FormTab, label: "Détails", icon: Settings },
     { id: "registration" as FormTab, label: "Inscription", icon: UserCheck },
   ];
 
-  const descriptionValue = watch("description");
-  const titleValue = watch("title");
-  const slugValue = watch("slug");
-
-  // Auto-generate slug from title if slug is empty or matches previous slugified title
-  useEffect(() => {
-    // If the user hasn't manually changed the slug, update it from the title
-    if (
-      typeof titleValue === "string" &&
-      titleValue.length > 0
-    ) {
-      const autoSlug = slugify(titleValue);
-      // If slug is empty or matches the previous auto-generated slug, update it
-      if (
-        (!slugValue || slugValue === "" || slugValue === slugify(cleanedDefaultValues.title || "")) &&
-        autoSlug !== slugValue
-      ) {
-        setValue("slug", autoSlug, { shouldValidate: true, shouldDirty: true });
-      }
-    }
-  }, [titleValue]); // eslint-disable-line
+  async function onSubmit(data: updateEventSchema) {
+    console.log(data);
+    editEventMutation.mutateAsync(data)
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
       <div className="space-y-4">
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
@@ -150,28 +168,36 @@ export default function EditEventForm({
           ))}
         </div>
 
-        {/* Tab Content */}
+        {/* Tab content */}
         <div className="max-h-[60vh] overflow-y-auto px-1">
           {activeTab === "basic" && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                    Titre de l'événement *
+                  <label
+                    htmlFor="title"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Titre de l&apos;événement *
                   </label>
                   <input
                     id="title"
+                    autoFocus
                     {...register("title")}
                     placeholder="Ex: Forum Entrepreneuriat 2025"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.title && (
-                    <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.title.message}
+                    </p>
                   )}
                 </div>
-
                 <div className="col-span-2">
-                  <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="slug"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Slug (URL) *
                   </label>
                   <input
@@ -181,13 +207,17 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.slug && (
-                    <p className="text-red-600 text-sm mt-1">{errors.slug.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.slug.message}
+                    </p>
                   )}
                 </div>
-
                 <div>
-                  <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 mb-1">
-                    Type d'événement *
+                  <label
+                    htmlFor="eventType"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Type d&apos;événement *
                   </label>
                   <select
                     id="eventType"
@@ -201,12 +231,16 @@ export default function EditEventForm({
                     ))}
                   </select>
                   {errors.eventType && (
-                    <p className="text-red-600 text-sm mt-1">{errors.eventType.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.eventType.message}
+                    </p>
                   )}
                 </div>
-
                 <div>
-                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="status"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Statut *
                   </label>
                   <select
@@ -221,12 +255,16 @@ export default function EditEventForm({
                     ))}
                   </select>
                   {errors.status && (
-                    <p className="text-red-600 text-sm mt-1">{errors.status.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.status.message}
+                    </p>
                   )}
                 </div>
-
                 <div className="col-span-2">
-                  <label htmlFor="shortDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="shortDescription"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Description courte
                   </label>
                   <textarea
@@ -237,27 +275,36 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.shortDescription && (
-                    <p className="text-red-600 text-sm mt-1">{errors.shortDescription.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.shortDescription.message}
+                    </p>
                   )}
                 </div>
-
-                {/* Markdown input for description */}
                 <div className="col-span-2">
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Description complète (Markdown supporté)
                   </label>
                   <MarkdownEditor
                     value={descriptionValue || ""}
-                    onChange={val => setValue("description", val, { shouldValidate: true })}
+                    onChange={(val) =>
+                      setValue("description", val, { shouldValidate: true })
+                    }
                     placeholder="Description détaillée de l'événement (supporte Markdown)"
                   />
                   {errors.description && (
-                    <p className="text-red-600 text-sm mt-1">{errors.description.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.description.message}
+                    </p>
                   )}
                 </div>
-
                 <div className="col-span-2">
-                  <label htmlFor="featuredImage" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="featuredImage"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Image principale (URL)
                   </label>
                   <input
@@ -267,7 +314,9 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.featuredImage && (
-                    <p className="text-red-600 text-sm mt-1">{errors.featuredImage.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.featuredImage.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -278,7 +327,10 @@ export default function EditEventForm({
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="startDate"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Date de début *
                   </label>
                   <input
@@ -288,11 +340,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.startDate && (
-                    <p className="text-red-600 text-sm mt-1">{errors.startDate.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.startDate.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="endDate"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Date de fin *
                   </label>
                   <input
@@ -302,11 +359,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.endDate && (
-                    <p className="text-red-600 text-sm mt-1">{errors.endDate.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.endDate.message}
+                    </p>
                   )}
                 </div>
                 <div className="col-span-2">
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="location"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Lieu
                   </label>
                   <input
@@ -316,11 +378,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.location && (
-                    <p className="text-red-600 text-sm mt-1">{errors.location.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.location.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="isVirtual" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="isVirtual"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Virtuel ?
                   </label>
                   <select
@@ -332,11 +399,16 @@ export default function EditEventForm({
                     <option value="true">Oui</option>
                   </select>
                   {errors.isVirtual && (
-                    <p className="text-red-600 text-sm mt-1">{errors.isVirtual.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.isVirtual.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="virtualLink" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="virtualLink"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Lien virtuel (si applicable)
                   </label>
                   <input
@@ -346,11 +418,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.virtualLink && (
-                    <p className="text-red-600 text-sm mt-1">{errors.virtualLink.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.virtualLink.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="isFeatured" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="isFeatured"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     À la une ?
                   </label>
                   <select
@@ -362,11 +439,16 @@ export default function EditEventForm({
                     <option value="true">Oui</option>
                   </select>
                   {errors.isFeatured && (
-                    <p className="text-red-600 text-sm mt-1">{errors.isFeatured.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.isFeatured.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="organizerName" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="organizerName"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Organisateur
                   </label>
                   <input
@@ -376,11 +458,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.organizerName && (
-                    <p className="text-red-600 text-sm mt-1">{errors.organizerName.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.organizerName.message}
+                    </p>
                   )}
                 </div>
                 <div className="col-span-2">
-                  <label htmlFor="agenda" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="agenda"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Agenda (Markdown)
                   </label>
                   <textarea
@@ -391,11 +478,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
                   />
                   {errors.agenda && (
-                    <p className="text-red-600 text-sm mt-1">{errors.agenda.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.agenda.message}
+                    </p>
                   )}
                 </div>
                 <div className="col-span-2">
-                  <label htmlFor="speakers" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="speakers"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Intervenants (Markdown)
                   </label>
                   <textarea
@@ -406,11 +498,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
                   />
                   {errors.speakers && (
-                    <p className="text-red-600 text-sm mt-1">{errors.speakers.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.speakers.message}
+                    </p>
                   )}
                 </div>
                 <div className="col-span-2">
-                  <label htmlFor="sponsors" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="sponsors"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Sponsors (Markdown)
                   </label>
                   <textarea
@@ -421,11 +518,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
                   />
                   {errors.sponsors && (
-                    <p className="text-red-600 text-sm mt-1">{errors.sponsors.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.sponsors.message}
+                    </p>
                   )}
                 </div>
                 <div className="col-span-2">
-                  <label htmlFor="requirements" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="requirements"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Prérequis (Markdown)
                   </label>
                   <textarea
@@ -436,11 +538,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
                   />
                   {errors.requirements && (
-                    <p className="text-red-600 text-sm mt-1">{errors.requirements.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.requirements.message}
+                    </p>
                   )}
                 </div>
                 <div className="col-span-2">
-                  <label htmlFor="whatToBring" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="whatToBring"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     À apporter (Markdown)
                   </label>
                   <textarea
@@ -451,7 +558,9 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
                   />
                   {errors.whatToBring && (
-                    <p className="text-red-600 text-sm mt-1">{errors.whatToBring.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.whatToBring.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -462,7 +571,10 @@ export default function EditEventForm({
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="registrationStart" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="registrationStart"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Début des inscriptions
                   </label>
                   <input
@@ -472,11 +584,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.registrationStart && (
-                    <p className="text-red-600 text-sm mt-1">{errors.registrationStart.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.registrationStart.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="registrationEnd" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="registrationEnd"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Fin des inscriptions
                   </label>
                   <input
@@ -486,11 +603,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.registrationEnd && (
-                    <p className="text-red-600 text-sm mt-1">{errors.registrationEnd.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.registrationEnd.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="maxParticipants" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="maxParticipants"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Nombre max. de participants
                   </label>
                   <input
@@ -501,11 +623,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.maxParticipants && (
-                    <p className="text-red-600 text-sm mt-1">{errors.maxParticipants.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.maxParticipants.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="isFree" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="isFree"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Gratuit ?
                   </label>
                   <select
@@ -517,11 +644,16 @@ export default function EditEventForm({
                     <option value="false">Non</option>
                   </select>
                   {errors.isFree && (
-                    <p className="text-red-600 text-sm mt-1">{errors.isFree.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.isFree.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="price"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Prix (si payant)
                   </label>
                   <input
@@ -533,11 +665,16 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.price && (
-                    <p className="text-red-600 text-sm mt-1">{errors.price.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.price.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="currency"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Devise
                   </label>
                   <input
@@ -547,7 +684,9 @@ export default function EditEventForm({
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   {errors.currency && (
-                    <p className="text-red-600 text-sm mt-1">{errors.currency.message}</p>
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.currency.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -558,30 +697,14 @@ export default function EditEventForm({
         {/* Action Buttons */}
         <div className="flex items-center justify-between pt-4 border-t">
           <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            disabled={isSubmitting}
-          >
-            Annuler
-          </button>
-          <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={editEventMutation.isPending}
             className="flex items-center gap-2 bg-emerald-600 text-white rounded-lg px-6 py-2.5 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4" />
-            {isSubmitting ? "Sauvegarde…" : "Enregistrer"}
+            {editEventMutation.isPending ? "Sauvegarde…" : "Enregistrer"}
           </button>
         </div>
-
-        {/* Error Messages */}
-        {serverError && (
-          <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-red-600 text-sm">{serverError}</p>
-          </div>
-        )}
       </div>
     </form>
   );

@@ -20,6 +20,10 @@ interface CreateEventFormProps {
   onCancel?: () => void;
 }
 
+// Correction: react-hook-form expects a TypeScript type for generics, not a Zod schema
+import type { z } from "zod";
+type CreateEventFormInput = z.infer<typeof createEventSchema>;
+
 export default function CreateEventForm({
 }: CreateEventFormProps) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
@@ -31,7 +35,7 @@ export default function CreateEventForm({
     watch,
     setValue,
     reset,
-  } = useForm<createEventSchema>({
+  } = useForm<CreateEventFormInput>({
     resolver: zodResolver(createEventSchema),
     defaultValues: {
       title: "",
@@ -58,15 +62,9 @@ export default function CreateEventForm({
 
   const titleValue = watch("title");
 
-  useEffect(() => {
-    setValue("slug", slugify(titleValue || ""));
-  }, [titleValue, setValue]);
-
-
   const createEventMutation = useMutation({
-    mutationFn: async (data: createEventSchema) => {
+    mutationFn: async (data: CreateEventFormInput) => {
       const result = await doCreateEvent(data);
-      
       if (result.serverError) {
         console.log(result.serverError);
         throw new Error("Failed to create event");
@@ -74,8 +72,8 @@ export default function CreateEventForm({
     }
   });
 
-  const onSubmit = (data: createEventSchema) => {
-    createEventMutation.mutate(data);
+  const onSubmit = (data: CreateEventFormInput) => {
+    createEventMutation.mutateAsync(data);
   };
 
   const tabs = [
@@ -83,13 +81,6 @@ export default function CreateEventForm({
     { id: "details" as FormTab, label: "Détails", icon: Settings },
     { id: "registration" as FormTab, label: "Inscription", icon: UserCheck },
   ];
-
-  // Affichage de toutes les erreurs du formulaire pour le debug
-  useEffect(() => {
-    if (Object.keys(errors).length > 0) {
-      console.log("Erreurs du formulaire :", errors);
-    }
-  }, [errors]);
 
   const descriptionValue = watch("description");
   const slugValue = watch("slug");
@@ -134,25 +125,6 @@ export default function CreateEventForm({
                   {errors.title && (
                     <p className="text-red-600 text-sm mt-1">
                       {errors.title.message as string}
-                    </p>
-                  )}
-                </div>
-
-                <div className="col-span-2">
-                  <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
-                    Slug (URL) *
-                  </label>
-                  <input
-                    id="slug"
-                    {...register("slug")}
-                    placeholder="forum-entrepreneuriat-2025"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    value={slugValue}
-                    readOnly
-                  />
-                  {errors.slug && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.slug.message as string}
                     </p>
                   )}
                 </div>
@@ -328,9 +300,14 @@ export default function CreateEventForm({
                   </label>
                   <select
                     id="isVirtual"
-                    {...register("isVirtual", {setValueAs(value) {
-                      return Boolean(value)
-                    },})}
+                    {...register("isVirtual", {
+                      setValueAs: (value) => {
+                        // Correction: parse boolean from string
+                        if (value === "true" || value === true) return true;
+                        if (value === "false" || value === false) return false;
+                        return false;
+                      }
+                    })}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   >
                     <option value="true">Oui</option>
@@ -348,7 +325,14 @@ export default function CreateEventForm({
                   </label>
                   <select
                     id="isFeatured"
-                    {...register("isFeatured")}
+                    {...register("isFeatured", {
+                      setValueAs: (value) => {
+                        // Correction: parse boolean from string
+                        if (value === "true" || value === true) return true;
+                        if (value === "false" || value === false) return false;
+                        return false;
+                      }
+                    })}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   >
                     <option value="true">Oui</option>
@@ -422,7 +406,14 @@ export default function CreateEventForm({
                   </label>
                   <select
                     id="isFree"
-                    {...register("isFree")}
+                    {...register("isFree", {
+                      setValueAs: (value) => {
+                        // Correction: parse boolean from string
+                        if (value === "true" || value === true) return true;
+                        if (value === "false" || value === false) return false;
+                        return false;
+                      }
+                    })}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   >
                     <option value="true">Oui</option>
@@ -478,26 +469,28 @@ export default function CreateEventForm({
           <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-red-600 text-sm">
-              {
-                "Erreur lors de la création de l'événement."}
+              {"Erreur lors de la création de l'événement."}
             </p>
+            {/* If error is available, display the actual error message too */}
+            {typeof createEventMutation.error === "object" &&
+              (createEventMutation.error as Error).message &&
+              <p className="text-red-700 text-xs italic">{(createEventMutation.error as Error).message}</p>
+            }
           </div>
         )}
 
         {/* Action Buttons */}
-      
       </div>
       <div className="flex items-center justify-end pt-4 border-t">
-      <button
-            type="submit"
-            disabled={createEventMutation.isPending}
-            className="flex items-center gap-2 bg-emerald-600 text-white rounded-lg px-6 py-2.5 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Save className="w-4 h-4" />
-            {createEventMutation.isPending ? "Enregistrement..." : "Créer l'événement"}
-          </button>
+        <button
+          type="submit"
+          disabled={createEventMutation.isPending}
+          className="flex items-center gap-2 bg-emerald-600 text-white rounded-lg px-6 py-2.5 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Save className="w-4 h-4" />
+          {createEventMutation.isPending ? "Enregistrement..." : "Créer l'événement"}
+        </button>
       </div>
-     
     </form>
   );
 }

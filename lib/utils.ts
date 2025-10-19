@@ -6,13 +6,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
-
 export const statusOptions = [
-  { value: "draft", label: "Brouillon" },
-  { value: "published", label: "Publié" },
-  { value: "ongoing", label: "En cours" },
-  { value: "completed", label: "Terminé" },
-  { value: "cancelled", label: "Annulé" },
+  { value: "draft", label: "Brouillon", color: "bg-gray-100 text-gray-800" },
+  { value: "published", label: "Publié", color: "bg-emerald-100 text-emerald-800" },
+  { value: "ongoing", label: "En cours", color: "bg-blue-100 text-blue-800" },
+  { value: "completed", label: "Terminé", color: "bg-purple-100 text-purple-800" },
+  { value: "cancelled", label: "Annulé", color: "bg-red-100 text-red-800" },
 ];
 
 export const eventTypeOptions = [
