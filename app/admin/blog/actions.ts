@@ -3,14 +3,17 @@ import { actionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createCategorySchema, updateCategorySchema } from "@/lib/validations/blog";
 
-export const listCategories = actionClient.action(async () => {
-  const categories = await prisma.blogCategory.findMany({
-    orderBy: { createdAt: "desc" },
+export const listCategories = actionClient
+  .metadata({ actionName: "list-categories" })
+  .action(async () => {
+    const categories = await prisma.blogCategory.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return { categories };
   });
-  return { categories };
-});
 
 export const createCategory = actionClient
+  .metadata({ actionName: "create-category" })
   .schema(createCategorySchema)
   .action(async ({ parsedInput }) => {
     const created = await prisma.blogCategory.create({ data: parsedInput });
@@ -18,6 +21,7 @@ export const createCategory = actionClient
   });
 
 export const updateCategory = actionClient
+  .metadata({ actionName: "update-category" })
   .schema(updateCategorySchema)
   .action(async ({ parsedInput }) => {
     const { id, ...data } = parsedInput;
@@ -26,9 +30,8 @@ export const updateCategory = actionClient
   });
 
 export const deleteCategory = actionClient
-  .schema(
-    updateCategorySchema.pick({ id: true })
-  )
+  .metadata({ actionName: "delete-category" })
+  .schema(updateCategorySchema.pick({ id: true }))
   .action(async ({ parsedInput }) => {
     await prisma.blogCategory.delete({ where: { id: parsedInput.id } });
     return { ok: true };

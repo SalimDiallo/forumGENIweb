@@ -6,15 +6,14 @@ import { revalidatePath } from "next/cache";
 import { createEventSchema } from "./event.create.sheme";
 
 export const doCreateEvent = adminAction
-    .metadata({actionName:"create event in admin"})
-    .inputSchema(createEventSchema)
-    .action(async ({ clientInput, ctx }) => {
-            console.log("creating event:", clientInput);
-    
-            const createdEvent = await prisma.event.create({ data: clientInput });
+    .metadata({ actionName: "create-event-admin" })
+    .schema(createEventSchema)
+    .action(async ({ parsedInput }) => {
+        console.log("creating event:", parsedInput);
 
-            revalidatePath("/admin/events");
-            
-            return { success: true, createdEvent };
-        
+        const createdEvent = await prisma.event.create({ data: parsedInput });
+
+        revalidatePath("/admin/events");
+
+        return { success: true, createdEvent };
     });

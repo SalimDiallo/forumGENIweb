@@ -6,25 +6,20 @@ import { revalidatePath } from "next/cache";
 import { updateEventSchema } from "./event.edit.sheme";
 
 export const doEditEvent = adminAction
-    .metadata({actionName:"edit event in admin"})
-    .inputSchema(updateEventSchema)
-    .action(async ({ clientInput, ctx }) => {
-            console.log("creating event:", clientInput);
-            const {id, ...data} = clientInput; 
-            if (!data) {
-                
-            }
-    
-            const editdEvent = await prisma.event.update({ 
-                where:{
-                    id:clientInput.id,
-                   
-                },
-                data
-             });
+    .metadata({ actionName: "edit-event-admin" })
+    .schema(updateEventSchema)
+    .action(async ({ parsedInput }) => {
+        console.log("editing event:", parsedInput);
 
-            revalidatePath("/admin/events");
-            
-            return { success: true, editdEvent };
-        
+        const { id, ...data } = parsedInput;
+
+        const editedEvent = await prisma.event.update({
+            where: { id },
+            data
+        });
+
+        revalidatePath("/admin/events");
+        revalidatePath(`/admin/events/event/${id}`);
+
+        return { success: true, editedEvent };
     });

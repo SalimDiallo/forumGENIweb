@@ -4,12 +4,17 @@ import { prisma } from "@/lib/db";
 import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jobs";
 import { z } from "zod";
 
-export const listJobs = actionClient.action(async () => {
-  const jobs = await prisma.jobOffer.findMany({ orderBy: { createdAt: "desc" } });
-  return { jobs };
-});
+export const listJobs = actionClient
+  .metadata({ actionName: "list-jobs" })
+  .action(async () => {
+    const jobs = await prisma.jobOffer.findMany({
+      orderBy: { createdAt: "desc" }
+    });
+    return { jobs };
+  });
 
 export const createJob = actionClient
+  .metadata({ actionName: "create-job" })
   .schema(createJobOfferSchema)
   .action(async ({ parsedInput }) => {
     const created = await prisma.jobOffer.create({ data: parsedInput });
@@ -17,6 +22,7 @@ export const createJob = actionClient
   });
 
 export const updateJob = actionClient
+  .metadata({ actionName: "update-job" })
   .schema(updateJobOfferSchema)
   .action(async ({ parsedInput }) => {
     const { id, ...data } = parsedInput;
@@ -25,24 +31,27 @@ export const updateJob = actionClient
   });
 
 export const deleteJob = actionClient
+  .metadata({ actionName: "delete-job" })
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
     await prisma.jobOffer.delete({ where: { id: parsedInput.id } });
     return { ok: true };
   });
 
-export const getJobsWithApplicationCount = actionClient.action(async () => {
-  const jobs = await prisma.jobOffer.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      _count: {
-        select: {
-          applications: true,
+export const getJobsWithApplicationCount = actionClient
+  .metadata({ actionName: "get-jobs-with-application-count" })
+  .action(async () => {
+    const jobs = await prisma.jobOffer.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: {
+            applications: true,
+          },
         },
       },
-    },
+    });
+    return { jobs };
   });
-  return { jobs };
-});
 
 

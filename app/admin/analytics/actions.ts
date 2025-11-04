@@ -4,13 +4,17 @@ import { prisma } from "@/lib/db";
 import { upsertSiteAnalyticsSchema } from "@/lib/validations/analytics";
 
 export const getAnalyticsByDate = actionClient
+  .metadata({ actionName: "get-analytics-by-date" })
   .schema(upsertSiteAnalyticsSchema.pick({ date: true }))
   .action(async ({ parsedInput }) => {
-    const entry = await prisma.siteAnalytics.findUnique({ where: { date: new Date(parsedInput.date) } });
+    const entry = await prisma.siteAnalytics.findUnique({
+      where: { date: new Date(parsedInput.date) }
+    });
     return { entry };
   });
 
 export const upsertAnalytics = actionClient
+  .metadata({ actionName: "upsert-analytics" })
   .schema(upsertSiteAnalyticsSchema)
   .action(async ({ parsedInput }) => {
     const { date, ...rest } = parsedInput;
