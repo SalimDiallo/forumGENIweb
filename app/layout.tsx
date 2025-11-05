@@ -4,12 +4,15 @@ import './globals.css';
 import Footer from '@/components/Footer';
 import Providers from './Providers';
 
-const raleway = Raleway(
-  { subsets: ['latin'], variable: '--font-freeman' ,
-    display: 'swap',
-    weight: ['400'],
-  }
-);
+// Raleway comme police secondaire (Google Fonts)
+const raleway = Raleway({
+  subsets: ['latin'],
+  variable: '--font-raleway',
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+// Clash Display et Britney sont importés via globals.css depuis les fichiers locaux
 
 export const metadata: Metadata = {
   title: 'Forum GENI Entreprises | INSEA',
@@ -28,14 +31,14 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="fr" className="scroll-smooth">
-      <body className={` antialiased min-h-screen ${raleway.className}`}>
-      <Providers>
-        <>
-        {children}
-        <Footer />
-        </>
-      </Providers>
+    <html lang="fr" className={`scroll-smooth ${raleway.variable}`}>
+      <body className="antialiased min-h-screen">
+        <Providers>
+          <>
+            {children}
+            <Footer />
+          </>
+        </Providers>
       </body>
     </html>
   );

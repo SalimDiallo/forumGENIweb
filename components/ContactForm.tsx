@@ -2,28 +2,63 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, User, Mail, MessageSquare, Building } from 'lucide-react';
+import { Send, User, Mail, MessageSquare, Phone, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { contactFormSchema, type ContactFormInput } from '@/app/(sections)/contact/contact.schema';
+import { submitContactForm } from '@/app/(sections)/contact/contact.action';
 
 const ContactForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-    type: 'general'
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({
+    type: null,
+    message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Logique d'envoi du formulaire
-    console.log('Formulaire envoyé:', formData);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ContactFormInput>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      subject: '',
+      message: '',
+      category: 'general',
+    },
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const onSubmit = async (data: ContactFormInput) => {
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
+
+    try {
+      const result = await submitContactForm(data);
+
+      if (result?.data?.success) {
+        setSubmitStatus({
+          type: 'success',
+          message: result.data.message,
+        });
+        reset();
+      } else {
+        setSubmitStatus({
+          type: 'error',
+          message: 'Une erreur est survenue. Veuillez réessayer.',
+        });
+      }
+    } catch (error) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Une erreur est survenue. Veuillez réessayer.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -52,7 +87,27 @@ const ContactForm = () => {
             viewport={{ once: true }}
             className="bg-emerald-50 rounded-xl p-8 border border-emerald-100"
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Status messages */}
+            {submitStatus.type && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
+                  submitStatus.type === 'success'
+                    ? 'bg-green-100 text-green-800 border border-green-200'
+                    : 'bg-red-100 text-red-800 border border-red-200'
+                }`}
+              >
+                {submitStatus.type === 'success' ? (
+                  <CheckCircle className="w-5 h-5" />
+                ) : (
+                  <XCircle className="w-5 h-5" />
+                )}
+                <p className="text-sm font-medium">{submitStatus.message}</p>
+              </motion.div>
+            )}
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
@@ -63,14 +118,16 @@ const ContactForm = () => {
                     <input
                       type="text"
                       id="name"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
+                      {...register('name')}
+                      className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent ${
+                        errors.name ? 'border-red-500' : 'border-emerald-200'
+                      }`}
                       placeholder="Votre nom complet"
                     />
                   </div>
+                  {errors.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                  )}
                 </div>
 
                 <div>
@@ -82,33 +139,50 @@ const ContactForm = () => {
                     <input
                       type="email"
                       id="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
+                      {...register('email')}
+                      className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent ${
+                        errors.email ? 'border-red-500' : 'border-emerald-200'
+                      }`}
                       placeholder="votre.email@exemple.com"
                     />
                   </div>
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                  )}
                 </div>
               </div>
 
               <div>
-                <label htmlFor="type" className="block text-sm font-medium text-black mb-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-black mb-2">
+                  Téléphone (optionnel)
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" size={20} />
+                  <input
+                    type="tel"
+                    id="phone"
+                    {...register('phone')}
+                    className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
+                    placeholder="+212 6XX XXX XXX"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-black mb-2">
                   Type de demande
                 </label>
                 <select
-                  id="type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
+                  id="category"
+                  {...register('category')}
                   className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                 >
                   <option value="general">Question générale</option>
                   <option value="partnership">Partenariat</option>
-                  <option value="participation">Participation événement</option>
-                  <option value="speaker">Devenir speaker</option>
+                  <option value="event">Participation événement</option>
+                  <option value="career">Carrière</option>
                   <option value="press">Relations presse</option>
+                  <option value="technical">Support technique</option>
                 </select>
               </div>
 
@@ -119,13 +193,15 @@ const ContactForm = () => {
                 <input
                   type="text"
                   id="subject"
-                  name="subject"
-                  required
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
+                  {...register('subject')}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent ${
+                    errors.subject ? 'border-red-500' : 'border-emerald-200'
+                  }`}
                   placeholder="Sujet de votre message"
                 />
+                {errors.subject && (
+                  <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
+                )}
               </div>
 
               <div>
@@ -136,25 +212,41 @@ const ContactForm = () => {
                   <MessageSquare className="absolute left-3 top-3 text-black" size={20} />
                   <textarea
                     id="message"
-                    name="message"
-                    required
                     rows={6}
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent resize-none"
+                    {...register('message')}
+                    className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent resize-none ${
+                      errors.message ? 'border-red-500' : 'border-emerald-200'
+                    }`}
                     placeholder="Décrivez votre demande en détail..."
                   />
                 </div>
+                {errors.message && (
+                  <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
+                )}
               </div>
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-emerald-800 text-white py-4 px-6 rounded-lg font-medium hover:bg-emerald-900 transition-colors flex items-center justify-center gap-2"
+                disabled={isSubmitting}
+                whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                className={`w-full py-4 px-6 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  isSubmitting
+                    ? 'bg-emerald-600 cursor-not-allowed'
+                    : 'bg-emerald-800 hover:bg-emerald-900'
+                } text-white`}
               >
-                <Send size={20} />
-                Envoyer le message
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    Envoi en cours...
+                  </>
+                ) : (
+                  <>
+                    <Send size={20} />
+                    Envoyer le message
+                  </>
+                )}
               </motion.button>
 
               <p className="text-center text-sm text-black">

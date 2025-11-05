@@ -3,24 +3,17 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        // Respecte la nomenclature Tailwind: font-<family> et font-<weight>
-        britney: [
-          'Britney-Regular',
-          'Arial Rounded MT Bold',
-          'Arial',
-          'sans-serif'
-        ],
-        'britney-light': ['Britney-Light', 'sans-serif'],
-        'britney-bold': ['Britney-Bold', 'sans-serif'],
-        'britney-ultra': ['Britney-Ultra', 'sans-serif'],
-        'britney-variable': ['Britney-Variable', 'sans-serif'],
-
-        clash: [
+        // Police par défaut (sans) : Clash Display (principale), Raleway (secondaire), Britney (tertiaire)
+        sans: [
           'ClashDisplay-Regular',
-          'Arial Rounded MT Bold',
+          'var(--font-raleway)',
+          'Britney-Regular',
           'Arial',
           'sans-serif'
         ],
+
+        // Clash Display - Police principale (avec variantes de poids)
+        clash: ['ClashDisplay-Regular', 'sans-serif'],
         'clash-extralight': ['ClashDisplay-Extralight', 'sans-serif'],
         'clash-light': ['ClashDisplay-Light', 'sans-serif'],
         'clash-medium': ['ClashDisplay-Medium', 'sans-serif'],
@@ -28,14 +21,15 @@ module.exports = {
         'clash-bold': ['ClashDisplay-Bold', 'sans-serif'],
         'clash-variable': ['ClashDisplay-Variable', 'sans-serif'],
 
-        // Default sans
-        sans: [
-          'ClashDisplay-Regular',
-          'Britney-Regular',
-          'Arial Rounded MT Bold',
-          'Arial',
-          'sans-serif'
-        ],
+        // Raleway - Police secondaire (Google Fonts)
+        raleway: ['var(--font-raleway)', 'sans-serif'],
+
+        // Britney - Police tertiaire (avec variantes de poids)
+        britney: ['Britney-Regular', 'sans-serif'],
+        'britney-light': ['Britney-Light', 'sans-serif'],
+        'britney-bold': ['Britney-Bold', 'sans-serif'],
+        'britney-ultra': ['Britney-Ultra', 'sans-serif'],
+        'britney-variable': ['Britney-Variable', 'sans-serif'],
       },
       colors: {
         primary: {

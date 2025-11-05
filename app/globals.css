@@ -6,6 +6,12 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Font variables */
+  --font-clash: 'ClashDisplay-Regular', sans-serif;
+  --font-britney: 'Britney-Regular', sans-serif;
+  /* --font-raleway is defined in layout.tsx via Next.js font optimization */
+
+  /* Color variables */
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 250, 250, 252;
   --background-end-rgb: 255, 255, 255;
@@ -85,9 +91,7 @@
 
 }
 
-body {
-  font-family: 'ClashDisplay-Light', sans-serif;
-}
+/* Configuration des polices déplacée dans @layer base ci-dessous */
 
 /* Pour le dégradé de transparence en arrière-plan */
 .bg-grid-white\/10 {
@@ -135,11 +139,92 @@ body {
 @layer base {
   * {
     @apply border-border outline-ring/50;
-
   }
+
+  /* Configuration de base du body avec Raleway pour le corps de texte */
   body {
     @apply bg-background text-foreground;
-
+    font-family: var(--font-raleway), 'Arial', sans-serif;
   }
 
+  /* Titres principaux utilisent Clash Display */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'ClashDisplay-Regular', var(--font-raleway), sans-serif;
+    font-weight: 600;
+  }
+
+  /* Variantes de poids pour les titres */
+  h1 {
+    font-family: 'ClashDisplay-Bold', var(--font-raleway), sans-serif;
+  }
+
+  h2 {
+    font-family: 'ClashDisplay-Semibold', var(--font-raleway), sans-serif;
+  }
+
+  /* Boutons utilisent Clash Display Medium */
+  button, .btn {
+    font-family: 'ClashDisplay-Medium', var(--font-raleway), sans-serif;
+  }
+
+  /* Labels et petits textes utilisent Raleway */
+  label, small, .text-sm {
+    font-family: var(--font-raleway), 'Arial', sans-serif;
+  }
+
+  /* Inputs utilisent Raleway pour une meilleure lisibilité */
+  input, textarea, select {
+    font-family: var(--font-raleway), 'Arial', sans-serif;
+  }
+
+  /* Navigation utilise Clash Display */
+  nav, .nav-link {
+    font-family: 'ClashDisplay-Medium', var(--font-raleway), sans-serif;
+  }
+}
+
+/* Classes utilitaires pour les polices */
+@layer utilities {
+  /* Clash Display */
+  .font-clash-display {
+    font-family: 'ClashDisplay-Regular', var(--font-raleway), sans-serif;
+  }
+
+  .font-clash-light {
+    font-family: 'ClashDisplay-Light', var(--font-raleway), sans-serif;
+  }
+
+  .font-clash-medium {
+    font-family: 'ClashDisplay-Medium', var(--font-raleway), sans-serif;
+  }
+
+  .font-clash-semibold {
+    font-family: 'ClashDisplay-Semibold', var(--font-raleway), sans-serif;
+  }
+
+  .font-clash-bold {
+    font-family: 'ClashDisplay-Bold', var(--font-raleway), sans-serif;
+  }
+
+  /* Raleway - Police secondaire */
+  .font-raleway {
+    font-family: var(--font-raleway), 'Arial', sans-serif;
+  }
+
+  /* Britney - Police tertiaire pour éléments décoratifs */
+  .font-britney {
+    font-family: 'Britney-Regular', var(--font-raleway), sans-serif;
+  }
+
+  .font-britney-light {
+    font-family: 'Britney-Light', var(--font-raleway), sans-serif;
+  }
+
+  .font-britney-bold {
+    font-family: 'Britney-Bold', var(--font-raleway), sans-serif;
+  }
+
+  .font-britney-ultra {
+    font-family: 'Britney-Ultra', var(--font-raleway), sans-serif;
+  }
 }
