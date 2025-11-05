@@ -85,24 +85,69 @@ export default function CreateEventForm({
   const descriptionValue = watch("description");
   const slugValue = watch("slug");
 
+  // Check which tabs have errors
+  const tabErrors = {
+    basic: !!(errors.title || errors.eventType || errors.status || errors.organizerName || errors.featuredImage || errors.shortDescription || errors.description),
+    details: !!(errors.startDate || errors.endDate || errors.location || errors.isVirtual || errors.isFeatured),
+    registration: !!(errors.registrationStart || errors.registrationEnd || errors.maxParticipants || errors.isFree || errors.price || errors.currency),
+  };
+
+  const hasErrors = Object.values(errors).length > 0;
+
+  // Helper function to get input classes based on error state
+  const getInputClasses = (fieldName: keyof CreateEventFormInput) => {
+    const baseClasses = "w-full rounded-lg px-4 py-2.5 transition-colors";
+    const hasError = errors[fieldName];
+
+    if (hasError) {
+      return `${baseClasses} border-2 border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 bg-red-50`;
+    }
+
+    return `${baseClasses} border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-transparent`;
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="space-y-4">
+        {/* Error Summary */}
+        {hasErrors && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-red-900 mb-1">
+                  Veuillez corriger les erreurs suivantes :
+                </h3>
+                <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
+                  {Object.entries(errors).map(([key, error]) => (
+                    <li key={key}>
+                      <span className="font-medium capitalize">{key}</span>: {error?.message as string}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
-              className={`flex items-center gap-1 px-4 py-2 -mb-px border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 -mb-px border-b-2 transition-colors relative ${
                 activeTab === tab.id
-                  ? "border-emerald-600 text-emerald-700 font-semibold"
-                  : "border-transparent text-gray-500 hover:text-emerald-600"
+                  ? "border-gray-900 text-gray-900 font-semibold"
+                  : "border-transparent text-gray-500 hover:text-gray-900"
               }`}
               onClick={() => setActiveTab(tab.id)}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
+              {tabErrors[tab.id] && (
+                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+              )}
             </button>
           ))}
         </div>
@@ -120,10 +165,11 @@ export default function CreateEventForm({
                     id="title"
                     {...register("title")}
                     placeholder="Ex: Forum Entrepreneuriat 2025"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className={getInputClasses("title")}
                   />
                   {errors.title && (
-                    <p className="text-red-600 text-sm mt-1">
+                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
                       {errors.title.message as string}
                     </p>
                   )}
@@ -136,7 +182,7 @@ export default function CreateEventForm({
                   <select
                     id="eventType"
                     {...register("eventType")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className={getInputClasses("eventType")}
                   >
                     {eventTypeOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -145,7 +191,8 @@ export default function CreateEventForm({
                     ))}
                   </select>
                   {errors.eventType && (
-                    <p className="text-red-600 text-sm mt-1">
+                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
                       {errors.eventType.message as string}
                     </p>
                   )}
@@ -158,7 +205,7 @@ export default function CreateEventForm({
                   <select
                     id="status"
                     {...register("status")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className={getInputClasses("status")}
                   >
                     {statusOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -484,8 +531,8 @@ export default function CreateEventForm({
       <div className="flex items-center justify-end pt-4 border-t">
         <button
           type="submit"
-          disabled={createEventMutation.isPending}
-          className="flex items-center gap-2 bg-emerald-600 text-white rounded-lg px-6 py-2.5 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={createEventMutation.isPending || hasErrors}
+          className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-6 py-2.5 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Save className="w-4 h-4" />
           {createEventMutation.isPending ? "Enregistrement..." : "Créer l'événement"}

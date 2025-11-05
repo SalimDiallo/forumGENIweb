@@ -12,17 +12,17 @@ export default async function AdminEventsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <section className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl p-6 shadow-lg">
+      <section className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold mb-2">Gestion des Événements</h1>
-            <p className="text-emerald-100">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Gestion des Événements</h1>
+            <p className="text-gray-600">
               {events?.length || 0} événement(s) au total
             </p>
           </div>
           <Link
           href={"/admin/events/event/create"}
-            className="flex items-center gap-2 bg-white text-emerald-600 rounded-lg px-5 py-3 font-medium hover:bg-emerald-50 transition-colors shadow-md"
+            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
           >
             <Plus className="w-5 h-5" />
             Nouvel événement
@@ -33,10 +33,10 @@ export default async function AdminEventsPage() {
     
 
       {/* Events List */}
-      <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <section className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         {/* {events === "executing" && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
         )} */}
 
@@ -62,13 +62,11 @@ export default async function AdminEventsPage() {
                       <h3 className="text-lg font-semibold text-gray-900 truncate">
                         {e.title}
                       </h3>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${statusOption?.color}`}
-                      >
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                         {statusOption?.label}
                       </span>
                       {e.isFeatured && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                           ⭐ Vedette
                         </span>
                       )}
@@ -115,22 +113,22 @@ export default async function AdminEventsPage() {
                   <div className="flex items-center gap-2">
                   <Link
                       href={`/admin/events/event/${e.id}`}
-                      className="flex items-center gap-1.5 px-3 py-2 text-blue-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                       <Eye className="w-4 h-4" />
                       Voir
                     </Link>
                     <Link
                       href={`/admin/events/event/${e.id}/edit`}
-                      className="flex items-center gap-1.5 px-3 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                       <Edit2 className="w-4 h-4" />
                       Éditer
                     </Link>
-                   
+
                     <button
                       // onClick={() => onDelete(e.id)}
-                      className="flex items-center gap-1.5 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                       Supprimer

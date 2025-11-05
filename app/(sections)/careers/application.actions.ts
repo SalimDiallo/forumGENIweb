@@ -23,8 +23,9 @@ const jobApplicationSchema = z.object({
 });
 
 export const submitJobApplication = actionClient
+  .metadata({ actionName: "submit-job-application" })
   .schema(jobApplicationSchema)
-  .action(async ({ parsedInput, metadata }) => {
+  .action(async ({ parsedInput }) => {
     // Check if job offer exists and is published
     const jobOffer = await prisma.jobOffer.findFirst({
       where: {
@@ -82,6 +83,7 @@ const getApplicationsSchema = z.object({
 });
 
 export const getJobApplications = actionClient
+  .metadata({ actionName: "get-job-applications" })
   .schema(getApplicationsSchema)
   .action(async ({ parsedInput }) => {
     const { jobOfferId, status, limit, offset } = parsedInput;
@@ -137,6 +139,7 @@ const updateApplicationStatusSchema = z.object({
 });
 
 export const updateApplicationStatus = actionClient
+  .metadata({ actionName: "update-application-status" })
   .schema(updateApplicationStatusSchema)
   .action(async ({ parsedInput }) => {
     const { applicationId, status, notes } = parsedInput;

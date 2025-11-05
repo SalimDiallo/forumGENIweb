@@ -7,37 +7,54 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Users, ArrowRight, Clock, Award } from 'lucide-react';
 
-const UpcomingEvents = () => {
-  const events = [
-    {
-      id: 1,
-      title: "Forum GENI Entreprises 2025",
-      date: "3-5 mai 2025",
-      time: "09:00 - 18:00",
-      location: "INSEA Rabat",
-      type: "Forum",
-      priority: "high",
-      description: "Forum annuel d'excellence réunissant les leaders de l'industrie, diplômés INSEA et étudiants ingénieurs. Conférences techniques, tables rondes sectorielles et sessions de recrutement exclusives.",
-      image: "/insea-building.jpg",
-      link: "/evenements/forum-2025",
-      attendees: "500+",
-      companies: "50+"
-    },
-    {
-      id: 2,
-      title: "Innovation & Entrepreneuriat Challenge",
-      date: "15 juin 2025",
-      time: "08:30 - 20:00",
-      location: "INSEA Rabat",
-      type: "Compétition",
-      priority: "medium",
-      description: "Marathon d'innovation technologique de 12h. Défis techniques en équipes pluridisciplinaires, mentorat par des experts industriels et prix d'excellence pour les meilleures solutions.",
-      image: "/insea-building.jpg",
-      link: "/evenements/innovation-challenge",
-      attendees: "200+",
-      companies: "15+"
-    }
-  ];
+type EventData = {
+  id: number;
+  title: string;
+  slug: string;
+  description: string | null;
+  shortDescription: string | null;
+  featuredImage: string | null;
+  eventType: string;
+  location: string | null;
+  isVirtual: boolean;
+  startDate: Date;
+  endDate: Date;
+  maxParticipants: number | null;
+  currentParticipants: number;
+  isFeatured: boolean;
+  _count: {
+    registrations: number;
+  };
+};
+
+type UpcomingEventsProps = {
+  events: EventData[];
+};
+
+const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
+  // Transform database events to display format
+  const displayEvents = events.map(event => ({
+    id: event.id,
+    title: event.title,
+    date: new Date(event.startDate).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }),
+    time: `${new Date(event.startDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.endDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`,
+    location: event.isVirtual ? 'En ligne' : (event.location || 'À définir'),
+    type: event.eventType === 'forum' ? 'Forum' :
+          event.eventType === 'workshop' ? 'Atelier' :
+          event.eventType === 'conference' ? 'Conférence' :
+          event.eventType === 'networking' ? 'Networking' :
+          event.eventType === 'webinar' ? 'Webinaire' : 'Autre',
+    priority: event.isFeatured ? 'high' : 'medium',
+    description: event.shortDescription || event.description || '',
+    image: event.featuredImage || '/insea-building.jpg',
+    link: `/evenements/${event.slug}`,
+    attendees: event.maxParticipants ? `${event.currentParticipants}/${event.maxParticipants}` : `${event.currentParticipants}+`,
+    companies: event._count.registrations > 0 ? `${event._count.registrations}` : '0',
+  }));
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -85,7 +102,7 @@ const UpcomingEvents = () => {
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-16">
-          {events.map((event, index) => (
+          {displayEvents.map((event, index) => (
             <motion.div
               key={event.id}
               initial={{ opacity: 0, y: 40 }}

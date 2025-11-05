@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { publicEventRegistrationSchema } from "@/lib/validations/public";
 
 export const registerForEvent = actionClient
+  .metadata({ actionName: "register-for-event" })
   .schema(publicEventRegistrationSchema)
   .action(async ({ parsedInput }) => {
     const event = await prisma.event.findUnique({ where: { slug: parsedInput.eventSlug } });

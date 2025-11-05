@@ -12,6 +12,7 @@ const getJobsSchema = z.object({
 });
 
 export const getPublicJobs = actionClient
+  .metadata({ actionName: "get-public-jobs" })
   .schema(getJobsSchema)
   .action(async ({ parsedInput }) => {
     const { search, jobType, limit, offset } = parsedInput;

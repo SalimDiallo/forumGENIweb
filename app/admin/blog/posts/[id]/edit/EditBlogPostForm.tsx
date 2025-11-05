@@ -94,6 +94,27 @@ export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
   const categories = categoriesAction.result?.data?.categories || [];
   const isLoading = getPostAction.status === "executing";
 
+  // Check which tabs have errors
+  const tabErrors = {
+    basic: !!(errors.title || errors.slug || errors.categoryId || errors.status || errors.authorName || errors.featuredImage || errors.excerpt || errors.readTimeMinutes || errors.isFeatured || errors.authorPosition),
+    content: !!errors.content,
+    meta: !!(errors.metaTitle || errors.metaDescription),
+  };
+
+  const hasErrors = Object.values(errors).length > 0;
+
+  // Helper function to get input classes based on error state
+  const getInputClasses = (fieldName: keyof UpdateBlogPostInput) => {
+    const baseClasses = "w-full rounded-lg px-4 py-2.5 transition-colors";
+    const hasError = errors[fieldName];
+
+    if (hasError) {
+      return `${baseClasses} border-2 border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 bg-red-50`;
+    }
+
+    return `${baseClasses} border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-transparent`;
+  };
+
   if (isLoading) {
     return (
       <div className="p-12">
@@ -124,13 +145,34 @@ export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-6">
       <div className="space-y-4">
+        {/* Error Summary */}
+        {hasErrors && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-red-900 mb-1">
+                  Veuillez corriger les erreurs suivantes :
+                </h3>
+                <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
+                  {Object.entries(errors).map(([key, error]) => (
+                    <li key={key}>
+                      <span className="font-medium capitalize">{key}</span>: {error?.message as string}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
-              className={`flex items-center gap-2 px-4 py-2 -mb-px border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 -mb-px border-b-2 transition-colors relative ${
                 activeTab === tab.id
                   ? "border-gray-900 text-gray-900 font-semibold"
                   : "border-transparent text-gray-500 hover:text-gray-900"
@@ -139,6 +181,9 @@ export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
+              {tabErrors[tab.id] && (
+                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+              )}
             </button>
           ))}
         </div>

@@ -2,7 +2,9 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import EditBlogPostForm from "./EditBlogPostForm";
 
-export default function EditBlogPostPage({ params }: { params: { id: string } }) {
+export default async function EditBlogPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -19,7 +21,7 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
       </div>
 
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-        <EditBlogPostForm postId={parseInt(params.id)} />
+        <EditBlogPostForm postId={parseInt(id)} />
       </div>
     </div>
   );

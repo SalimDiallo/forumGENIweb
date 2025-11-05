@@ -3,11 +3,11 @@ import Hero from '@/components/Hero';
 import Stats from '@/components/Stats';
 import Link from 'next/link';
 import HeaderHome from '@/components/home/HeaderHome';
+import UpcomingEventsWrapper from '@/components/home/UpcomingEventsWrapper';
+import VideoTestimonialsWrapper from '@/components/home/VideoTestimonialsWrapper';
 
 // Lazy loading des composants non critiques
-const UpcomingEvents = lazy(() => import('@/components/UpcomingEvents'));
 const Partners = lazy(() => import('@/components/home/Partners'));
-const VideoTestimonials = lazy(() => import('@/components/VideoTestimonials'));
 const TeamsMembres = lazy(() => import('@/components/TeamsMembres'));
 
 // Composant de loading simple
@@ -22,9 +22,9 @@ export default function Home() {
     <main>
       <HeaderHome />
       <Hero />
-      
+
       <Suspense fallback={<SimpleLoader />}>
-        <UpcomingEvents />
+        <UpcomingEventsWrapper />
       </Suspense>
 
       <Suspense fallback={<SimpleLoader />}>
@@ -37,9 +37,9 @@ export default function Home() {
       <Suspense fallback={<SimpleLoader />}>
         <Partners />
       </Suspense>
-      
+
       <Suspense fallback={<SimpleLoader />}>
-        <VideoTestimonials />
+        <VideoTestimonialsWrapper />
       </Suspense>
       
      

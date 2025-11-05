@@ -3,44 +3,40 @@
 import React, { useState } from 'react';
 import { Play, Quote, Users, Award, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const VideoTestimonials = () => {
+type TestimonialData = {
+  id: number;
+  name: string;
+  position: string | null;
+  company: string | null;
+  graduationYear: number | null;
+  videoUrl: string;
+  thumbnailUrl: string | null;
+  quote: string | null;
+  fullTranscript: string | null;
+  isFeatured: boolean;
+  isActive: boolean;
+  sortOrder: number;
+};
+
+type VideoTestimonialsProps = {
+  testimonials: TestimonialData[];
+};
+
+const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
-  const testimonials = [
-    {
-      id: 1,
-      name: "Sarah Bennani",
-      role: "Diplômée Génie Informatique",
-      company: "TechVision",
-      video: "/testimonials/sarah-bennani.mp4",
-      thumbnail: "/testimonials/sarah-thumb.jpg",
-      quote: "L'association GENI m'a permis de développer mes compétences en leadership et de créer un réseau professionnel solide dès mes études.",
-      year: "Promo 2022",
-      achievement: "Startup fondée"
-    },
-    {
-      id: 2,
-      name: "Mehdi Alaoui",
-      role: "Ingénieur Génie Civil",
-      company: "Groupe OCP",
-      video: "/testimonials/mehdi-alaoui.mp4",
-      thumbnail: "/testimonials/mehdi-thumb.jpg",
-      quote: "Les projets collaboratifs de l'association m'ont préparé aux défis du monde professionnel. Une expérience enrichissante !",
-      year: "Promo 2021",
-      achievement: "Prix innovation"
-    },
-    {
-      id: 3,
-      name: "Fatima Zahra",
-      role: "Étudiante Génie Électrique",
-      company: "École Nationale d'Ingénieurs",
-      video: "/testimonials/fatima-zahra.mp4",
-      thumbnail: "/testimonials/fatima-thumb.jpg",
-      quote: "Grâce à GENI, j'ai découvert ma passion pour l'entrepreneuriat et participé à des concours nationaux.",
-      year: "Promo 2024",
-      achievement: "Concours gagné"
-    }
-  ];
+  // Transform database testimonials to display format
+  const displayTestimonials = testimonials.map(testimonial => ({
+    id: testimonial.id,
+    name: testimonial.name,
+    role: testimonial.position || 'Membre',
+    company: testimonial.company || 'INSEA',
+    video: testimonial.videoUrl,
+    thumbnail: testimonial.thumbnailUrl || '/testimonials/default-thumb.jpg',
+    quote: testimonial.quote || 'Une expérience formidable avec l\'association GENI.',
+    year: testimonial.graduationYear ? `Promo ${testimonial.graduationYear}` : 'INSEA',
+    achievement: testimonial.isFeatured ? 'Témoignage vedette' : 'Membre actif',
+  }));
 
   const stats = [
     { icon: Users, value: "500+", label: "Membres actifs" },
@@ -49,11 +45,11 @@ const VideoTestimonials = () => {
   ];
 
   const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    setCurrentTestimonial((prev) => (prev + 1) % displayTestimonials.length);
   };
 
   const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setCurrentTestimonial((prev) => (prev - 1 + displayTestimonials.length) % displayTestimonials.length);
   };
 
   return (
@@ -95,7 +91,7 @@ const VideoTestimonials = () => {
 
         {/* Video Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {testimonials.map((testimonial, index) => (
+          {displayTestimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
               className="group bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-600/40 transition-all duration-300 hover:scale-105"
@@ -151,24 +147,24 @@ const VideoTestimonials = () => {
             <div className="text-center max-w-4xl mx-auto">
               <Quote className="text-emerald-600 mx-auto mb-6" size={48} />
               <p className="text-gray-300 text-xl italic mb-8 leading-relaxed">
-                "{testimonials[currentTestimonial].quote}"
+                "{displayTestimonials[currentTestimonial]?.quote || ''}"
               </p>
-              
+
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-700 to-emerald-800 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-xl">
-                    {testimonials[currentTestimonial].name.charAt(0)}
+                    {displayTestimonials[currentTestimonial]?.name.charAt(0) || 'G'}
                   </span>
                 </div>
                 <div className="text-left">
                   <h4 className="text-white font-bold text-lg">
-                    {testimonials[currentTestimonial].name}
+                    {displayTestimonials[currentTestimonial]?.name || ''}
                   </h4>
                   <p className="text-gray-400 text-sm">
-                    {testimonials[currentTestimonial].role}
+                    {displayTestimonials[currentTestimonial]?.role || ''}
                   </p>
                   <p className="text-emerald-600 text-sm font-medium">
-                    {testimonials[currentTestimonial].year}
+                    {displayTestimonials[currentTestimonial]?.year || ''}
                   </p>
                 </div>
               </div>
@@ -184,13 +180,13 @@ const VideoTestimonials = () => {
               </button>
               
               <div className="flex gap-2">
-                {testimonials.map((_, index) => (
+                {displayTestimonials.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentTestimonial(index)}
                     className={`w-3 h-3 rounded-full transition-all ${
-                      index === currentTestimonial 
-                        ? 'bg-emerald-600' 
+                      index === currentTestimonial
+                        ? 'bg-emerald-600'
                         : 'bg-white/20 hover:bg-white/40'
                     }`}
                   />
