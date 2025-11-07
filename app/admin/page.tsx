@@ -8,7 +8,6 @@ import {
   Briefcase,
   Calendar,
   MessageSquare,
-  Handshake,
   FileText,
   Image,
   Video,
@@ -16,7 +15,7 @@ import {
   BarChart3,
   ArrowRight,
 } from "lucide-react";
-import { listContacts, listPartnerships } from "./crm/actions";
+import { listContacts } from "./crm/actions";
 import { getJobsWithApplicationCount } from "./jobs/actions";
 import { listCategories } from "./blog/actions";
 import { listMedia } from "./media/actions";
@@ -25,7 +24,6 @@ import { listSubscriptions } from "./newsletter/actions";
 
 export default function AdminDashboard() {
   const contacts = useAction(listContacts);
-  const partnerships = useAction(listPartnerships);
   const jobs = useAction(getJobsWithApplicationCount);
   const categories = useAction(listCategories);
   const media = useAction(listMedia);
@@ -35,7 +33,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     // Load all stats on mount
     contacts.execute();
-    partnerships.execute();
     jobs.execute();
     categories.execute();
     media.execute();
@@ -45,7 +42,6 @@ export default function AdminDashboard() {
 
   const isLoading =
     contacts.status === "executing" ||
-    partnerships.status === "executing" ||
     jobs.status === "executing";
 
   // Calculate stats
@@ -53,10 +49,6 @@ export default function AdminDashboard() {
     contacts: {
       total: contacts.result?.data?.messages?.length || 0,
       new: contacts.result?.data?.messages?.filter((m: any) => m.status === "new").length || 0,
-    },
-    partnerships: {
-      total: partnerships.result?.data?.requests?.length || 0,
-      pending: partnerships.result?.data?.requests?.filter((r: any) => r.status === "pending").length || 0,
     },
     jobs: {
       total: jobs.result?.data?.jobs?.length || 0,

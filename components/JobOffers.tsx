@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAction } from 'next-safe-action/hooks';
-import { 
-  MapPin, 
-  Clock, 
-  Euro, 
-  Building, 
+import {
+  MapPin,
+  Clock,
+  Euro,
+  Building,
   Filter,
   Bookmark,
   BookmarkCheck,
@@ -17,11 +17,13 @@ import {
   Search,
   ChevronRight,
   Share2,
-  Plus
+  Plus,
+  Mail,
+  Phone,
+  ExternalLink
 } from 'lucide-react';
 import { getPublicJobs } from '@/app/(sections)/careers/jobs.actions';
 import JobSubmissionModal from './JobSubmissionModal';
-import JobApplicationModal from './JobApplicationModal';
 
 // Types
 type JobType = "cdi" | 'cdd' | 'stage' | 'freelance' | 'alternance' | 'autre';
@@ -64,8 +66,7 @@ const JobOffers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [jobs, setJobs] = useState<JobOffer[]>([]);
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
-  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
-  const [selectedJobForApplication, setSelectedJobForApplication] = useState<JobOffer | null>(null);
+  const [expandedJobId, setExpandedJobId] = useState<number | null>(null);
   const [filterCounts, setFilterCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
@@ -389,18 +390,14 @@ const JobOffers: React.FC = () => {
                 
                 {/* Action Buttons - Mobile full width */}
                 <div className="flex flex-col gap-1 sm:gap-2 sm:items-end mt-2 sm:mt-0">
-                  <button 
-                    onClick={() => {
-                      setSelectedJobForApplication(job);
-                      setIsApplicationModalOpen(true);
-                    }}
+                  <button
+                    onClick={() => setExpandedJobId(expandedJobId === job.id ? null : job.id)}
                     className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white rounded-xl sm:rounded-2xl font-semibold hover:shadow hover:shadow-emerald-200 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-2 group text-xs sm:text-sm"
                   >
-                    <span className="sm:hidden">Postuler</span>
-                    <span className="hidden sm:inline">Postuler maintenant</span>
-                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>{expandedJobId === job.id ? 'Masquer' : 'Voir'} les contacts</span>
+                    <ChevronRight className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${expandedJobId === job.id ? 'rotate-90' : ''}`} />
                   </button>
-                  
+
                   <div className="flex gap-1 sm:gap-2 justify-center sm:justify-end">
                     <button
                       onClick={() => toggleSaveJob(job.id)}
@@ -416,7 +413,7 @@ const JobOffers: React.FC = () => {
                         <Bookmark className="w-4 h-4 sm:w-5 sm:h-5" />
                       )}
                     </button>
-                    
+
                     <button
                       className="p-2 sm:p-2.5 bg-white text-gray-600 rounded-lg sm:rounded-xl border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
                     >
@@ -425,6 +422,65 @@ const JobOffers: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Contact Information - Expandable */}
+              {expandedJobId === job.id && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-emerald-700" />
+                    Informations de contact
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    {job.applicationEmail && (
+                      <a
+                        href={`mailto:${job.applicationEmail}`}
+                        className="flex items-center gap-2 p-2 sm:p-3 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
+                      >
+                        <Mail className="w-4 h-4 text-emerald-700 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs text-gray-600">Email</p>
+                          <p className="text-sm font-medium text-emerald-800 truncate">{job.applicationEmail}</p>
+                        </div>
+                      </a>
+                    )}
+                    {job.applicationPhone && (
+                      <a
+                        href={`tel:${job.applicationPhone}`}
+                        className="flex items-center gap-2 p-2 sm:p-3 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
+                      >
+                        <Phone className="w-4 h-4 text-emerald-700 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs text-gray-600">Téléphone</p>
+                          <p className="text-sm font-medium text-emerald-800">{job.applicationPhone}</p>
+                        </div>
+                      </a>
+                    )}
+                    {job.applicationUrl && (
+                      <a
+                        href={job.applicationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 p-2 sm:p-3 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors sm:col-span-2"
+                      >
+                        <ExternalLink className="w-4 h-4 text-emerald-700 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs text-gray-600">Lien de candidature</p>
+                          <p className="text-sm font-medium text-emerald-800 truncate">{job.applicationUrl}</p>
+                        </div>
+                      </a>
+                    )}
+                  </div>
+                  {job.applicationDeadline && (
+                    <p className="mt-2 text-xs text-gray-600">
+                      <Clock className="w-3 h-3 inline mr-1" />
+                      Date limite : {new Date(job.applicationDeadline).toLocaleDateString('fr-FR')}
+                    </p>
+                  )}
+                  {!job.applicationEmail && !job.applicationPhone && !job.applicationUrl && (
+                    <p className="text-sm text-gray-500 italic">Aucune information de contact disponible</p>
+                  )}
+                </div>
+              )}
             </div>
             ))}
           </div>
@@ -490,26 +546,6 @@ const JobOffers: React.FC = () => {
           loadJobs();
         }}
       />
-
-      {/* Job Application Modal */}
-      {selectedJobForApplication && (
-        <JobApplicationModal
-          open={isApplicationModalOpen}
-          onClose={() => {
-            setIsApplicationModalOpen(false);
-            setSelectedJobForApplication(null);
-          }}
-          onSuccess={() => {
-            // Optionnel: recharger les données ou afficher un message de succès
-            console.log("Candidature envoyée avec succès !");
-          }}
-          jobOffer={{
-            id: selectedJobForApplication.id,
-            title: selectedJobForApplication.title,
-            company: selectedJobForApplication.company,
-          }}
-        />
-      )}
     </section>
   );
 };

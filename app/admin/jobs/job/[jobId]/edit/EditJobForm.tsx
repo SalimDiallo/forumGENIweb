@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Modal from "@/components/Modal";
-import { updateJobOfferSchema } from "@/lib/validations/jobs";
+import { updateJobOfferSchema } from "./job.edit.schema";
 import { useEffect, useMemo, useState } from "react";
 import MarkdownEditor from "@/components/MardownEditor";
 import {

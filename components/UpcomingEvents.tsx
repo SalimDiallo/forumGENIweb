@@ -32,6 +32,26 @@ type UpcomingEventsProps = {
 };
 
 const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
+  // Helper to validate image URL
+  const getValidImageUrl = (url: string | null): string => {
+    if (!url || url.trim() === '' || url === 'image') {
+      return '/insea-building.jpg';
+    }
+
+    // Check if it's a valid absolute path
+    if (url.startsWith('/')) {
+      return url;
+    }
+
+    // Check if it's a valid URL
+    try {
+      new URL(url);
+      return url;
+    } catch {
+      return '/insea-building.jpg';
+    }
+  };
+
   // Transform database events to display format
   const displayEvents = events.map(event => ({
     id: event.id,
@@ -50,7 +70,7 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
           event.eventType === 'webinar' ? 'Webinaire' : 'Autre',
     priority: event.isFeatured ? 'high' : 'medium',
     description: event.shortDescription || event.description || '',
-    image: event.featuredImage || '/insea-building.jpg',
+    image: getValidImageUrl(event.featuredImage),
     link: `/evenements/${event.slug}`,
     attendees: event.maxParticipants ? `${event.currentParticipants}/${event.maxParticipants}` : `${event.currentParticipants}+`,
     companies: event._count.registrations > 0 ? `${event._count.registrations}` : '0',

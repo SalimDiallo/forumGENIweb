@@ -5,9 +5,9 @@ import { Prisma } from "@/lib/generated/prisma";
 export async function getEvents() {
     try {
       const events = await prisma.event.findMany({
-        // where: {
-        //   status: 'published'
-        // },
+        where: {
+          status: 'published'
+        },
         orderBy: {
           startDate: 'asc'
         }

@@ -1,6 +1,6 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
-import { createContact, deleteContact, listContacts } from "../actions";
+import { createContact, deleteContact, listContacts, updateContact } from "../actions";
 import { useEffect, useCallback, useState, useMemo } from "react";
 import type { ContactMessage } from "@/lib/generated/prisma";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ export default function AdminContactsPage() {
   const contacts = useAction(listContacts);
   const createC = useAction(createContact);
   const delC = useAction(deleteContact);
+  const updateC = useAction(updateContact);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -40,6 +41,16 @@ export default function AdminContactsPage() {
     }
   }, [delC.status, delC.result]);
 
+  useEffect(() => {
+    if (updateC.status === "hasSucceeded") {
+      contacts.execute();
+      toast.success("Statut mis à jour avec succès");
+    }
+    if (updateC.status === "hasErrored") {
+      toast.error(updateC.result?.serverError || "Erreur lors de la mise à jour");
+    }
+  }, [updateC.status, updateC.result]);
+
   const handleCreate = useCallback((formData: FormData) => {
     createC.execute({
       name: String(formData.get("name") || ""),
@@ -55,8 +66,31 @@ export default function AdminContactsPage() {
     }
   }, [delC]);
 
+  const handleStatusChange = useCallback((id: number, newStatus: "new" | "in_progress" | "resolved" | "closed") => {
+    updateC.execute({ id, status: newStatus });
+  }, [updateC]);
+
   const isLoading = contacts.status === "executing";
   const allMessages = contacts.result?.data?.messages || [];
+
+  // Calculate status statistics
+  const statusStats = useMemo(() => {
+    const stats = {
+      new: 0,
+      in_progress: 0,
+      resolved: 0,
+      closed: 0,
+      total: allMessages.length
+    };
+
+    allMessages.forEach((msg: ContactMessage) => {
+      if (msg.status in stats) {
+        stats[msg.status as keyof typeof stats]++;
+      }
+    });
+
+    return stats;
+  }, [allMessages]);
 
   // Pagination calculations
   const totalPages = Math.ceil(allMessages.length / itemsPerPage);
@@ -67,6 +101,30 @@ export default function AdminContactsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Status Statistics */}
+      <section className="grid grid-cols-5 md:grid-cols-5 gap-4">
+        <div className="bg-white p-4 rounded-lg border shadow-sm">
+          <div className="text-sm text-gray-600 mb-1">Total</div>
+          <div className="text-2xl font-bold text-gray-900">{statusStats.total}</div>
+        </div>
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 shadow-sm">
+          <div className="text-sm text-blue-600 mb-1">Nouveaux</div>
+          <div className="text-2xl font-bold text-blue-900">{statusStats.new}</div>
+        </div>
+        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 shadow-sm">
+          <div className="text-sm text-yellow-600 mb-1">En cours</div>
+          <div className="text-2xl font-bold text-yellow-900">{statusStats.in_progress}</div>
+        </div>
+        <div className="bg-green-50 p-4 rounded-lg border border-green-200 shadow-sm">
+          <div className="text-sm text-green-600 mb-1">Résolus</div>
+          <div className="text-2xl font-bold text-green-900">{statusStats.resolved}</div>
+        </div>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+          <div className="text-sm text-gray-600 mb-1">Fermés</div>
+          <div className="text-2xl font-bold text-gray-900">{statusStats.closed}</div>
+        </div>
+      </section>
+
       {/* Create Form */}
       <section className="p-6 bg-white rounded-lg border shadow-sm">
         <h2 className="text-xl font-semibold mb-4 text-gray-900">Créer un message de contact</h2>
@@ -178,11 +236,17 @@ export default function AdminContactsPage() {
 
               const categoryLabels: Record<typeof m.category, string> = {
                 general: "Général",
-                partnership: "Partenariat",
                 technical: "Technique",
                 press: "Presse",
                 event: "Événement",
                 career: "Carrière",
+              };
+
+              const statusLabels: Record<typeof m.status, string> = {
+                new: "Nouveau",
+                in_progress: "En cours",
+                resolved: "Résolu",
+                closed: "Fermé",
               };
 
               return (
@@ -191,9 +255,17 @@ export default function AdminContactsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <h3 className="font-semibold text-gray-900">{m.subject}</h3>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[m.status]}`}>
-                          {m.status}
-                        </span>
+                        <select
+                          value={m.status}
+                          onChange={(e) => handleStatusChange(m.id, e.target.value as "new" | "in_progress" | "resolved" | "closed")}
+                          disabled={updateC.status === "executing"}
+                          className={`px-2 py-1 rounded-lg text-xs font-medium border-0 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${statusColors[m.status]}`}
+                        >
+                          <option value="new">Nouveau</option>
+                          <option value="in_progress">En cours</option>
+                          <option value="resolved">Résolu</option>
+                          <option value="closed">Fermé</option>
+                        </select>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${priorityColors[m.priority]}`}>
                           {m.priority}
                         </span>

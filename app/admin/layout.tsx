@@ -35,8 +35,8 @@ const navItems: NavItem[] = [
     label: "CRM",
     icon: Users,
     children: [
+      { href: "/admin/crm", label: "Accueil" },
       { href: "/admin/crm/contacts", label: "Contacts" },
-      { href: "/admin/crm/partnerships", label: "Partenariats" },
     ]
   },
   {
@@ -44,6 +44,7 @@ const navItems: NavItem[] = [
     label: "Blog",
     icon: FileText,
     children: [
+      { href: "/admin/blog", label: "Accueil" },
       { href: "/admin/blog/posts", label: "Articles" },
       { href: "/admin/blog/categories", label: "Catégories" },
       { href: "/admin/blog/tags", label: "Tags" },
@@ -73,11 +74,6 @@ const navItems: NavItem[] = [
     href: "/admin/newsletter",
     label: "Newsletter",
     icon: Mail
-  },
-  {
-    href: "/admin/analytics",
-    label: "Analytics",
-    icon: BarChart3
   },
 ];
 

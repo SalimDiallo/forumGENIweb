@@ -16,7 +16,11 @@ export const createMedia = actionClient
   .metadata({ actionName: "create-media" })
   .schema(createMediaSchema)
   .action(async ({ parsedInput }) => {
-    const created = await prisma.mediaGallery.create({ data: parsedInput });
+    const data: any = { ...parsedInput };
+    if (!data.eventId) {
+      delete data.eventId;
+    }
+    const created = await prisma.mediaGallery.create({ data });
     return { id: created.id };
   });
 
@@ -24,7 +28,11 @@ export const updateMedia = actionClient
   .metadata({ actionName: "update-media" })
   .schema(updateMediaSchema)
   .action(async ({ parsedInput }) => {
-    const { id, ...data } = parsedInput;
+    const { id, ...rest } = parsedInput;
+    const data: any = { ...rest };
+    if (!data.eventId) {
+      delete data.eventId;
+    }
     const updated = await prisma.mediaGallery.update({ where: { id }, data });
     return { id: updated.id };
   });

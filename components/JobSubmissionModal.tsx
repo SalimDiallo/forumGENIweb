@@ -332,7 +332,7 @@ export default function JobSubmissionModal({
           <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-red-600 text-sm">
-              {create.result?.serverError?.message || "Erreur lors de la soumission de l'offre."}
+              {create.result?.serverError || "Erreur lors de la soumission de l'offre."}
             </p>
           </div>
         )}

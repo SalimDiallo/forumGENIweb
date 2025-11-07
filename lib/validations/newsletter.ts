@@ -4,7 +4,7 @@ export const createNewsletterSubscriptionSchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
   categories: z.string().optional(),
-  frequency: z.string().default("weekly"),
+  frequency: z.enum(["daily", "weekly", "monthly"]).default("weekly"),
   isActive: z.boolean().default(true),
   source: z.string().optional(),
 });

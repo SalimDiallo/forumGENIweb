@@ -1,7 +1,7 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
 import { createJob, deleteJob, listJobs, updateJob, getJobsWithApplicationCount } from "./actions";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   Plus,
   Edit2,
@@ -22,32 +22,22 @@ import {
   ListChecks,
   Clock,
   Home,
-  Users,
+  Eye,
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import CreateJobModal from "./CreateJobs";
-import EditJobs from "./EditJobs";
 
 export default function AdminJobsPage() {
   const list = useAction(getJobsWithApplicationCount);
   const create = useAction(createJob);
   const del = useAction(deleteJob);
-  const upd = useAction(updateJob);
 
   useEffect(() => {
     list.execute();
   }, []);
 
   const [openCreate, setOpenCreate] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
-
-  // Find the job being edited
-  const editingItem = useMemo(
-    () => list.result?.data?.jobs?.find((j: any) => j.id === editingId) ?? null,
-    [editingId, list.result]
-  );
 
   async function onDelete(id: number) {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette annonce ?")) {
@@ -61,14 +51,6 @@ export default function AdminJobsPage() {
       setOpenCreate(false);
     }
   }, [create.status]);
-
-  useEffect(() => {
-    if (upd.status === "hasSucceeded") {
-      list.execute();
-      setOpenEdit(false);
-      setEditingId(null);
-    }
-  }, [upd.status]);
 
   useEffect(() => {
     if (del.status === "hasSucceeded") {
@@ -113,14 +95,6 @@ export default function AdminJobsPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Link
-              href="/admin/jobs/applications"
-              className="flex items-center gap-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg px-4 py-3 font-medium transition-colors"
-            >
-              <Users className="w-5 h-5" />
-              Voir candidatures
-              <ArrowRight className="w-4 h-4" />
-            </Link>
             <button
               onClick={() => setOpenCreate(true)}
               className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
@@ -189,10 +163,6 @@ export default function AdminJobsPage() {
                           Vedette
                         </span>
                       )}
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200 flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        {j._count?.applications || 0} candidature{(j._count?.applications || 0) > 1 ? 's' : ''}
-                      </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                       <span className="flex items-center gap-1">
@@ -280,22 +250,19 @@ export default function AdminJobsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/admin/jobs/applications?jobId=${j.id}`}
+                      href={`/admin/jobs/job/${j.id}`}
                       className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      <Users className="w-4 h-4" />
-                      Candidatures
+                      <Eye className="w-4 h-4" />
+                      Détails
                     </Link>
-                    <button
-                      onClick={() => {
-                        setEditingId(j.id);
-                        setOpenEdit(true);
-                      }}
+                    <Link
+                      href={`/admin/jobs/job/${j.id}/edit`}
                       className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                       <Edit2 className="w-4 h-4" />
                       Éditer
-                    </button>
+                    </Link>
                     <button
                       onClick={() => onDelete(j.id)}
                       className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -349,24 +316,6 @@ export default function AdminJobsPage() {
           })}
         </div>
       </section>
-
-      {/* Edit Modal */}
-      <EditJobs
-        open={openEdit && !!editingItem}
-        onClose={() => {
-          setOpenEdit(false);
-          setEditingId(null);
-        }}
-        editingId={editingId}
-        jobs={list.result?.data?.jobs || []}
-        onSubmitEdit={(values) => upd.execute(values)}
-        upd={upd}
-        jobTypeOptions={jobTypeOptions}
-        statusOptions={statusOptions}
-        educationLevelOptions={educationLevelOptions}
-        setEditingId={setEditingId}
-        setOpenEdit={setOpenEdit}
-      />
     </div>
   );
 }

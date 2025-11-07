@@ -51,7 +51,7 @@ const initialFields = {
   newsletter: true,
 };
 
-type Errors = Partial<Record<keyof typeof initialFields, string>>;
+type Errors = Partial<Record<keyof typeof initialFields | 'form', string>>;
 
 function validate(fields: typeof initialFields) {
   const errors: Errors = {};
@@ -103,30 +103,55 @@ export default function RegistrationForm({ eventSlug, formData }: Props) {
     if (Object.keys(validationErrors).length > 0) return;
     setIsSubmitting(true);
 
-    try {
-      await registerForEvent({
-        eventSlug,
-        firstName: fields.firstName,
-        lastName: fields.lastName,
-        email: fields.email,
-        phone: fields.phone,
-        school: fields.school,
-        cne: fields.cne,
-        cycle: fields.cycle,
-        level: fields.level,
-        schoolYear: fields.schoolYear,
-        newsletter: fields.newsletter,
-      });
-      setSubmitted(true);
-      setFields({ ...initialFields });
-    } catch (error: any) {
+    const result = await registerForEvent({
+      eventSlug,
+      firstName: fields.firstName,
+      lastName: fields.lastName,
+      email: fields.email,
+      phone: fields.phone,
+      school: fields.school,
+      cne: fields.cne,
+      cycle: fields.cycle,
+      level: fields.level,
+      schoolYear: fields.schoolYear,
+      newsletter: fields.newsletter,
+    });
+
+    setIsSubmitting(false);
+
+    // Handle server errors
+    if (result?.serverError) {
       setErrors(prev => ({
         ...prev,
-        form: error?.message || "Erreur lors de l'inscription"
+        form: result.serverError
       }));
-    } finally {
-      setIsSubmitting(false);
+      return;
     }
+
+    // Handle validation errors from server
+    if (result?.validationErrors) {
+      const newErrors: Errors = {};
+      Object.entries(result.validationErrors).forEach(([key, value]) => {
+        if (value) {
+          // Handle both array format and object format
+          const errorMessage = Array.isArray(value)
+            ? value[0]
+            : (typeof value === 'object' && '_errors' in value && Array.isArray(value._errors) && value._errors.length > 0)
+              ? value._errors[0]
+              : undefined;
+
+          if (errorMessage) {
+            newErrors[key as keyof Errors] = errorMessage;
+          }
+        }
+      });
+      setErrors(newErrors);
+      return;
+    }
+
+    // Success
+    setSubmitted(true);
+    setFields({ ...initialFields });
   };
 
   return (
@@ -309,6 +334,11 @@ export default function RegistrationForm({ eventSlug, formData }: Props) {
                 <Newspaper size={10} /> Newsletter
               </label>
             </div>
+            {errors.form && (
+              <div className="text-red-700 mt-2 bg-red-50 border border-red-200 rounded py-2 px-3 text-center font-medium text-xs">
+                {errors.form}
+              </div>
+            )}
             <button
               type="submit"
               className={`w-full bg-gradient-to-r from-emerald-800 to-emerald-500 text-white py-2 px-2 rounded font-medium hover:bg-emerald-900 transition-colors flex items-center justify-center gap-1 text-xs shadow mt-1 ${submitted ? 'opacity-60 cursor-not-allowed' : ''}`}

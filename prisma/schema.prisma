@@ -94,7 +94,6 @@ enum PaymentStatus {
 
 enum ContactCategory {
   general
-  partnership
   technical
   press
   event
@@ -113,22 +112,6 @@ enum Priority {
   normal
   high
   urgent
-}
-
-enum PartnershipType {
-  sponsor
-  recruiter
-  speaker
-  mentor
-  other
-}
-
-enum PartnershipStatus {
-  pending
-  reviewing
-  approved
-  rejected
-  on_hold
 }
 
 enum CompanySize {
@@ -352,8 +335,6 @@ model JobOffer {
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
-  applications        JobApplication[]
-
   @@index([slug])
   @@index([jobType])
   @@index([location])
@@ -363,41 +344,8 @@ model JobOffer {
   @@map("job_offers")
 }
 
-model JobApplication {
-  id                Int       @id @default(autoincrement())
-  jobOfferId        Int
-  firstName         String
-  lastName          String
-  email             String
-  phone             String?
-  resumeUrl         String?
-  coverLetter       String?
-  experience        String?
-  education         String?
-  skills            String?   // JSON string for skills
-  portfolioUrl      String?
-  linkedinUrl       String?
-  availability      String?
-  expectedSalary    String?
-  additionalInfo    String?
-  status            String    @default("pending") // pending, reviewed, accepted, rejected
-  appliedAt         DateTime  @default(now())
-  reviewedAt        DateTime?
-  notes             String?   // Admin notes
-  ipAddress         String?
-  userAgent         String?
-
-  jobOffer          JobOffer  @relation(fields: [jobOfferId], references: [id], onDelete: Cascade)
-
-  @@index([jobOfferId])
-  @@index([email])
-  @@index([status])
-  @@index([appliedAt])
-  @@map("job_applications")
-}
-
 // =====================================
-// CONTACT & PARTNERSHIPS
+// CONTACT
 // =====================================
 
 model ContactMessage {
@@ -422,37 +370,6 @@ model ContactMessage {
   @@index([category])
   @@index([createdAt])
   @@map("contact_messages")
-}
-
-model PartnershipRequest {
-  id                   Int               @id @default(autoincrement())
-  companyName          String
-  industry             String?
-  companySize          CompanySize
-  website              String?
-  contactName          String
-  contactPosition      String?
-  contactEmail         String
-  contactPhone         String?
-  partnershipType      PartnershipType
-  budgetRange          String?
-  objectives           String?
-  previousPartnerships String?
-  additionalInfo       String?
-  status               PartnershipStatus @default(pending)
-  rejectionReason      String?
-  adminNotes           String?
-  ipAddress            String?
-  userAgent            String?
-  submittedAt          DateTime          @default(now())
-  reviewedAt           DateTime?
-  approvedAt           DateTime?
-
-  @@index([status])
-  @@index([partnershipType])
-  @@index([companyName])
-  @@index([submittedAt])
-  @@map("partnership_requests")
 }
 
 // =====================================
@@ -544,7 +461,6 @@ model SiteAnalytics {
   newsletterSignups     Int      @default(0)
   eventRegistrations    Int      @default(0)
   contactMessages       Int      @default(0)
-  partnershipRequests   Int      @default(0)
   jobViews              Int      @default(0)
   blogViews             Int      @default(0)
   createdAt             DateTime @default(now())

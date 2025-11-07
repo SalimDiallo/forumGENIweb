@@ -59,7 +59,7 @@ export default function AdminTagsPage() {
             </button>
           </div>
           {create.result?.serverError && (
-            <p className="text-red-600">{create.result.serverError.message}</p>
+            <p className="text-red-600">{create.result.serverError}</p>
           )}
         </form>
       </Modal>

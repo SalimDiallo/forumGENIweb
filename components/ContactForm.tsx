@@ -178,7 +178,6 @@ const ContactForm = () => {
                   className="w-full px-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent"
                 >
                   <option value="general">Question générale</option>
-                  <option value="partnership">Partenariat</option>
                   <option value="event">Participation événement</option>
                   <option value="career">Carrière</option>
                   <option value="press">Relations presse</option>

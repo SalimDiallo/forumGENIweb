@@ -5,8 +5,8 @@ import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
 import { z } from "zod";
-import { createJob } from "./actions";
-import { createJobOfferSchema } from "@/lib/validations/jobs";
+import { doCreateJob } from "./job.create.action";
+import { createJobOfferSchema } from "./job.create.schema";
 import MarkdownEditor from "@/components/MardownEditor";
 import {
   FileText,
@@ -181,7 +181,7 @@ export default function CreateJobModal({
   onCreated?: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
-  const create = useAction(createJob);
+  const create = useAction(doCreateJob);
 
   const createForm = useForm<z.infer<typeof createJobOfferSchema>>({
     resolver: zodResolver(createJobOfferSchema),
