@@ -265,13 +265,10 @@ function AdminNav() {
 }
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  // Vérifie si on est en production
-  if (process.env.NODE_ENV === "production") {
-    // En production, on ne rentre pas dans le layout (rien n'est rendu)
-    return null;
-  }
+  // TODO: Implémenter une véritable authentification avec middleware Next.js
+  // Pour l'instant, le layout admin est accessible sans restriction
+  // ATTENTION: Ajouter une protection d'authentification avant de déployer en production!
 
-  // En développement, on affiche le layout admin avec navigation
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminNav />

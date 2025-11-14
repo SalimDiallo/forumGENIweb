@@ -1,16 +1,20 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
 import { createMedia, deleteMedia, listMedia } from "./actions";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Pagination } from "@/components/admin/Pagination";
 
 export default function AdminMediaPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
   const list = useAction(listMedia);
   const create = useAction(createMedia);
   const del = useAction(deleteMedia);
 
   useEffect(() => {
-    list.execute();
-  }, []);
+    list.execute({ page: currentPage, limit: itemsPerPage });
+  }, [currentPage]);
 
   async function onCreate(formData: FormData) {
     create.execute({
@@ -25,9 +29,12 @@ export default function AdminMediaPage() {
 
   useEffect(() => {
     if (create.status === "hasSucceeded" || del.status === "hasSucceeded") {
-      list.execute();
+      list.execute({ page: currentPage, limit: itemsPerPage });
     }
   }, [create.status, del.status]);
+
+  const totalPages = list.result?.data?.totalPages || 0;
+  const total = list.result?.data?.total || 0;
 
   return (
     <div className="space-y-6">
@@ -42,7 +49,9 @@ export default function AdminMediaPage() {
       </section>
 
       <section className="p-4 bg-white rounded-md border">
-        <h2 className="text-lg font-semibold mb-3">Médias</h2>
+        <h2 className="text-lg font-semibold mb-3">
+          Médias {total > 0 && `(${total} au total)`}
+        </h2>
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {list.result?.data?.media?.map((m: any) => (
             <li key={m.id} className="border rounded p-3">
@@ -55,6 +64,18 @@ export default function AdminMediaPage() {
             </li>
           ))}
         </ul>
+
+        {totalPages > 1 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              totalItems={total}
+              itemsPerPage={itemsPerPage}
+            />
+          </div>
+        )}
       </section>
     </div>
   );

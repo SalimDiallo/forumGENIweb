@@ -40,11 +40,26 @@ export const deleteJob = actionClient
 
 export const getJobsWithApplicationCount = actionClient
   .metadata({ actionName: "get-jobs-with-application-count" })
-  .action(async () => {
-    const jobs = await prisma.jobOffer.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-    return { jobs };
+  .schema(z.object({
+    page: z.number().min(1).default(1),
+    limit: z.number().min(1).max(100).default(20)
+  }).optional().default({ page: 1, limit: 20 }))
+  .action(async ({ parsedInput }) => {
+    const { page, limit } = parsedInput || { page: 1, limit: 20 };
+    const skip = (page - 1) * limit;
+
+    const [jobs, total] = await Promise.all([
+      prisma.jobOffer.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.jobOffer.count()
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return { jobs, total, totalPages, currentPage: page };
   });
 
 

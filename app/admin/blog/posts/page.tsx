@@ -1,7 +1,7 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
 import { listBlogPosts, deleteBlogPost, toggleFeatured } from "../posts-actions";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { BlogPost, BlogCategory } from "@/lib/generated/prisma";
 import { toast } from "sonner";
 import { Pagination } from "@/components/admin/Pagination";
@@ -41,15 +41,15 @@ export default function AdminBlogPostsPage() {
   const toggleFeaturedAction = useAction(toggleFeatured);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
   useEffect(() => {
-    list.execute();
-  }, []);
+    list.execute({ page: currentPage, limit: itemsPerPage });
+  }, [currentPage]);
 
   useEffect(() => {
     if (deleteAction.status === "hasSucceeded") {
-      list.execute();
+      list.execute({ page: currentPage, limit: itemsPerPage });
       toast.success("Article supprimé avec succès");
     }
     if (deleteAction.status === "hasErrored") {
@@ -59,7 +59,7 @@ export default function AdminBlogPostsPage() {
 
   useEffect(() => {
     if (toggleFeaturedAction.status === "hasSucceeded") {
-      list.execute();
+      list.execute({ page: currentPage, limit: itemsPerPage });
       toast.success("Article mis à jour");
     }
     if (toggleFeaturedAction.status === "hasErrored") {
@@ -88,19 +88,15 @@ export default function AdminBlogPostsPage() {
   );
 
   const allPosts = (list.result?.data?.posts || []) as BlogPostWithRelations[];
+  const total = list.result?.data?.total || 0;
+  const totalPages = list.result?.data?.totalPages || 0;
 
   const stats = {
-    total: allPosts.length,
+    total: total,
     published: allPosts.filter((p) => p.status === "published").length,
     draft: allPosts.filter((p) => p.status === "draft").length,
     featured: allPosts.filter((p) => p.isFeatured).length,
   };
-
-  const totalPages = Math.ceil(allPosts.length / itemsPerPage);
-  const paginatedPosts = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return allPosts.slice(startIndex, startIndex + itemsPerPage);
-  }, [allPosts, currentPage, itemsPerPage]);
 
   const isLoading = list.status === "executing";
 
@@ -171,7 +167,7 @@ export default function AdminBlogPostsPage() {
         ) : (
           <>
             <div className="divide-y divide-gray-200">
-              {paginatedPosts.map((post) => (
+              {allPosts.map((post) => (
                 <div key={post.id} className="p-6 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -289,7 +285,7 @@ export default function AdminBlogPostsPage() {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={setCurrentPage}
-                  totalItems={allPosts.length}
+                  totalItems={total}
                   itemsPerPage={itemsPerPage}
                 />
               </div>

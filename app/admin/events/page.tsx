@@ -1,13 +1,29 @@
-
 import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, UserCheck, Plus, Eye } from "lucide-react";
 import Link from "next/link";
 import { statusOptions } from "@/lib/utils";
 import { prisma } from "@/lib/db";
 
-export default async function AdminEventsPage() {
+interface PageProps {
+  searchParams?: {
+    page?: string;
+  };
+}
 
-  const events = await prisma.event.findMany({
-  });
+export default async function AdminEventsPage({ searchParams }: PageProps) {
+  const page = searchParams?.page ? parseInt(searchParams.page) : 1;
+  const limit = 15;
+  const skip = (page - 1) * limit;
+
+  const [events, total] = await Promise.all([
+    prisma.event.findMany({
+      skip,
+      take: limit,
+      orderBy: { startDate: "desc" }
+    }),
+    prisma.event.count()
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="space-y-6">
@@ -17,7 +33,7 @@ export default async function AdminEventsPage() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Gestion des Événements</h1>
             <p className="text-gray-600">
-              {events?.length || 0} événement(s) au total
+              {total} événement(s) au total
             </p>
           </div>
           <Link
@@ -139,7 +155,46 @@ export default async function AdminEventsPage() {
             );
           })}
         </div>
+
+        {totalPages > 1 && (
+          <ServerPaginationClient
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={total}
+            itemsPerPage={limit}
+          />
+        )}
       </section>
+    </div>
+  );
+}
+
+// Client component pour la pagination dans un Server Component
+"use client";
+import { useRouter } from "next/navigation";
+import { Pagination } from "@/components/admin/Pagination";
+
+function ServerPaginationClient({ currentPage, totalPages, totalItems, itemsPerPage }: {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}) {
+  const router = useRouter();
+
+  const handlePageChange = (page: number) => {
+    router.push(`/admin/events?page=${page}`);
+  };
+
+  return (
+    <div className="border-t border-gray-200 p-4">
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+      />
     </div>
   );
 }

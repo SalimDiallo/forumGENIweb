@@ -9,8 +9,6 @@ export const doEditJob = adminAction
     .metadata({ actionName: "edit-job-admin" })
     .schema(updateJobOfferSchema)
     .action(async ({ parsedInput }) => {
-        console.log("editing job:", parsedInput);
-
         const { id, ...data } = parsedInput;
 
         const editedJob = await prisma.jobOffer.update({

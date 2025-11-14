@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import MarkdownEditor from "@/components/MardownEditor";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { FileText, Settings, UserCheck, Save, AlertCircle } from "lucide-react";
 import {
   eventTypeOptions,
@@ -10,7 +10,7 @@ import {
   statusOptions,
 } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { createEventSchema } from "./event.create.sheme";
+import { createEventSchema } from "./event.create.schema";
 import { doCreateEvent } from "./event.create.action";
 
 type FormTab = "basic" | "details" | "registration";
@@ -66,7 +66,6 @@ export default function CreateEventForm({
     mutationFn: async (data: CreateEventFormInput) => {
       const result = await doCreateEvent(data);
       if (result.serverError) {
-        console.log(result.serverError);
         throw new Error("Failed to create event");
       }
     }

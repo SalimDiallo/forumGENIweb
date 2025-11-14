@@ -9,8 +9,6 @@ export const doCreateJob = adminAction
     .metadata({ actionName: "create-job-admin" })
     .schema(createJobOfferSchema)
     .action(async ({ parsedInput }) => {
-        console.log("creating job:", parsedInput);
-
         const createdJob = await prisma.jobOffer.create({ data: parsedInput });
 
         revalidatePath("/admin/jobs");

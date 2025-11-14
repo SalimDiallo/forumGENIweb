@@ -21,7 +21,7 @@ import {
   Video,
   Youtube
 } from "lucide-react";
-import { markdownOptions } from "@/utils/mardown";
+import { markdownOptions } from "@/utils/markdown";
 
 interface MarkdownEditorProps {
   value: string;

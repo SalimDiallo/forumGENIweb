@@ -2,15 +2,17 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save, AlertCircle, Settings, UserCheck, FileText } from "lucide-react";
+import { Save, Settings, UserCheck, FileText } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import MarkdownEditor from "@/components/MardownEditor";
-import { eventTypeOptions, slugify, statusOptions } from "@/lib/utils";
+import { slugify } from "@/lib/utils";
 import { Event } from "@/lib/generated/prisma";
-import { updateEventSchema } from "./event.edit.sheme";
+import { updateEventSchema } from "./event.edit.schema";
 import { useMutation } from "@tanstack/react-query";
 import { doEditEvent } from "./event.edit.action";
 import { useRouter } from "next/navigation";
+import EventBasicFields from "./components/EventBasicFields";
+import EventAdvancedFields from "./components/EventAdvancedFields";
+import EventRegistrationFields from "./components/EventRegistrationFields";
 
 
 type FormTab = "basic" | "details" | "registration";
@@ -107,7 +109,6 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     mutationFn: async (data: updateEventSchema) => {
       const result = await doEditEvent(data);
       if (result.serverError) {
-        console.log(result.serverError);
         throw new Error("Failed to create event");
       }else{
         router.push("/admin/events")
@@ -116,7 +117,6 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     }
   });
 
-  const descriptionValue = watch("description");
   const titleValue = watch("title");
   const slugValue = watch("slug");
 
@@ -142,7 +142,6 @@ export default function EditEventForm({ event }: EditEventFormProps) {
   ];
 
   async function onSubmit(data: updateEventSchema) {
-    console.log(data);
     editEventMutation.mutateAsync(data)
   }
 
@@ -171,526 +170,26 @@ export default function EditEventForm({ event }: EditEventFormProps) {
         {/* Tab content */}
         <div className="max-h-[60vh] overflow-y-auto px-1">
           {activeTab === "basic" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Titre de l&apos;événement *
-                  </label>
-                  <input
-                    id="title"
-                    autoFocus
-                    {...register("title")}
-                    placeholder="Ex: Forum Entrepreneuriat 2025"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.title && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.title.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="slug"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Slug (URL) *
-                  </label>
-                  <input
-                    id="slug"
-                    {...register("slug")}
-                    placeholder="forum-entrepreneuriat-2025"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.slug && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.slug.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="eventType"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Type d&apos;événement *
-                  </label>
-                  <select
-                    id="eventType"
-                    {...register("eventType")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  >
-                    {eventTypeOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.eventType && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.eventType.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="status"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Statut *
-                  </label>
-                  <select
-                    id="status"
-                    {...register("status")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  >
-                    {statusOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.status && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.status.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="shortDescription"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Description courte
-                  </label>
-                  <textarea
-                    id="shortDescription"
-                    {...register("shortDescription")}
-                    placeholder="Résumé en une phrase"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.shortDescription && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.shortDescription.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Description complète (Markdown supporté)
-                  </label>
-                  <MarkdownEditor
-                    value={descriptionValue || ""}
-                    onChange={(val) =>
-                      setValue("description", val, { shouldValidate: true })
-                    }
-                    placeholder="Description détaillée de l'événement (supporte Markdown)"
-                  />
-                  {errors.description && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.description.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="featuredImage"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Image principale (URL)
-                  </label>
-                  <input
-                    id="featuredImage"
-                    {...register("featuredImage")}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.featuredImage && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.featuredImage.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+            <EventBasicFields
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              watch={watch}
+            />
           )}
 
           {activeTab === "details" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="startDate"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Date de début *
-                  </label>
-                  <input
-                    id="startDate"
-                    type="datetime-local"
-                    {...register("startDate")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.startDate && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.startDate.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="endDate"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Date de fin *
-                  </label>
-                  <input
-                    id="endDate"
-                    type="datetime-local"
-                    {...register("endDate")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.endDate && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.endDate.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="location"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Lieu
-                  </label>
-                  <input
-                    id="location"
-                    {...register("location")}
-                    placeholder="Ex: Université, Casablanca"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.location && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.location.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="isVirtual"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Virtuel ?
-                  </label>
-                  <select
-                    id="isVirtual"
-                    {...register("isVirtual")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  >
-                    <option value="false">Non</option>
-                    <option value="true">Oui</option>
-                  </select>
-                  {errors.isVirtual && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.isVirtual.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="virtualLink"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Lien virtuel (si applicable)
-                  </label>
-                  <input
-                    id="virtualLink"
-                    {...register("virtualLink")}
-                    placeholder="https://meet.example.com/..."
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.virtualLink && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.virtualLink.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="isFeatured"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    À la une ?
-                  </label>
-                  <select
-                    id="isFeatured"
-                    {...register("isFeatured")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  >
-                    <option value="false">Non</option>
-                    <option value="true">Oui</option>
-                  </select>
-                  {errors.isFeatured && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.isFeatured.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="organizerName"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Organisateur
-                  </label>
-                  <input
-                    id="organizerName"
-                    {...register("organizerName")}
-                    placeholder="Nom de l'organisateur"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.organizerName && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.organizerName.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="agenda"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Agenda (Markdown)
-                  </label>
-                  <textarea
-                    id="agenda"
-                    {...register("agenda")}
-                    placeholder="Programme de l'événement"
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                  />
-                  {errors.agenda && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.agenda.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="speakers"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Intervenants (Markdown)
-                  </label>
-                  <textarea
-                    id="speakers"
-                    {...register("speakers")}
-                    placeholder="Liste des intervenants"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                  />
-                  {errors.speakers && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.speakers.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="sponsors"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Sponsors (Markdown)
-                  </label>
-                  <textarea
-                    id="sponsors"
-                    {...register("sponsors")}
-                    placeholder="Sponsors de l'événement"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                  />
-                  {errors.sponsors && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.sponsors.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="requirements"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Prérequis (Markdown)
-                  </label>
-                  <textarea
-                    id="requirements"
-                    {...register("requirements")}
-                    placeholder="Prérequis pour participer"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                  />
-                  {errors.requirements && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.requirements.message}
-                    </p>
-                  )}
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="whatToBring"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    À apporter (Markdown)
-                  </label>
-                  <textarea
-                    id="whatToBring"
-                    {...register("whatToBring")}
-                    placeholder="Ce que les participants doivent apporter"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm"
-                  />
-                  {errors.whatToBring && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.whatToBring.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+            <EventAdvancedFields
+              register={register}
+              errors={errors}
+            />
           )}
 
           {activeTab === "registration" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="registrationStart"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Début des inscriptions
-                  </label>
-                  <input
-                    id="registrationStart"
-                    type="datetime-local"
-                    {...register("registrationStart")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.registrationStart && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.registrationStart.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="registrationEnd"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Fin des inscriptions
-                  </label>
-                  <input
-                    id="registrationEnd"
-                    type="datetime-local"
-                    {...register("registrationEnd")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.registrationEnd && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.registrationEnd.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="maxParticipants"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Nombre max. de participants
-                  </label>
-                  <input
-                    id="maxParticipants"
-                    type="number"
-                    min={0}
-                    {...register("maxParticipants", { valueAsNumber: true })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.maxParticipants && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.maxParticipants.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="isFree"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Gratuit ?
-                  </label>
-                  <select
-                    id="isFree"
-                    {...register("isFree")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  >
-                    <option value="true">Oui</option>
-                    <option value="false">Non</option>
-                  </select>
-                  {errors.isFree && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.isFree.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="price"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Prix (si payant)
-                  </label>
-                  <input
-                    id="price"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    {...register("price", { valueAsNumber: true })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.price && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.price.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="currency"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Devise
-                  </label>
-                  <input
-                    id="currency"
-                    {...register("currency")}
-                    placeholder="MAD"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                  {errors.currency && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.currency.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+            <EventRegistrationFields
+              register={register}
+              errors={errors}
+            />
           )}
         </div>
 

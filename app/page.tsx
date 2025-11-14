@@ -2,7 +2,7 @@ import { Suspense, lazy } from 'react';
 import Hero from '@/components/Hero';
 import Stats from '@/components/Stats';
 import Link from 'next/link';
-import HeaderHome from '@/components/home/HeaderHome';
+import Header from '@/components/Header';
 import UpcomingEventsWrapper from '@/components/home/UpcomingEventsWrapper';
 import VideoTestimonialsWrapper from '@/components/home/VideoTestimonialsWrapper';
 
@@ -20,7 +20,7 @@ const SimpleLoader = () => (
 export default function Home() {
   return (
     <main>
-      <HeaderHome />
+      <Header />
       <Hero />
 
       <Suspense fallback={<SimpleLoader />}>

@@ -86,7 +86,7 @@ export const myAction = actionClient
 ### Event Management Pattern
 
 Events module demonstrates the recommended pattern:
-- Co-located schemas: `event.create.sheme.ts`, `event.edit.sheme.ts`
+- Co-located schemas: `event.create.schema.ts`, `event.edit.schema.ts`
 - Co-located actions: `event.create.action.ts`, `event.edit.action.ts`
 - Form components: `CreateEventForm.tsx`, `EditEventForm.tsx`
 - Dynamic routes: `[eventId]/edit`

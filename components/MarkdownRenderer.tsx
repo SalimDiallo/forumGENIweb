@@ -1,5 +1,5 @@
 "use client";
-import { markdownOptions } from "@/utils/mardown";
+import { markdownOptions } from "@/utils/markdown";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 

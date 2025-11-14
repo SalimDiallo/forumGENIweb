@@ -1,16 +1,20 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
 import { createTestimonial, deleteTestimonial, listTestimonials } from "./actions";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Pagination } from "@/components/admin/Pagination";
 
 export default function AdminTestimonialsPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const list = useAction(listTestimonials);
   const create = useAction(createTestimonial);
   const del = useAction(deleteTestimonial);
 
   useEffect(() => {
-    list.execute();
-  }, []);
+    list.execute({ page: currentPage, limit: itemsPerPage });
+  }, [currentPage]);
 
   async function onCreate(formData: FormData) {
     create.execute({
@@ -24,9 +28,12 @@ export default function AdminTestimonialsPage() {
 
   useEffect(() => {
     if (create.status === "hasSucceeded" || del.status === "hasSucceeded") {
-      list.execute();
+      list.execute({ page: currentPage, limit: itemsPerPage });
     }
   }, [create.status, del.status]);
+
+  const totalPages = list.result?.data?.totalPages || 0;
+  const total = list.result?.data?.total || 0;
 
   return (
     <div className="space-y-6">
@@ -40,7 +47,9 @@ export default function AdminTestimonialsPage() {
       </section>
 
       <section className="p-4 bg-white rounded-md border">
-        <h2 className="text-lg font-semibold mb-3">Témoignages</h2>
+        <h2 className="text-lg font-semibold mb-3">
+          Témoignages {total > 0 && `(${total} au total)`}
+        </h2>
         <ul className="divide-y">
           {list.result?.data?.testimonials?.map((t: any) => (
             <li key={t.id} className="flex items-center justify-between py-2">
@@ -52,6 +61,18 @@ export default function AdminTestimonialsPage() {
             </li>
           ))}
         </ul>
+
+        {totalPages > 1 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              totalItems={total}
+              itemsPerPage={itemsPerPage}
+            />
+          </div>
+        )}
       </section>
     </div>
   );

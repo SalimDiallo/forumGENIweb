@@ -2,14 +2,31 @@
 import { actionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createMediaSchema, updateMediaSchema } from "@/lib/validations/media";
+import { revalidateTag } from "next/cache";
+import { z } from "zod";
 
 export const listMedia = actionClient
   .metadata({ actionName: "list-media" })
-  .action(async () => {
-    const media = await prisma.mediaGallery.findMany({
-      orderBy: { uploadedAt: "desc" }
-    });
-    return { media };
+  .schema(z.object({
+    page: z.number().min(1).default(1),
+    limit: z.number().min(1).max(100).default(15)
+  }).optional().default({ page: 1, limit: 15 }))
+  .action(async ({ parsedInput }) => {
+    const { page, limit } = parsedInput || { page: 1, limit: 15 };
+    const skip = (page - 1) * limit;
+
+    const [media, total] = await Promise.all([
+      prisma.mediaGallery.findMany({
+        skip,
+        take: limit,
+        orderBy: { uploadedAt: "desc" }
+      }),
+      prisma.mediaGallery.count()
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return { media, total, totalPages, currentPage: page };
   });
 
 export const createMedia = actionClient
@@ -21,6 +38,10 @@ export const createMedia = actionClient
       delete data.eventId;
     }
     const created = await prisma.mediaGallery.create({ data });
+
+    // Revalidate cache tag for media
+    revalidateTag('media');
+
     return { id: created.id };
   });
 
@@ -34,6 +55,10 @@ export const updateMedia = actionClient
       delete data.eventId;
     }
     const updated = await prisma.mediaGallery.update({ where: { id }, data });
+
+    // Revalidate cache tag for media
+    revalidateTag('media');
+
     return { id: updated.id };
   });
 
@@ -42,6 +67,10 @@ export const deleteMedia = actionClient
   .schema(updateMediaSchema.pick({ id: true }))
   .action(async ({ parsedInput }) => {
     await prisma.mediaGallery.delete({ where: { id: parsedInput.id } });
+
+    // Revalidate cache tag for media
+    revalidateTag('media');
+
     return { ok: true };
   });
 

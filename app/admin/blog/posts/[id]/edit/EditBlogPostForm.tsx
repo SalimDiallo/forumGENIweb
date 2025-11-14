@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import MarkdownEditor from "@/components/MardownEditor";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { FileText, Settings, Eye, Save, AlertCircle } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { getBlogPost, updateBlogPost } from "../../../posts-actions";

@@ -2,6 +2,7 @@
 import { useAction } from "next-safe-action/hooks";
 import { createJob, deleteJob, listJobs, updateJob, getJobsWithApplicationCount } from "./actions";
 import { useEffect, useState } from "react";
+import { Pagination } from "@/components/admin/Pagination";
 import {
   Plus,
   Edit2,
@@ -26,16 +27,19 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
-import CreateJobModal from "./CreateJobs";
+import CreateJobModal from "./job/create/CreateJobForm";
 
 export default function AdminJobsPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
   const list = useAction(getJobsWithApplicationCount);
   const create = useAction(createJob);
   const del = useAction(deleteJob);
 
   useEffect(() => {
-    list.execute();
-  }, []);
+    list.execute({ page: currentPage, limit: itemsPerPage });
+  }, [currentPage]);
 
   const [openCreate, setOpenCreate] = useState(false);
 
@@ -47,16 +51,19 @@ export default function AdminJobsPage() {
 
   useEffect(() => {
     if (create.status === "hasSucceeded") {
-      list.execute();
+      list.execute({ page: currentPage, limit: itemsPerPage });
       setOpenCreate(false);
     }
   }, [create.status]);
 
   useEffect(() => {
     if (del.status === "hasSucceeded") {
-      list.execute();
+      list.execute({ page: currentPage, limit: itemsPerPage });
     }
   }, [del.status]);
+
+  const totalPages = list.result?.data?.totalPages || 0;
+  const total = list.result?.data?.total || 0;
 
   // Options for select fields (should be kept in sync with CreateJobs.tsx and EditJobs.tsx)
   const jobTypeOptions = [
@@ -91,7 +98,7 @@ export default function AdminJobsPage() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Gestion des Annonces d'emploi</h1>
             <p className="text-gray-600">
-              {list.result?.data?.jobs?.length || 0} annonce(s) au total
+              {total} annonce(s) au total
             </p>
           </div>
           <div className="flex gap-3">
@@ -111,7 +118,7 @@ export default function AdminJobsPage() {
         open={openCreate}
         onClose={() => setOpenCreate(false)}
         onCreated={() => {
-          list.execute();
+          list.execute({ page: currentPage, limit: itemsPerPage });
           setOpenCreate(false);
         }}
       />
@@ -315,6 +322,18 @@ export default function AdminJobsPage() {
             );
           })}
         </div>
+
+        {totalPages > 1 && (
+          <div className="border-t border-gray-200 p-4">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              totalItems={total}
+              itemsPerPage={itemsPerPage}
+            />
+          </div>
+        )}
       </section>
     </div>
   );

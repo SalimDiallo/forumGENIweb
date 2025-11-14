@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Modal from "@/components/Modal";
 import { updateJobOfferSchema } from "./job.edit.schema";
 import { useEffect, useMemo, useState } from "react";
-import MarkdownEditor from "@/components/MardownEditor";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import {
   FileText,
   Settings,

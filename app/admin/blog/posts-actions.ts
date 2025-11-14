@@ -2,23 +2,39 @@
 import { actionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/validations/blog";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 
 export const listBlogPosts = actionClient
   .metadata({ actionName: "list-blog-posts" })
-  .action(async () => {
-    const posts = await prisma.blogPost.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        category: true,
-        tags: {
-          include: {
-            tag: true,
+  .schema(z.object({
+    page: z.number().min(1).default(1),
+    limit: z.number().min(1).max(100).default(20)
+  }).optional().default({ page: 1, limit: 20 }))
+  .action(async ({ parsedInput }) => {
+    const { page, limit } = parsedInput || { page: 1, limit: 20 };
+    const skip = (page - 1) * limit;
+
+    const [posts, total] = await Promise.all([
+      prisma.blogPost.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          category: true,
+          tags: {
+            include: {
+              tag: true,
+            },
           },
         },
-      },
-    });
-    return { posts };
+      }),
+      prisma.blogPost.count()
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return { posts, total, totalPages, currentPage: page };
   });
 
 export const getBlogPost = actionClient
@@ -61,6 +77,10 @@ export const createBlogPost = actionClient
         publishedAt: parsedInput.status === "published" ? new Date() : null,
       },
     });
+
+    // Revalidate cache tag for blog
+    revalidateTag('blog');
+
     return { id: created.id };
   });
 
@@ -82,6 +102,10 @@ export const updateBlogPost = actionClient
       where: { id },
       data: updateData,
     });
+
+    // Revalidate cache tag for blog
+    revalidateTag('blog');
+
     return { id: updated.id };
   });
 
@@ -90,6 +114,10 @@ export const deleteBlogPost = actionClient
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
     await prisma.blogPost.delete({ where: { id: parsedInput.id } });
+
+    // Revalidate cache tag for blog
+    revalidateTag('blog');
+
     return { ok: true };
   });
 
@@ -101,5 +129,9 @@ export const toggleFeatured = actionClient
       where: { id: parsedInput.id },
       data: { isFeatured: parsedInput.isFeatured },
     });
+
+    // Revalidate cache tag for blog
+    revalidateTag('blog');
+
     return { id: updated.id };
   });

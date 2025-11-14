@@ -1,5 +1,5 @@
 import z from "zod";
-import { createEventSchema } from "../../create/event.create.sheme";
+import { createEventSchema } from "../../create/event.create.schema";
 
 
 

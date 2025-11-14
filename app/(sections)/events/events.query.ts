@@ -1,17 +1,14 @@
-import { prisma } from "@/lib/db";
+import { getCachedEvents } from "@/lib/cache";
 import { Prisma } from "@/lib/generated/prisma";
 
-
+/**
+ * Get all published events (cached version)
+ * Uses cache with 1 hour TTL
+ */
 export async function getEvents() {
     try {
-      const events = await prisma.event.findMany({
-        where: {
-          status: 'published'
-        },
-        orderBy: {
-          startDate: 'asc'
-        }
-      });
+      // Use cached version for better performance
+      const events = await getCachedEvents();
       return events;
     } catch (error) {
       console.error('Error fetching events:', error);
