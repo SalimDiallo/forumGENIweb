@@ -2,15 +2,17 @@ import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, UserCheck, P
 import Link from "next/link";
 import { statusOptions } from "@/lib/utils";
 import { prisma } from "@/lib/db";
+import { ServerPaginationClient } from "./ServerPaginationClient";
 
 interface PageProps {
-  searchParams?: {
+  searchParams?: Promise<{
     page?: string;
-  };
+  }>;
 }
 
 export default async function AdminEventsPage({ searchParams }: PageProps) {
-  const page = searchParams?.page ? parseInt(searchParams.page) : 1;
+  const resolvedSearchParams = await searchParams;
+  const page = resolvedSearchParams?.page ? parseInt(resolvedSearchParams.page) : 1;
   const limit = 15;
   const skip = (page - 1) * limit;
 
@@ -169,32 +171,3 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
   );
 }
 
-// Client component pour la pagination dans un Server Component
-"use client";
-import { useRouter } from "next/navigation";
-import { Pagination } from "@/components/admin/Pagination";
-
-function ServerPaginationClient({ currentPage, totalPages, totalItems, itemsPerPage }: {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-}) {
-  const router = useRouter();
-
-  const handlePageChange = (page: number) => {
-    router.push(`/admin/events?page=${page}`);
-  };
-
-  return (
-    <div className="border-t border-gray-200 p-4">
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalItems={totalItems}
-        itemsPerPage={itemsPerPage}
-      />
-    </div>
-  );
-}

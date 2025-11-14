@@ -33,10 +33,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     // Load all stats on mount
     contacts.execute();
-    jobs.execute();
+    jobs.execute({});
     categories.execute();
-    media.execute();
-    testimonials.execute();
+    media.execute({});
+    testimonials.execute({});
     subscriptions.execute();
   }, []);
 

@@ -3,6 +3,7 @@ import { actionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jobs";
 import { z } from "zod";
+import { revalidateTag } from "next/cache";
 
 export const listJobs = actionClient
   .metadata({ actionName: "list-jobs" })
@@ -18,6 +19,7 @@ export const createJob = actionClient
   .schema(createJobOfferSchema)
   .action(async ({ parsedInput }) => {
     const created = await prisma.jobOffer.create({ data: parsedInput });
+    revalidateTag('jobs');
     return { id: created.id };
   });
 
@@ -27,6 +29,7 @@ export const updateJob = actionClient
   .action(async ({ parsedInput }) => {
     const { id, ...data } = parsedInput;
     const updated = await prisma.jobOffer.update({ where: { id }, data });
+    revalidateTag('jobs');
     return { id: updated.id };
   });
 
@@ -35,6 +38,7 @@ export const deleteJob = actionClient
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
     await prisma.jobOffer.delete({ where: { id: parsedInput.id } });
+    revalidateTag('jobs');
     return { ok: true };
   });
 

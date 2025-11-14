@@ -294,10 +294,10 @@ export const getCachedGalleryMedia = unstable_cache(
   async () => {
     const media = await prisma.mediaGallery.findMany({
       where: {
-        isActive: true
+        isPublic: true
       },
       orderBy: {
-        uploadDate: 'desc'
+        uploadedAt: 'desc'
       }
     });
     return media;
@@ -318,21 +318,49 @@ export const getCachedActiveJobs = unstable_cache(
   async (limit?: number) => {
     const jobs = await prisma.jobOffer.findMany({
       where: {
-        status: 'active',
+        status: 'published',
         applicationDeadline: {
           gte: new Date()
         }
       },
-      orderBy: {
-        postedDate: 'desc'
-      },
+      orderBy: [
+        { isFeatured: 'desc' },
+        { publishedAt: 'desc' },
+        { createdAt: 'desc' }
+      ],
       take: limit,
-      include: {
-        _count: {
-          select: {
-            applications: true
-          }
-        }
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        companyName: true,
+        companyLogo: true,
+        companyWebsite: true,
+        industry: true,
+        jobType: true,
+        location: true,
+        isRemote: true,
+        salaryMin: true,
+        salaryMax: true,
+        salaryCurrency: true,
+        salaryPeriod: true,
+        description: true,
+        requirements: true,
+        benefits: true,
+        applicationEmail: true,
+        applicationUrl: true,
+        applicationPhone: true,
+        applicationDeadline: true,
+        experienceRequired: true,
+        educationLevel: true,
+        contractDuration: true,
+        startDate: true,
+        skillsRequired: true,
+        languagesRequired: true,
+        isFeatured: true,
+        viewsCount: true,
+        publishedAt: true,
+        createdAt: true,
       }
     });
     return jobs;
@@ -357,9 +385,15 @@ export const getCachedDashboardStats = unstable_cache(
       totalEvents,
       upcomingEvents,
       totalBlogPosts,
+      blogCategories,
       totalJobs,
-      totalContacts,
-      totalNewsletterSubscriptions
+      contacts,
+      newContacts,
+      totalMedia,
+      testimonials,
+      activeTestimonials,
+      newsletterSubscriptions,
+      activeNewsletterSubscriptions
     ] = await Promise.all([
       prisma.event.count(),
       prisma.event.count({
@@ -375,12 +409,26 @@ export const getCachedDashboardStats = unstable_cache(
           status: 'published'
         }
       }),
+      prisma.blogCategory.count(),
       prisma.jobOffer.count({
         where: {
-          status: 'active'
+          status: 'published'
         }
       }),
       prisma.contactMessage.count(),
+      prisma.contactMessage.count({
+        where: {
+          status: 'new'
+        }
+      }),
+      prisma.mediaGallery.count(),
+      prisma.videoTestimonial.count(),
+      prisma.videoTestimonial.count({
+        where: {
+          isActive: true
+        }
+      }),
+      prisma.newsletterSubscription.count(),
       prisma.newsletterSubscription.count({
         where: {
           isActive: true
@@ -389,12 +437,32 @@ export const getCachedDashboardStats = unstable_cache(
     ]);
 
     return {
-      totalEvents,
-      upcomingEvents,
-      totalBlogPosts,
-      totalJobs,
-      totalContacts,
-      totalNewsletterSubscriptions
+      events: {
+        total: totalEvents,
+        upcoming: upcomingEvents
+      },
+      blog: {
+        posts: totalBlogPosts,
+        categories: blogCategories
+      },
+      jobs: {
+        total: totalJobs
+      },
+      contacts: {
+        total: contacts,
+        new: newContacts
+      },
+      media: {
+        total: totalMedia
+      },
+      testimonials: {
+        total: testimonials,
+        active: activeTestimonials
+      },
+      newsletter: {
+        total: newsletterSubscriptions,
+        active: activeNewsletterSubscriptions
+      }
     };
   },
   ['dashboard-stats'],

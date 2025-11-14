@@ -3,7 +3,7 @@ import { Control, Controller, UseFormRegister, FieldErrors, UseFormWatch, UseFor
 import { z } from "zod";
 import { createJobOfferSchema } from "../job.create.schema";
 import { useState } from "react";
-import MarkdownEditor from "@/components/MardownEditor";
+import MarkdownEditor from "@/components/MarkdownEditor";
 
 interface JobRequirementsSectionProps {
   register: UseFormRegister<z.infer<typeof createJobOfferSchema>>;
