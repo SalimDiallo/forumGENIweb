@@ -392,8 +392,6 @@ export const getCachedDashboardStats = unstable_cache(
       totalMedia,
       testimonials,
       activeTestimonials,
-      newsletterSubscriptions,
-      activeNewsletterSubscriptions
     ] = await Promise.all([
       prisma.event.count(),
       prisma.event.count({
@@ -428,12 +426,7 @@ export const getCachedDashboardStats = unstable_cache(
           isActive: true
         }
       }),
-      prisma.newsletterSubscription.count(),
-      prisma.newsletterSubscription.count({
-        where: {
-          isActive: true
-        }
-      })
+    
     ]);
 
     return {
@@ -459,10 +452,6 @@ export const getCachedDashboardStats = unstable_cache(
         total: testimonials,
         active: activeTestimonials
       },
-      newsletter: {
-        total: newsletterSubscriptions,
-        active: activeNewsletterSubscriptions
-      }
     };
   },
   ['dashboard-stats'],

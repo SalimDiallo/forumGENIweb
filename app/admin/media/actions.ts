@@ -1,5 +1,5 @@
 "use server";
-import { actionClient } from "@/lib/safe-action";
+import { actionClient, adminAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createMediaSchema, updateMediaSchema } from "@/lib/validations/media";
 import { revalidateTag } from "next/cache";
@@ -29,7 +29,7 @@ export const listMedia = actionClient
     return { media, total, totalPages, currentPage: page };
   });
 
-export const createMedia = actionClient
+export const createMedia = adminAction
   .metadata({ actionName: "create-media" })
   .schema(createMediaSchema)
   .action(async ({ parsedInput }) => {
@@ -45,7 +45,7 @@ export const createMedia = actionClient
     return { id: created.id };
   });
 
-export const updateMedia = actionClient
+export const updateMedia = adminAction
   .metadata({ actionName: "update-media" })
   .schema(updateMediaSchema)
   .action(async ({ parsedInput }) => {
@@ -62,7 +62,7 @@ export const updateMedia = actionClient
     return { id: updated.id };
   });
 
-export const deleteMedia = actionClient
+export const deleteMedia = adminAction
   .metadata({ actionName: "delete-media" })
   .schema(updateMediaSchema.pick({ id: true }))
   .action(async ({ parsedInput }) => {

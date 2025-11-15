@@ -1,5 +1,5 @@
 "use server";
-import { actionClient } from "@/lib/safe-action";
+import { actionClient, adminAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createContactMessageSchema, updateContactMessageSchema } from "@/lib/validations/crm";
 
@@ -12,7 +12,7 @@ export const listContacts = actionClient
     return { messages };
   });
 
-export const createContact = actionClient
+export const createContact = adminAction
   .metadata({ actionName: "create-contact" })
   .schema(createContactMessageSchema)
   .action(async ({ parsedInput }) => {
@@ -20,7 +20,7 @@ export const createContact = actionClient
     return { id: created.id };
   });
 
-export const updateContact = actionClient
+export const updateContact = adminAction
   .metadata({ actionName: "update-contact" })
   .schema(updateContactMessageSchema)
   .action(async ({ parsedInput }) => {
@@ -29,7 +29,7 @@ export const updateContact = actionClient
     return { id: updated.id };
   });
 
-export const deleteContact = actionClient
+export const deleteContact = adminAction
   .metadata({ actionName: "delete-contact" })
   .schema(updateContactMessageSchema.pick({ id: true }))
   .action(async ({ parsedInput }) => {

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createTagSchema } from "@/lib/validations/blog";
+import { toast } from "sonner";
 
 export default function AdminTagsPage() {
   const list = useAction(listTags);
@@ -27,15 +28,47 @@ export default function AdminTagsPage() {
     create.execute(values);
   }
 
-  async function onDelete(id: number) {
-    del.execute({ id });
+  // Auto-generate slug from name
+  const nameValue = form.watch("name");
+  useEffect(() => {
+    if (nameValue) {
+      const slug = nameValue
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+      form.setValue("slug", slug);
+    }
+  }, [nameValue, form]);
+
+  async function onDelete(id: number, name: string) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le tag "${name}" ?`)) {
+      del.execute({ id });
+    }
   }
 
   useEffect(() => {
-    if (create.status === "hasSucceeded" || del.status === "hasSucceeded") {
+    if (create.status === "hasSucceeded") {
       list.execute();
+      setOpen(false);
+      form.reset();
+      toast.success("Tag créé avec succès");
     }
-  }, [create.status, del.status]);
+    if (create.status === "hasErrored") {
+      toast.error(create.result?.serverError || "Erreur lors de la création");
+    }
+  }, [create.status, create.result]);
+
+  useEffect(() => {
+    if (del.status === "hasSucceeded") {
+      list.execute();
+      toast.success("Tag supprimé avec succès");
+    }
+    if (del.status === "hasErrored") {
+      toast.error(del.result?.serverError || "Erreur lors de la suppression");
+    }
+  }, [del.status, del.result]);
 
   return (
     <div className="space-y-6">
@@ -72,9 +105,22 @@ export default function AdminTagsPage() {
             <li key={t.id} className="flex items-center justify-between py-2">
               <div>
                 <p className="font-medium">{t.name}</p>
-                <p className="text-sm text-gray-600">/{t.slug}</p>
+                <p className="text-sm text-gray-600">
+                  /{t.slug}
+                  {t._count?.posts > 0 && (
+                    <span className="ml-2 text-xs text-gray-500">
+                      ({t._count.posts} article{t._count.posts > 1 ? 's' : ''})
+                    </span>
+                  )}
+                </p>
               </div>
-              <button onClick={() => onDelete(t.id)} className="text-red-600 hover:underline">Supprimer</button>
+              <button
+                onClick={() => onDelete(t.id, t.name)}
+                disabled={del.status === "executing"}
+                className="text-red-600 hover:underline disabled:opacity-50"
+              >
+                Supprimer
+              </button>
             </li>
           ))}
         </ul>

@@ -1,5 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -425,49 +423,6 @@ model VideoTestimonial {
   @@map("video_testimonials")
 }
 
-// =====================================
-// NEWSLETTER
-// =====================================
-
-model NewsletterSubscription {
-  id                Int                 @id @default(autoincrement())
-  email             String              @unique
-  name              String?
-  categories        String?             // JSON string
-  frequency         NewsletterFrequency @default(weekly)
-  isActive          Boolean             @default(true)
-  confirmationToken String?
-  confirmedAt       DateTime?
-  source            String?
-  ipAddress         String?
-  subscribedAt      DateTime            @default(now())
-  unsubscribedAt    DateTime?
-
-  @@index([email])
-  @@index([isActive])
-  @@index([source])
-  @@map("newsletter_subscriptions")
-}
-
-// =====================================
-// ANALYTICS
-// =====================================
-
-model SiteAnalytics {
-  id                    Int      @id @default(autoincrement())
-  date                  DateTime @unique
-  pageViews             Int      @default(0)
-  uniqueVisitors        Int      @default(0)
-  newsletterSignups     Int      @default(0)
-  eventRegistrations    Int      @default(0)
-  contactMessages       Int      @default(0)
-  jobViews              Int      @default(0)
-  blogViews             Int      @default(0)
-  createdAt             DateTime @default(now())
-
-  @@index([date])
-  @@map("site_analytics")
-}
 
 // =====================================
 // ADMIN MANAGEMENT

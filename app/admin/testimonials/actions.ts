@@ -1,5 +1,5 @@
 "use server";
-import { actionClient } from "@/lib/safe-action";
+import { actionClient, adminAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createVideoTestimonialSchema, updateVideoTestimonialSchema } from "@/lib/validations/testimonials";
 import { revalidateTag } from "next/cache";
@@ -29,7 +29,7 @@ export const listTestimonials = actionClient
     return { testimonials, total, totalPages, currentPage: page };
   });
 
-export const createTestimonial = actionClient
+export const createTestimonial = adminAction
   .metadata({ actionName: "create-testimonial" })
   .schema(createVideoTestimonialSchema)
   .action(async ({ parsedInput }) => {
@@ -41,7 +41,7 @@ export const createTestimonial = actionClient
     return { id: created.id };
   });
 
-export const updateTestimonial = actionClient
+export const updateTestimonial = adminAction
   .metadata({ actionName: "update-testimonial" })
   .schema(updateVideoTestimonialSchema)
   .action(async ({ parsedInput }) => {
@@ -54,7 +54,7 @@ export const updateTestimonial = actionClient
     return { id: updated.id };
   });
 
-export const deleteTestimonial = actionClient
+export const deleteTestimonial = adminAction
   .metadata({ actionName: "delete-testimonial" })
   .schema(updateVideoTestimonialSchema.pick({ id: true }))
   .action(async ({ parsedInput }) => {

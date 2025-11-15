@@ -1,11 +1,11 @@
 "use server";
 
-import { actionClient } from "@/lib/safe-action";
 import { contactFormSchema } from "./contact.schema";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { authActionClient } from "@/lib/safe-action";
 
-export const submitContactForm = actionClient
+export const submitContactForm = authActionClient
   .metadata({ actionName: "submit-contact-form" })
   .schema(contactFormSchema)
   .action(async ({ parsedInput }) => {

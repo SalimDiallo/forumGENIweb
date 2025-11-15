@@ -35,10 +35,14 @@ export const createBlogPostSchema = z.object({
   slug: z.string().min(3, "Le slug doit contenir au moins 3 caractères"),
   excerpt: z.string().optional(),
   content: z.string().min(10, "Le contenu doit contenir au moins 10 caractères"),
-  featuredImage: z.string().url("URL d'image invalide").optional().or(z.literal("")),
+  featuredImage: z.string().optional().transform(val => val === "" || !val ? undefined : val).refine(
+    (val) => !val || /^https?:\/\/.+/.test(val),
+    { message: "URL d'image invalide" }
+  ),
   authorName: z.string().min(2, "Le nom de l'auteur est requis"),
   authorPosition: z.string().optional(),
   categoryId: z.number().int().positive("Sélectionnez une catégorie"),
+  tagIds: z.array(z.number().int().positive()).optional().default([]),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
   isFeatured: z.boolean().default(false),
   readTimeMinutes: z.number().int().positive().default(5),

@@ -1,5 +1,5 @@
 "use server";
-import { actionClient } from "@/lib/safe-action";
+import { actionClient, adminAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jobs";
 import { z } from "zod";
@@ -14,7 +14,7 @@ export const listJobs = actionClient
     return { jobs };
   });
 
-export const createJob = actionClient
+export const createJob = adminAction
   .metadata({ actionName: "create-job" })
   .schema(createJobOfferSchema)
   .action(async ({ parsedInput }) => {
@@ -23,7 +23,7 @@ export const createJob = actionClient
     return { id: created.id };
   });
 
-export const updateJob = actionClient
+export const updateJob = adminAction
   .metadata({ actionName: "update-job" })
   .schema(updateJobOfferSchema)
   .action(async ({ parsedInput }) => {
@@ -33,7 +33,7 @@ export const updateJob = actionClient
     return { id: updated.id };
   });
 
-export const deleteJob = actionClient
+export const deleteJob = adminAction
   .metadata({ actionName: "delete-job" })
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
@@ -42,7 +42,7 @@ export const deleteJob = actionClient
     return { ok: true };
   });
 
-export const getJobsWithApplicationCount = actionClient
+export const getJobsWithApplicationCount = adminAction
   .metadata({ actionName: "get-jobs-with-application-count" })
   .schema(z.object({
     page: z.number().min(1).default(1),

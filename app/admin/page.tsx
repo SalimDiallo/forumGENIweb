@@ -9,35 +9,23 @@ import {
   Calendar,
   MessageSquare,
   FileText,
-  Image,
-  Video,
-  Mail,
-  BarChart3,
   ArrowRight,
 } from "lucide-react";
 import { listContacts } from "./crm/actions";
 import { getJobsWithApplicationCount } from "./jobs/actions";
 import { listCategories } from "./blog/actions";
-import { listMedia } from "./media/actions";
-import { listTestimonials } from "./testimonials/actions";
-import { listSubscriptions } from "./newsletter/actions";
 
 export default function AdminDashboard() {
   const contacts = useAction(listContacts);
   const jobs = useAction(getJobsWithApplicationCount);
   const categories = useAction(listCategories);
-  const media = useAction(listMedia);
-  const testimonials = useAction(listTestimonials);
-  const subscriptions = useAction(listSubscriptions);
 
   useEffect(() => {
     // Load all stats on mount
     contacts.execute();
     jobs.execute({});
     categories.execute();
-    media.execute({});
-    testimonials.execute({});
-    subscriptions.execute();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isLoading =
@@ -48,25 +36,21 @@ export default function AdminDashboard() {
   const stats = {
     contacts: {
       total: contacts.result?.data?.messages?.length || 0,
-      new: contacts.result?.data?.messages?.filter((m: any) => m.status === "new").length || 0,
+      new:
+        contacts.result?.data?.messages?.filter(
+          (m: any) => m.status === "new"
+        ).length || 0,
     },
     jobs: {
       total: jobs.result?.data?.jobs?.length || 0,
-      applications: jobs.result?.data?.jobs?.reduce((acc: number, j: any) => acc + (j._count?.applications || 0), 0) || 0,
+      applications:
+        jobs.result?.data?.jobs?.reduce(
+          (acc: number, j: any) => acc + (j._count?.applications || 0),
+          0
+        ) || 0,
     },
     blog: {
       categories: categories.result?.data?.categories?.length || 0,
-    },
-    media: {
-      total: media.result?.data?.media?.length || 0,
-    },
-    testimonials: {
-      total: testimonials.result?.data?.testimonials?.length || 0,
-      active: testimonials.result?.data?.testimonials?.filter((t: any) => t.isActive).length || 0,
-    },
-    newsletter: {
-      total: subscriptions.result?.data?.subscriptions?.length || 0,
-      active: subscriptions.result?.data?.subscriptions?.filter((s: any) => s.isActive).length || 0,
     },
   };
 
@@ -97,31 +81,6 @@ export default function AdminDashboard() {
       icon: FileText,
       stats: `${stats.blog.categories} catégories`,
     },
-    {
-      name: "Médias",
-      href: "/admin/media",
-      icon: Image,
-      stats: `${stats.media.total} fichiers`,
-    },
-    {
-      name: "Témoignages",
-      href: "/admin/testimonials",
-      icon: Video,
-      stats: `${stats.testimonials.total} vidéos`,
-      badge: `${stats.testimonials.active} actifs`,
-    },
-    {
-      name: "Newsletter",
-      href: "/admin/newsletter",
-      icon: Mail,
-      stats: `${stats.newsletter.total} abonnés`,
-    },
-    {
-      name: "Analytics",
-      href: "/admin/analytics",
-      icon: BarChart3,
-      stats: "Statistiques du site",
-    },
   ];
 
   return (
@@ -130,10 +89,12 @@ export default function AdminDashboard() {
       <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
         <div className="flex items-center gap-3 mb-3">
           <LayoutDashboard className="w-8 h-8 text-gray-900" />
-          <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord Admin</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Tableau de Bord Admin
+          </h1>
         </div>
         <p className="text-gray-600 text-base max-w-2xl">
-          Bienvenue dans le panneau d'administration. Gérez tous les aspects de votre plateforme Forum Génie Entreprise.
+          Bienvenue dans le panneau d&apos;administration. Gérez tous les aspects de votre plateforme Forum Génie Entreprise.
         </p>
       </div>
 
@@ -142,7 +103,9 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-xl border shadow-sm p-12">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-            <span className="ml-4 text-gray-600">Chargement des statistiques...</span>
+            <span className="ml-4 text-gray-600">
+              Chargement des statistiques...
+            </span>
           </div>
         </div>
       ) : (
@@ -171,7 +134,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="text-2xl font-bold text-gray-900 mb-1">{stats.jobs.total}</div>
-              <div className="text-sm text-gray-600 mb-2">Offres d'emploi</div>
+              <div className="text-sm text-gray-600 mb-2">Offres d&apos;emploi</div>
               <div className="text-xs font-medium text-gray-700 bg-gray-100 rounded-full px-2 py-1 inline-block">
                 {stats.jobs.applications} candidatures
               </div>
@@ -180,24 +143,27 @@ export default function AdminDashboard() {
             <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-gray-100 rounded-lg">
-                  <Mail className="w-5 h-5 text-gray-700" />
+                  <Calendar className="w-5 h-5 text-gray-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">{stats.newsletter.total}</div>
-              <div className="text-sm text-gray-600 mb-2">Abonnés newsletter</div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">-</div>
+              <div className="text-sm text-gray-600 mb-2">Événements</div>
               <div className="text-xs font-medium text-gray-700 bg-gray-100 rounded-full px-2 py-1 inline-block">
-                {stats.newsletter.active} actifs
+                Gérer les événements
               </div>
             </div>
 
             <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-gray-100 rounded-lg">
-                  <Image className="w-5 h-5 text-gray-700" />
+                  <FileText className="w-5 h-5 text-gray-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">{stats.media.total}</div>
-              <div className="text-sm text-gray-600">Médias</div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">{stats.blog.categories}</div>
+              <div className="text-sm text-gray-600 mb-2">Catégories du blog</div>
+              <div className="text-xs font-medium text-gray-700 bg-gray-100 rounded-full px-2 py-1 inline-block">
+                {stats.blog.categories} catégories
+              </div>
             </div>
           </div>
 

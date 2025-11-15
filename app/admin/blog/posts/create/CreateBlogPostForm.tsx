@@ -7,6 +7,7 @@ import { FileText, Settings, Eye, Save, AlertCircle } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createBlogPost } from "../../posts-actions";
 import { listCategories } from "../../actions";
+import { listTags } from "../../tags-actions";
 import { createBlogPostSchema } from "@/lib/validations/blog";
 import type { z } from "zod";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ export default function CreateBlogPostForm() {
 
   const createAction = useAction(createBlogPost);
   const categoriesAction = useAction(listCategories);
+  const tagsAction = useAction(listTags);
 
   const {
     register,
@@ -39,6 +41,7 @@ export default function CreateBlogPostForm() {
       authorName: "",
       authorPosition: "",
       categoryId: 0,
+      tagIds: [],
       status: "draft",
       isFeatured: false,
       readTimeMinutes: 5,
@@ -49,6 +52,7 @@ export default function CreateBlogPostForm() {
 
   useEffect(() => {
     categoriesAction.execute();
+    tagsAction.execute();
   }, []);
 
   useEffect(() => {
@@ -88,6 +92,8 @@ export default function CreateBlogPostForm() {
   ];
 
   const categories = categoriesAction.result?.data?.categories || [];
+  const tags = tagsAction.result?.data?.tags || [];
+  const selectedTagIds = watch("tagIds") || [];
 
   // Check which tabs have errors
   const tabErrors = {
@@ -220,6 +226,45 @@ export default function CreateBlogPostForm() {
                     <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />
                       {errors.categoryId.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tags
+                  </label>
+                  <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto">
+                    {tags.length === 0 ? (
+                      <p className="text-sm text-gray-500">Aucun tag disponible</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {tags.map((tag: any) => (
+                          <label key={tag.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                            <input
+                              type="checkbox"
+                              value={tag.id}
+                              checked={selectedTagIds.includes(tag.id)}
+                              onChange={(e) => {
+                                const currentTags = selectedTagIds;
+                                if (e.target.checked) {
+                                  setValue("tagIds", [...currentTags, tag.id]);
+                                } else {
+                                  setValue("tagIds", currentTags.filter((id: number) => id !== tag.id));
+                                }
+                              }}
+                              className="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-2 focus:ring-gray-900"
+                            />
+                            <span className="text-sm text-gray-900">{tag.name}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {errors.tagIds && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      {errors.tagIds.message}
                     </p>
                   )}
                 </div>

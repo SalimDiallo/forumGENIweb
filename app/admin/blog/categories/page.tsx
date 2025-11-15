@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCategorySchema } from "@/lib/validations/blog";
+import { toast } from "sonner";
 
 export default function AdminBlogCategoriesPage() {
   const list = useAction(listCategories);
@@ -27,15 +28,41 @@ export default function AdminBlogCategoriesPage() {
     create.execute(values);
   }
 
+  // Auto-generate slug from name
+  const nameValue = form.watch("name");
   useEffect(() => {
-    if (create.status === "hasSucceeded" || del.status === "hasSucceeded") {
-      list.execute();
-      if (create.status === "hasSucceeded") {
-        setOpen(false);
-        form.reset();
-      }
+    if (nameValue) {
+      const slug = nameValue
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+      form.setValue("slug", slug);
     }
-  }, [create.status, del.status]);
+  }, [nameValue, form]);
+
+  useEffect(() => {
+    if (create.status === "hasSucceeded") {
+      list.execute();
+      setOpen(false);
+      form.reset();
+      toast.success("Catégorie créée avec succès");
+    }
+    if (create.status === "hasErrored") {
+      toast.error(create.result?.serverError || "Erreur lors de la création");
+    }
+  }, [create.status, create.result]);
+
+  useEffect(() => {
+    if (del.status === "hasSucceeded") {
+      list.execute();
+      toast.success("Catégorie supprimée avec succès");
+    }
+    if (del.status === "hasErrored") {
+      toast.error(del.result?.serverError || "Erreur lors de la suppression");
+    }
+  }, [del.status, del.result]);
 
   return (
     <div className="space-y-6">
@@ -73,9 +100,26 @@ export default function AdminBlogCategoriesPage() {
             <li key={c.id} className="flex items-center justify-between py-2">
               <div>
                 <p className="font-medium">{c.name}</p>
-                <p className="text-sm text-gray-600">/{c.slug}</p>
+                <p className="text-sm text-gray-600">
+                  /{c.slug}
+                  {c._count?.posts > 0 && (
+                    <span className="ml-2 text-xs text-gray-500">
+                      ({c._count.posts} article{c._count.posts > 1 ? 's' : ''})
+                    </span>
+                  )}
+                </p>
               </div>
-              <button onClick={() => del.execute({ id: c.id })} className="text-red-600 hover:underline">Supprimer</button>
+              <button
+                onClick={() => {
+                  if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${c.name}" ?`)) {
+                    del.execute({ id: c.id });
+                  }
+                }}
+                disabled={del.status === "executing"}
+                className="text-red-600 hover:underline disabled:opacity-50"
+              >
+                Supprimer
+              </button>
             </li>
           ))}
         </ul>

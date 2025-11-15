@@ -1,8 +1,7 @@
 "use server";
-import { actionClient } from "@/lib/safe-action";
+import { actionClient, adminAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/validations/blog";
-import { revalidateTag } from "next/cache";
 import { z } from "zod";
 
 export const listBlogPosts = actionClient
@@ -55,73 +54,131 @@ export const getBlogPost = actionClient
     return { post };
   });
 
-export const createBlogPost = actionClient
+export const createBlogPost = adminAction
   .metadata({ actionName: "create-blog-post" })
   .schema(createBlogPostSchema)
   .action(async ({ parsedInput }) => {
-    const created = await prisma.blogPost.create({
-      data: {
-        title: parsedInput.title,
-        slug: parsedInput.slug,
-        excerpt: parsedInput.excerpt,
-        content: parsedInput.content,
-        featuredImage: parsedInput.featuredImage,
-        authorName: parsedInput.authorName,
-        authorPosition: parsedInput.authorPosition,
-        categoryId: parsedInput.categoryId,
-        status: parsedInput.status,
-        isFeatured: parsedInput.isFeatured,
-        readTimeMinutes: parsedInput.readTimeMinutes,
-        metaTitle: parsedInput.metaTitle,
-        metaDescription: parsedInput.metaDescription,
-        publishedAt: parsedInput.status === "published" ? new Date() : null,
-      },
-    });
+    try {
+      // Vérifier si le slug existe déjà
+      const existingPost = await prisma.blogPost.findFirst({
+        where: { slug: parsedInput.slug },
+      });
 
-    // Revalidate cache tag for blog
-    revalidateTag('blog');
+      if (existingPost) {
+        throw new Error("Ce slug existe déjà. Veuillez en choisir un autre.");
+      }
 
-    return { id: created.id };
+      const { tagIds, ...postData } = parsedInput;
+
+      const created = await prisma.blogPost.create({
+        data: {
+          ...postData,
+          publishedAt: parsedInput.status === "published" ? new Date() : null,
+          // Créer les relations avec les tags
+          tags: tagIds && tagIds.length > 0 ? {
+            create: tagIds.map((tagId) => ({
+              tag: {
+                connect: { id: tagId },
+              },
+            })),
+          } : undefined,
+        },
+      });
+
+      return { id: created.id };
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        throw new Error("Ce slug existe déjà. Veuillez en choisir un autre.");
+      }
+      if (error.code === "P2003") {
+        throw new Error("Catégorie ou tag invalide. Veuillez vérifier vos sélections.");
+      }
+      throw error;
+    }
   });
 
-export const updateBlogPost = actionClient
+export const updateBlogPost = adminAction
   .metadata({ actionName: "update-blog-post" })
   .schema(updateBlogPostSchema)
   .action(async ({ parsedInput }) => {
-    const { id, ...data } = parsedInput;
+    try {
+      const { id, tagIds, ...data } = parsedInput;
 
-    // If status is being changed to published and wasn't published before, set publishedAt
-    const existing = await prisma.blogPost.findUnique({ where: { id } });
-    const updateData: any = { ...data };
+      // Vérifier si le slug existe déjà pour un autre article
+      if (data.slug) {
+        const existingPost = await prisma.blogPost.findFirst({
+          where: {
+            slug: data.slug,
+            id: { not: id }
+          },
+        });
 
-    if (data.status === "published" && existing?.status !== "published" && !existing?.publishedAt) {
-      updateData.publishedAt = new Date();
+        if (existingPost) {
+          throw new Error("Ce slug existe déjà. Veuillez en choisir un autre.");
+        }
+      }
+
+      // If status is being changed to published and wasn't published before, set publishedAt
+      const existing = await prisma.blogPost.findUnique({ where: { id } });
+
+      if (!existing) {
+        throw new Error("Article introuvable");
+      }
+
+      const updateData: any = { ...data };
+
+      if (data.status === "published" && existing?.status !== "published" && !existing?.publishedAt) {
+        updateData.publishedAt = new Date();
+      }
+
+      // Mettre à jour l'article dans une transaction
+      const updated = await prisma.$transaction(async (tx) => {
+        // Si des tags sont fournis, mettre à jour les relations
+        if (tagIds !== undefined) {
+          // Supprimer toutes les relations existantes
+          await tx.blogPostTag.deleteMany({
+            where: { postId: id },
+          });
+
+          // Créer les nouvelles relations
+          if (tagIds.length > 0) {
+            await tx.blogPostTag.createMany({
+              data: tagIds.map((tagId) => ({
+                postId: id,
+                tagId: tagId,
+              })),
+            });
+          }
+        }
+
+        // Mettre à jour l'article
+        return await tx.blogPost.update({
+          where: { id },
+          data: updateData,
+        });
+      });
+
+      return { id: updated.id };
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        throw new Error("Ce slug existe déjà. Veuillez en choisir un autre.");
+      }
+      if (error.code === "P2003") {
+        throw new Error("Catégorie ou tag invalide. Veuillez vérifier vos sélections.");
+      }
+      throw error;
     }
-
-    const updated = await prisma.blogPost.update({
-      where: { id },
-      data: updateData,
-    });
-
-    // Revalidate cache tag for blog
-    revalidateTag('blog');
-
-    return { id: updated.id };
   });
 
-export const deleteBlogPost = actionClient
+export const deleteBlogPost = adminAction
   .metadata({ actionName: "delete-blog-post" })
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
     await prisma.blogPost.delete({ where: { id: parsedInput.id } });
-
-    // Revalidate cache tag for blog
-    revalidateTag('blog');
-
     return { ok: true };
   });
 
-export const toggleFeatured = actionClient
+export const toggleFeatured = adminAction
   .metadata({ actionName: "toggle-featured-blog-post" })
   .schema(z.object({ id: z.number().int().positive(), isFeatured: z.boolean() }))
   .action(async ({ parsedInput }) => {
@@ -129,9 +186,6 @@ export const toggleFeatured = actionClient
       where: { id: parsedInput.id },
       data: { isFeatured: parsedInput.isFeatured },
     });
-
-    // Revalidate cache tag for blog
-    revalidateTag('blog');
 
     return { id: updated.id };
   });
