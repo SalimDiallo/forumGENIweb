@@ -149,6 +149,19 @@ async function cacheInvalidationMiddleware({
 
   // Invalider les caches uniquement si l'action a réussi
   if (result && metadata?.actionName) {
+    const lowerActionName = metadata.actionName.toLowerCase();
+
+    // Skip cache invalidation for read operations (get, list, fetch, etc.)
+    // These are data fetching operations that should not invalidate cache
+    const isReadOperation = lowerActionName.startsWith('get') ||
+                           lowerActionName.startsWith('list') ||
+                           lowerActionName.startsWith('fetch') ||
+                           lowerActionName.startsWith('find');
+
+    if (isReadOperation) {
+      return result;
+    }
+
     try {
       // Utiliser les tags personnalisés ou détecter automatiquement
       const tagsToInvalidate = metadata.cacheTags || detectCacheTagsFromActionName(metadata.actionName);

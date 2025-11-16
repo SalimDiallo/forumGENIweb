@@ -37,9 +37,9 @@ const Hero = () => {
           className="absolute inset-0 w-full h-full object-cover"
           poster="/insea-building.jpg"
         >
-          <source src="/hero-video.mp4" type="video/mp4" />
-          <source src="/hero-video.webm" type="video/webm" />
-          {/* Fallback image si la vidéo ne charge pas */}
+          Utilisation d'une vidéo en ligne (par exemple, fichier sur CDN public)
+          <source src="https://www.pexels.com/fr-fr/download/video/6774633/" />
+          <source src="https://www.w3schools.com/html/mov_bbb.ogv" type="video/ogg" />
         </video>
 
         {/* Gradient Overlays pour meilleure lisibilité */}

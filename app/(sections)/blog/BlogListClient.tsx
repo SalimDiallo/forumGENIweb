@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -70,6 +70,8 @@ const BlogImage = ({ src, alt, className }: { src: string | null; alt: string; c
 export default function BlogListClient({ posts, categories }: BlogListClientProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Préparer les catégories avec icônes
   const categoryIcons: Record<string, React.ElementType> = {
@@ -88,18 +90,35 @@ export default function BlogListClient({ posts, categories }: BlogListClientProp
     }))
   ];
 
-  // Filtrage des articles
+  // Filtrage: combine recherche ET catégorie
   const filteredPosts = posts.filter(post => {
-    const matchesCategory = activeCategory === 'all' || post.category.slug === activeCategory;
-    const matchesSearch = searchTerm === '' ||
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (post.excerpt && post.excerpt.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      post.tags.some(({ tag }) => tag.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    // Catégorie sélectionnée
+    const matchesCategory =
+      activeCategory === 'all' || post.category.slug === activeCategory;
+    // Recherche (term present in titre, extrait, tags, ou catégorie)
+    const trimmedSearch = searchTerm.trim().toLowerCase();
+    const matchesSearch =
+      trimmedSearch === '' ||
+      post.title.toLowerCase().includes(trimmedSearch) ||
+      (post.excerpt && post.excerpt.toLowerCase().includes(trimmedSearch)) ||
+      post.tags.some(({ tag }) => tag.name.toLowerCase().includes(trimmedSearch)) ||
+      post.category.name.toLowerCase().includes(trimmedSearch);
     return matchesCategory && matchesSearch;
   });
 
   const featuredPost = filteredPosts.find(post => post.isFeatured) || filteredPosts[0];
-  const regularPosts = filteredPosts.filter(post => post.id !== featuredPost?.id);
+  const regularPosts = filteredPosts;
+
+  function handleSearch(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    setSearchTerm(inputValue.trim());
+  }
+
+  function handleInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  }
 
   return (
     <section className="py-10 bg-gradient-to-b from-white to-emerald-50/30">
@@ -119,17 +138,36 @@ export default function BlogListClient({ posts, categories }: BlogListClientProp
             Restez informé des dernières tendances et innovations avec notre sélection d'articles experts
           </p>
 
-          {/* Barre de recherche */}
-          <div className="relative max-w-xs mx-auto mb-6">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-700 w-4 h-4" />
+          {/* Barre de recherche avec bouton */}
+          <form
+            className="relative max-w-xs mx-auto mb-6 flex"
+            onSubmit={handleSearch}
+            role="search"
+            autoComplete="off"
+          >
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-700">
+              <Search className="w-4 h-4" />
+            </span>
             <input
+              ref={inputRef}
               type="text"
               placeholder="Rechercher un article..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 rounded-lg border border-emerald-200 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 outline-none text-sm transition-all"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleInputKeyDown}
+              className="w-full pl-10 pr-3 py-2 rounded-l-lg border border-emerald-200 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 outline-none text-sm transition-all"
+              aria-label="Rechercher un article"
             />
-          </div>
+            <button
+              type="submit"
+              className="px-3 py-2 rounded-r-lg bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-colors text-sm border border-emerald-700 border-l-0"
+              aria-label="Chercher"
+              tabIndex={0}
+            >
+              <Search className="w-4 h-4 inline-block mr-1" />
+              Rechercher
+            </button>
+          </form>
         </motion.div>
 
         {/* Filtres de catégories */}
@@ -199,11 +237,9 @@ export default function BlogListClient({ posts, categories }: BlogListClientProp
                   <div className="relative p-4 md:col-span-2 flex flex-col justify-center">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="px-2 py-1 bg-gradient-to-r from-emerald-700 to-emerald-700 text-white text-xs font-semibold  shadow">
-                        ⭐ Article vedette
+                        ⭐ Dernier article
                       </span>
-                      <span className="px-2 py-0.5 bg-white/20 backdrop-blur-sm text-white text-xs ">
-                        {featuredPost.viewsCount} vues
-                      </span>
+                     
                     </div>
 
                     <h2 className="text-lg md:text-xl font-bold text-white mb-2 leading-tight line-clamp-2">
@@ -348,6 +384,8 @@ export default function BlogListClient({ posts, categories }: BlogListClientProp
               onClick={() => {
                 setActiveCategory('all');
                 setSearchTerm('');
+                setInputValue('');
+                if (inputRef.current) inputRef.current.value = '';
               }}
               className="px-4 py-2 bg-black text-white rounded hover:bg-emerald-800 transition-colors text-sm"
             >

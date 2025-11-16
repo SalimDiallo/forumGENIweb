@@ -312,7 +312,7 @@ const Header = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 1 }}
             >
-              <Link href="/events">
+              <Link href="/contact">
                 <motion.button
                   className="relative px-6 py-3 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold  overflow-hidden hover:shadow-emerald-700/30 group"
                   whileHover={{ 
