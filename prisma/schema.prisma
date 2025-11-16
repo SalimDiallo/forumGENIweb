@@ -252,7 +252,6 @@ model Event {
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   
-  registrations       EventRegistration[]
   media               MediaGallery[]
 
   @@index([slug])
@@ -263,35 +262,7 @@ model Event {
   @@map("events")
 }
 
-model EventRegistration {
-  id                  Int                @id @default(autoincrement())
-  eventId             Int
-  firstName           String
-  lastName            String
-  email               String
-  phone               String?
-  school              String?
-  cne                 String?
-  cycle               String?
-  level               String?
-  schoolYear          String?
-  newsletterConsent   Boolean            @default(false)
-  registrationStatus  RegistrationStatus @default(pending)
-  paymentStatus       PaymentStatus      @default(pending)
-  paymentMethod       String?
-  paymentReference    String?
-  qrCode              String?
-  registeredAt        DateTime           @default(now())
-  confirmedAt         DateTime?
-  attendedAt          DateTime?
 
-  event               Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  @@index([eventId])
-  @@index([email])
-  @@index([registrationStatus])
-  @@map("event_registrations")
-}
 
 // =====================================
 // JOB OFFERS

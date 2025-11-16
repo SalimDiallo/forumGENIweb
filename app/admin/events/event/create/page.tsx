@@ -5,7 +5,7 @@ export default function CreateEventPage(){
     return(
         <div>
             <BackButton />
-            <div className="container">
+            <div >
                 <CreateEventForm />
             </div>
         </div>

@@ -7,9 +7,13 @@ import { createEventSchema } from "./event.create.schema";
 
 export const doCreateEvent = adminAction
     .metadata({ actionName: "create-event-admin" })
-    .schema(createEventSchema)
+    .inputSchema(createEventSchema)
     .action(async ({ parsedInput }) => {
-        const createdEvent = await prisma.event.create({ data: parsedInput });
+    
+        const createdEvent = await prisma.event.create({ data: {
+            ...parsedInput,
+            maxParticipants: Number(parsedInput.maxParticipants) ?? 0
+        } });
 
         // Revalidate paths
         revalidatePath("/admin/events");

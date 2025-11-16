@@ -227,4 +227,31 @@
   .font-britney-ultra {
     font-family: 'Britney-Ultra', var(--font-raleway), sans-serif;
   }
+
+  /* Animation shimmer pour les effets de brillance */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  /* Perspective 3D pour l'effet livre */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .perspective-2000 {
+    perspective: 2000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
 }

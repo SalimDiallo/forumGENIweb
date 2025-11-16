@@ -80,7 +80,7 @@ export default function EventAdvancedFields({
           </label>
           <select
             id="isVirtual"
-            {...register("isVirtual")}
+            {...register("isVirtual", { setValueAs: v => v === "true" })}
             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           >
             <option value="false">Non</option>
@@ -120,7 +120,7 @@ export default function EventAdvancedFields({
           </label>
           <select
             id="isFeatured"
-            {...register("isFeatured")}
+            {...register("isFeatured", { setValueAs: v => v === "true" })}
             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           >
             <option value="false">Non</option>

@@ -1,7 +1,4 @@
 import type { Metadata } from 'next';
-import Header from '@/components/Header';
-
-
 
 export const metadata: Metadata = {
   title: 'Forum GENI Entreprises | INSEA',
@@ -13,19 +10,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function SectionsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className="scroll-smooth">
-      <body className={` antialiased min-h-screen`}>
-        <Header />
-        <div className='py-18'>
-        {children}
-        </div>
-      </body>
-    </html>
+    <div className='py-18'>
+      {children}
+    </div>
   );
 }

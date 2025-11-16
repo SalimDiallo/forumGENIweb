@@ -1,6 +1,8 @@
 import React, { FC } from "react";
 import { Label } from "./label";
 
+
+
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   success?: boolean;
   error?: boolean;
@@ -87,7 +89,6 @@ const Input: FC<InputProps> = ({
       )}
     </div>
 
- 
   </>
   );
 };

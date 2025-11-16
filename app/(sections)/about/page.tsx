@@ -1,27 +1,21 @@
-import { Suspense, lazy } from 'react';
+'use client';
 
-const About = lazy(() => import('@/components/About'));
-const Stats = lazy(() => import('@/components/Stats'));
-const Mission = lazy(() => import('@/components/Mission'));
-
-const PageLoader = () => (
-  <div className="flex justify-center items-center py-16">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-800"></div>
-  </div>
-);
+import React from 'react';
+import { motion } from 'framer-motion';
+import BookHistory from '@/components/BookHistory';
+import { Target, Eye, Users, Award, Building, Calendar, TrendingUp, Sparkles } from 'lucide-react';
+import TeamsMembres from '@/components/TeamsMembres';
+import Stats from '@/components/Stats';
 
 export default function AboutPage() {
   return (
-    <main>
-      <Suspense fallback={<PageLoader />}>
-        <About />
-      </Suspense>
-      <Suspense fallback={<PageLoader />}>
-        <Mission />
-      </Suspense>
-      <Suspense fallback={<PageLoader />}>
-        <Stats />
-      </Suspense>
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* Book History Section */}
+      <BookHistory />
+
+      <TeamsMembres />
+      <Stats />
+
     </main>
   );
 }

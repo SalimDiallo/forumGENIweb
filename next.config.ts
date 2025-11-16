@@ -4,18 +4,19 @@ const nextConfig: NextConfig = {
   // Optimisations d'images
   images: {
     formats: ['image/webp', 'image/avif'],
-    minimumCacheTTL: 3600, // Cache plus long
+    minimumCacheTTL: 3600,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     dangerouslyAllowSVG: true,
+    // Autorise toutes les images externes (utilise pattern générique)
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'via.placeholder.com',
+        hostname: '**',
       },
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
+        protocol: 'http',
+        hostname: '**',
       },
     ],
   },

@@ -14,6 +14,8 @@ export default async function EditEventPage(props:{
         event = await prisma.event.findUnique({
             where: { id: eventId }
         });
+        console.log(event);
+        
         if (!event) {
             return (
                 <div className="container py-12 text-center text-red-600">
@@ -31,7 +33,7 @@ export default async function EditEventPage(props:{
     return(
         <div>
             <BackButton />
-            <div className="container">
+            <div >
                 <EditEventForm event={event} />
             </div>
         </div>

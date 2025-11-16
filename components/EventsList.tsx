@@ -35,7 +35,6 @@ const EventsList = ({ events }: { events: EventsType }) => {
         date: formatDate(new Date(event.startDate)),
         location: event.location || (event.isVirtual ? 'En ligne' : 'Lieu à préciser'),
         price: event.isFree ? 'Gratuit' : `${event.price} ${event.currency}`,
-        attendees: `${event.currentParticipants}${event.maxParticipants ? `/${event.maxParticipants}` : '+'}`,
         category: getEventTypeLabel(event.eventType),
         categoryId: event.eventType,
         originalEvent: event,
@@ -179,11 +178,7 @@ const EventsList = ({ events }: { events: EventsType }) => {
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                  <div className="flex items-center gap-1 text-emerald-600 text-sm">
-                    <Users size={16} />
-                    <span className="font-medium">{event.attendees}</span>
-                  </div>
-
+                 
                   <span className="text-emerald-700 font-semibold text-sm hover:text-emerald-800 transition-colors">
                     {isPast ? 'Voir détails →' : 'S\'inscrire →'}
                   </span>
@@ -272,10 +267,7 @@ const EventsList = ({ events }: { events: EventsType }) => {
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <div className="flex items-center gap-1 text-emerald-600 text-sm">
-                    <Users size={16} />
-                    <span className="font-medium">{event.attendees} participants</span>
-                  </div>
+                 
                   <span className="px-4 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors font-semibold text-sm">
                     {isPast ? 'Voir détails' : 'S\'inscrire'}
                   </span>

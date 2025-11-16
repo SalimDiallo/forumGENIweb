@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import RegistrationForm from '@/components/RegistrationEventForm';
 import { EventDetailType, RelatedEventsType } from './event-detail.query';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 interface Props {
   event: NonNullable<EventDetailType>;
@@ -29,20 +30,16 @@ interface Props {
 }
 
 const EventDetailClient = ({ event, relatedEvents }: Props) => {
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
 
   // Calcul si l'événement est passé
-  const isPast = new Date(event.startDate) < new Date();
-  const isRegistrationOpen = event.registrationStart && event.registrationEnd
-    ? new Date() >= new Date(event.registrationStart) && new Date() <= new Date(event.registrationEnd)
-    : !isPast;
+  const isPast = new Date(event.endDate) < new Date();
+  // const isRegistrationOpen = event.registrationStart && event.registrationEnd
+  //   ? new Date() >= new Date(event.registrationStart) && new Date() <= new Date(event.registrationEnd)
+  //   : !isPast;
+  const isRegistrationOpen = true;
   const isFull = event.maxParticipants ? event.currentParticipants >= event.maxParticipants : false;
 
-  // Parse JSON fields
-  const agenda = event.agenda ? JSON.parse(event.agenda) : null;
-  const speakers = event.speakers ? JSON.parse(event.speakers) : null;
-  const sponsors = event.sponsors ? JSON.parse(event.sponsors) : null;
 
   // Helper functions
   const formatDate = (date: Date) => {
@@ -78,7 +75,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-emerald-100/50 shadow-sm"
+        className="pt-6 bg-white/80 backdrop-blur-lg border-b border-emerald-100/50"
       >
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
@@ -88,17 +85,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
             </Link>
 
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsBookmarked(!isBookmarked)}
-                className={`p-2 rounded-lg transition-all ${
-                  isBookmarked
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
-                }`}
-              >
-                <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-              </button>
-
+        
               <div className="relative">
                 <button
                   onClick={() => setShowShareMenu(!showShareMenu)}
@@ -111,7 +98,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="absolute right-0 mt-2 bg-white rounded-lg shadow-xl border border-emerald-100 p-2 min-w-[200px]"
+                    className="absolute right-0 mt-2 bg-white rounded-lg  border border-emerald-100 p-2 min-w-[200px]"
                   >
                     <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-emerald-50 transition-all">
                       <Share2 className="w-4 h-4" />
@@ -145,7 +132,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
         <div className="max-w-6xl mx-auto">
           {/* Statut et catégorie */}
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-700 to-emerald-600 text-white text-sm font-semibold rounded-full shadow-md">
+            <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-700 to-emerald-600 text-white text-sm font-semibold rounded-full ">
               {getEventTypeLabel(event.eventType)}
             </span>
             {isPast && (
@@ -178,8 +165,8 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
           )}
 
           {/* Informations clés */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 border-b border-emerald-100">
-            <div className="flex items-start gap-3 p-4 bg-white rounded-lg shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-6 border-b border-emerald-100">
+            <div className="flex items-start gap-3 p-4 bg-white rounded-lg ">
               <Calendar className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
               <div>
                 <div className="text-xs text-gray-500 mb-1">Date</div>
@@ -188,7 +175,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 bg-white rounded-lg shadow-sm">
+            <div className="flex items-start gap-3 p-4 bg-white rounded-lg ">
               <MapPin className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
               <div>
                 <div className="text-xs text-gray-500 mb-1">Lieu</div>
@@ -205,17 +192,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <Users className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="text-xs text-gray-500 mb-1">Participants</div>
-                <div className="font-semibold text-gray-900">
-                  {event.currentParticipants}{event.maxParticipants ? `/${event.maxParticipants}` : '+'}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-4 bg-white rounded-lg shadow-sm">
+            <div className="flex items-start gap-3 p-4 bg-white rounded-lg ">
               <Tag className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
               <div>
                 <div className="text-xs text-gray-500 mb-1">Tarif</div>
@@ -240,7 +217,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
             <img
               src={event.featuredImage}
               alt={event.title}
-              className="w-full h-[400px] md:h-[600px] object-cover rounded-2xl shadow-2xl"
+              className="w-full h-[400px] md:h-[600px] object-cover rounded-2xl l"
             />
           </div>
         </motion.div>
@@ -258,84 +235,50 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 md:p-8"
+                  className="bg-white rounded-2xl  p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
                     <AlertCircle className="w-6 h-6" />
                     À propos de l'événement
                   </h2>
                   <div className="prose prose-lg max-w-none prose-headings:text-emerald-900 prose-p:text-gray-700">
-                    <p className="whitespace-pre-line">{event.description}</p>
+                   <MarkdownRenderer content={event.description} />
                   </div>
                 </motion.div>
               )}
 
               {/* Programme / Agenda */}
-              {agenda && Array.isArray(agenda) && agenda.length > 0 && (
+              {event.agenda && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 md:p-8"
+                  className="bg-white rounded-2xl  p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center gap-2">
                     <Clock className="w-6 h-6" />
                     Programme
                   </h2>
                   <div className="space-y-4">
-                    {agenda.map((item: any, index: number) => (
-                      <div key={index} className="flex gap-4 p-4 bg-emerald-50 rounded-lg border-l-4 border-emerald-600">
-                        <div className="text-emerald-700 font-semibold min-w-[80px]">
-                          {item.time}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
-                          {item.description && (
-                            <p className="text-sm text-gray-600">{item.description}</p>
-                          )}
-                          {item.speaker && (
-                            <p className="text-sm text-emerald-700 mt-1">Par {item.speaker}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                  <MarkdownRenderer content={event.agenda ?? ""} />
                   </div>
                 </motion.div>
               )}
 
               {/* Intervenants */}
-              {speakers && Array.isArray(speakers) && speakers.length > 0 && (
+              {event.speakers && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 md:p-8"
+                  className="bg-white rounded-2xl  p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center gap-2">
                     <UserCheck className="w-6 h-6" />
                     Intervenants
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {speakers.map((speaker: any, index: number) => (
-                      <div key={index} className="flex gap-4 p-4 bg-emerald-50 rounded-lg">
-                        {speaker.photo && (
-                          <img
-                            src={speaker.photo}
-                            alt={speaker.name}
-                            className="w-16 h-16 rounded-full object-cover border-2 border-emerald-200"
-                          />
-                        )}
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{speaker.name}</h3>
-                          {speaker.title && (
-                            <p className="text-sm text-emerald-700">{speaker.title}</p>
-                          )}
-                          {speaker.bio && (
-                            <p className="text-sm text-gray-600 mt-1">{speaker.bio}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                   <MarkdownRenderer content={event.speakers} />
                   </div>
                 </motion.div>
               )}
@@ -346,7 +289,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 md:p-8"
+                  className="bg-white rounded-2xl  p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center gap-2">
                     <CheckCircle2 className="w-6 h-6" />
@@ -370,28 +313,16 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
               )}
 
               {/* Sponsors */}
-              {sponsors && Array.isArray(sponsors) && sponsors.length > 0 && (
+              {event.sponsors && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 md:p-8"
+                  className="bg-white rounded-2xl  p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-6">Sponsors</h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {sponsors.map((sponsor: any, index: number) => (
-                      <div key={index} className="flex items-center justify-center p-4 bg-gray-50 rounded-lg">
-                        {sponsor.logo ? (
-                          <img
-                            src={sponsor.logo}
-                            alt={sponsor.name}
-                            className="max-w-full h-16 object-contain"
-                          />
-                        ) : (
-                          <span className="text-gray-600 font-medium text-center">{sponsor.name}</span>
-                        )}
-                      </div>
-                    ))}
+                   <MarkdownRenderer content={event.sponsors} />
                   </div>
                 </motion.div>
               )}
@@ -405,7 +336,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                 transition={{ delay: 0.3 }}
                 className="sticky top-24"
               >
-                <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="bg-white rounded-2xl  p-6">
                   <h2 className="text-2xl font-bold text-emerald-900 mb-4">
                     {isPast ? 'Événement terminé' : 'Inscription'}
                   </h2>
@@ -415,11 +346,6 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                         <p className="text-gray-700 text-sm">
                           Cet événement est terminé. Les inscriptions ne sont plus disponibles.
-                        </p>
-                      </div>
-                      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                        <p className="text-emerald-800 text-sm">
-                          <strong>{event.currentParticipants}</strong> participant(s) ont assisté à cet événement.
                         </p>
                       </div>
                     </div>
@@ -443,7 +369,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                 </div>
 
                 {/* Organisateur */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mt-6">
+                <div className="bg-white rounded-2xl  p-6 mt-6">
                   <h3 className="text-lg font-bold text-emerald-900 mb-4">Organisateur</h3>
                   <p className="text-gray-700 font-medium">{event.organizerName}</p>
                 </div>
@@ -468,7 +394,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   <Link
                     key={related.id}
                     href={`/events/${related.slug}`}
-                    className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+                    className="group bg-white rounded-xl overflow-hidden  hover: transition-all duration-300"
                   >
                     <div className="relative h-48 overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
                       {related.featuredImage ? (

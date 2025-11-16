@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import MarkdownEditor from "@/components/MarkdownEditor";
-import { FileText, Settings, UserCheck, Save, AlertCircle } from "lucide-react";
+import { FileText, Settings, UserCheck, Save, AlertCircle, Pencil } from "lucide-react";
 import {
   eventTypeOptions,
   slugify,
@@ -20,13 +20,19 @@ interface CreateEventFormProps {
   onCancel?: () => void;
 }
 
-// Correction: react-hook-form expects a TypeScript type for generics, not a Zod schema
 import type { z } from "zod";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 type CreateEventFormInput = z.infer<typeof createEventSchema>;
 
-export default function CreateEventForm({
-}: CreateEventFormProps) {
+export default function CreateEventForm({}: CreateEventFormProps) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
+    const router = useRouter();
+
+
+  // Gestion du mode édition/auto du slug
+  const [slugMode, setSlugMode] = useState<"auto" | "custom">("auto");
+  const slugInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     register,
@@ -35,6 +41,7 @@ export default function CreateEventForm({
     watch,
     setValue,
     reset,
+    trigger,
   } = useForm<CreateEventFormInput>({
     resolver: zodResolver(createEventSchema),
     defaultValues: {
@@ -61,13 +68,46 @@ export default function CreateEventForm({
   });
 
   const titleValue = watch("title");
+  const slugValue = watch("slug");
+
+  // Gère la génération automatique du slug sauf si l'utilisateur le personnalise
+  useEffect(() => {
+    if (slugMode === "auto") {
+      setValue("slug", slugify(titleValue || ""), { shouldValidate: false });
+      trigger("slug");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [titleValue, slugMode, setValue, trigger]);
+
+  // Passe en mode custom si l'utilisateur clique sur l'icône d'édition
+  function handleSlugEditClick() {
+    setSlugMode("custom");
+    setTimeout(() => {
+      slugInputRef.current?.focus();
+      slugInputRef.current?.select();
+    }, 10);
+  }
+
+  // Revenir en mode auto si l'utilisateur efface le champ slug
+  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const newValue = e.target.value;
+    setValue("slug", newValue, { shouldValidate: true });
+    if (newValue === "" && titleValue) {
+      setSlugMode("auto");
+    }
+  }
 
   const createEventMutation = useMutation({
     mutationFn: async (data: CreateEventFormInput) => {
       const result = await doCreateEvent(data);
       if (result.serverError) {
         throw new Error("Failed to create event");
+      }else{
+      router.push("/admin/events");
       }
+   
+   
+
     }
   });
 
@@ -82,7 +122,6 @@ export default function CreateEventForm({
   ];
 
   const descriptionValue = watch("description");
-  const slugValue = watch("slug");
 
   // Check which tabs have errors
   const tabErrors = {
@@ -170,6 +209,67 @@ export default function CreateEventForm({
                     <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />
                       {errors.title.message as string}
+                    </p>
+                  )}
+                </div>
+
+                {/* Slug: gestion éditable/auto */}
+                <div className="relative group">
+                  <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+                    Slug
+                    <span className="ml-1 inline text-xs text-gray-400">
+                      {slugMode === "auto"
+                        ? "(généré automatiquement)"
+                        : "(personnalisé)"}
+                    </span>
+                  </label>
+                  <div className="flex items-center">
+                    <input
+                      id="slug"
+                      {...register("slug")}
+                      type="text"
+                      value={slugValue || ""}
+                      readOnly={slugMode === "auto"}
+                      ref={slugMode === "custom" ? slugInputRef : undefined}
+                      onChange={slugMode === "custom" ? handleSlugChange : undefined}
+                      className={
+                        slugMode === "auto"
+                          ? "w-full border border-gray-200 bg-gray-50 rounded-lg px-4 py-2.5 text-gray-500 focus:outline-none cursor-not-allowed"
+                          : getInputClasses("slug")
+                      }
+                      style={
+                        slugMode === "auto"
+                          ? { pointerEvents: "none" }
+                          : {}
+                      }
+                    />
+                    {slugMode === "auto" && (
+                      <button
+                        type="button"
+                        aria-label="Personnaliser le slug"
+                        className="ml-2 p-2 rounded hover:bg-gray-100 text-gray-600"
+                        onClick={handleSlugEditClick}
+                        tabIndex={0}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                    )}
+                    {slugMode === "custom" && (
+                      <button
+                        type="button"
+                        aria-label="Revenir au slug automatique"
+                        className="ml-2 p-2 rounded hover:bg-gray-100 text-gray-600"
+                        onClick={() => setSlugMode("auto")}
+                        tabIndex={0}
+                      >
+                        <span className="text-xs">auto</span>
+                      </button>
+                    )}
+                  </div>
+                  {errors.slug && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      {errors.slug.message as string}
                     </p>
                   )}
                 </div>
@@ -348,7 +448,6 @@ export default function CreateEventForm({
                     id="isVirtual"
                     {...register("isVirtual", {
                       setValueAs: (value) => {
-                        // Correction: parse boolean from string
                         if (value === "true" || value === true) return true;
                         if (value === "false" || value === false) return false;
                         return false;
@@ -373,7 +472,6 @@ export default function CreateEventForm({
                     id="isFeatured"
                     {...register("isFeatured", {
                       setValueAs: (value) => {
-                        // Correction: parse boolean from string
                         if (value === "true" || value === true) return true;
                         if (value === "false" || value === false) return false;
                         return false;
@@ -454,7 +552,6 @@ export default function CreateEventForm({
                     id="isFree"
                     {...register("isFree", {
                       setValueAs: (value) => {
-                        // Correction: parse boolean from string
                         if (value === "true" || value === true) return true;
                         if (value === "false" || value === false) return false;
                         return false;
@@ -517,7 +614,6 @@ export default function CreateEventForm({
             <p className="text-red-600 text-sm">
               {"Erreur lors de la création de l'événement."}
             </p>
-            {/* If error is available, display the actual error message too */}
             {typeof createEventMutation.error === "object" &&
               (createEventMutation.error as Error).message &&
               <p className="text-red-700 text-xs italic">{(createEventMutation.error as Error).message}</p>

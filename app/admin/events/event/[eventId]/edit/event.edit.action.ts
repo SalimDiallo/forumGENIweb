@@ -7,13 +7,18 @@ import { updateEventSchema } from "./event.edit.schema";
 
 export const doEditEvent = adminAction
     .metadata({ actionName: "edit-event-admin" })
-    .schema(updateEventSchema)
+    .inputSchema(updateEventSchema)
     .action(async ({ parsedInput }) => {
-        const { id, ...data } = parsedInput;
-
+        const { id, ...event } = parsedInput;
+        console.log(event);
+        
         const editedEvent = await prisma.event.update({
             where: { id },
-            data
+         data:{
+        ...event,
+        maxParticipants: event.maxParticipants ? Number(event.maxParticipants) : 0
+        
+      }
         });
 
         // Revalidate paths

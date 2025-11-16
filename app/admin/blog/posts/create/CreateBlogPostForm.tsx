@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import MarkdownEditor from "@/components/MarkdownEditor";
-import { FileText, Settings, Eye, Save, AlertCircle } from "lucide-react";
-import { useAction } from "next-safe-action/hooks";
+import { FileText, Settings, Eye, Save } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
 import { createBlogPost } from "../../posts-actions";
 import { listCategories } from "../../actions";
 import { listTags } from "../../tags-actions";
@@ -12,6 +12,8 @@ import { createBlogPostSchema } from "@/lib/validations/blog";
 import type { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { renderErrors } from "@/lib/utils";
+import Input from "@/components/ui/InputField";
 
 type FormTab = "basic" | "content" | "meta";
 type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>;
@@ -20,9 +22,51 @@ export default function CreateBlogPostForm() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
 
-  const createAction = useAction(createBlogPost);
-  const categoriesAction = useAction(listCategories);
-  const tagsAction = useAction(listTags);
+  // To prevent hydration issues, track if we're mounted/rendered on client
+  const [isMounted, setIsMounted] = useState(false);
+
+  // State for categories and tags
+  const [categoriesData, setCategoriesData] = useState<any[]>([]);
+  const [tagsData, setTagsData] = useState<any[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [tagsLoading, setTagsLoading] = useState(false);
+
+  // Fetch categories and tags on mount
+  useEffect(() => {
+    setIsMounted(true);
+
+    const fetchData = async () => {
+      // Fetch categories
+      setCategoriesLoading(true);
+      try {
+        const categoriesResult = await listCategories();
+        if (categoriesResult?.data) {
+          setCategoriesData(categoriesResult.data.categories);
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des catégories:", error);
+        toast.error("Impossible de charger les catégories");
+      } finally {
+        setCategoriesLoading(false);
+      }
+
+      // Fetch tags
+      setTagsLoading(true);
+      try {
+        const tagsResult = await listTags();
+        if (tagsResult?.data) {
+          setTagsData(tagsResult.data.tags);
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des tags:", error);
+        toast.error("Impossible de charger les tags");
+      } finally {
+        setTagsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const {
     register,
@@ -30,8 +74,11 @@ export default function CreateBlogPostForm() {
     formState: { errors },
     watch,
     setValue,
+    reset,
   } = useForm<CreateBlogPostInput>({
     resolver: zodResolver(createBlogPostSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
     defaultValues: {
       title: "",
       slug: "",
@@ -50,23 +97,32 @@ export default function CreateBlogPostForm() {
     },
   });
 
-  useEffect(() => {
-    categoriesAction.execute();
-    tagsAction.execute();
-  }, []);
-
-  useEffect(() => {
-    if (createAction.status === "hasSucceeded") {
-      toast.success("Article créé avec succès");
-      router.push("/admin/blog/posts");
-    }
-    if (createAction.status === "hasErrored") {
-      toast.error(createAction.result?.serverError || "Erreur lors de la création");
-    }
-  }, [createAction.status, createAction.result, router]);
+  const createMutation = useMutation({
+    mutationFn: async (data: CreateBlogPostInput) => {
+      return await createBlogPost(data);
+    },
+    onSuccess: (result) => {
+      if (result?.data) {
+        toast.success("Article créé avec succès");
+        reset();
+        router.push("/admin/blog/posts");
+      } else if (result?.serverError) {
+        toast.error(result.serverError);
+        console.error("Échec de la création:", result.serverError);
+      } else if (result?.validationErrors) {
+        toast.error("Veuillez corriger les erreurs dans le formulaire");
+        console.error("Erreurs de validation:", result.validationErrors);
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Erreur lors de la création de l'article";
+      toast.error(errorMessage);
+      console.error("Erreur lors de la création:", error);
+    },
+  });
 
   const onSubmit = (data: CreateBlogPostInput) => {
-    createAction.execute(data);
+    createMutation.mutate(data);
   };
 
   const titleValue = watch("title");
@@ -74,16 +130,17 @@ export default function CreateBlogPostForm() {
 
   // Auto-generate slug from title
   useEffect(() => {
+    if (!isMounted) return;
     if (titleValue) {
       const slug = titleValue
-        .toLowerCase()
+        .toLocaleLowerCase("fr-FR")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
       setValue("slug", slug);
     }
-  }, [titleValue, setValue]);
+  }, [titleValue, setValue, isMounted]);
 
   const tabs = [
     { id: "basic" as FormTab, label: "Informations", icon: FileText },
@@ -91,54 +148,34 @@ export default function CreateBlogPostForm() {
     { id: "meta" as FormTab, label: "SEO", icon: Eye },
   ];
 
-  const categories = categoriesAction.result?.data?.categories || [];
-  const tags = tagsAction.result?.data?.tags || [];
+  const categories = categoriesData || [];
+  const tags = tagsData || [];
   const selectedTagIds = watch("tagIds") || [];
 
-  // Check which tabs have errors
   const tabErrors = {
-    basic: !!(errors.title || errors.slug || errors.categoryId || errors.status || errors.authorName || errors.featuredImage || errors.excerpt || errors.readTimeMinutes || errors.isFeatured || errors.authorPosition),
+    basic: !!(
+      errors.title ||
+      errors.slug ||
+      errors.categoryId ||
+      errors.status ||
+      errors.authorName ||
+      errors.featuredImage ||
+      errors.excerpt ||
+      errors.readTimeMinutes ||
+      errors.isFeatured ||
+      errors.authorPosition
+    ),
     content: !!errors.content,
     meta: !!(errors.metaTitle || errors.metaDescription),
   };
 
-  const hasErrors = Object.values(errors).length > 0;
-
-  // Helper function to get input classes based on error state
-  const getInputClasses = (fieldName: keyof CreateBlogPostInput) => {
-    const baseClasses = "w-full rounded-lg px-4 py-2.5 transition-colors";
-    const hasError = errors[fieldName];
-
-    if (hasError) {
-      return `${baseClasses} border-2 border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 bg-red-50`;
-    }
-
-    return `${baseClasses} border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-transparent`;
-  };
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-6">
+    <form
+      onSubmit={handleSubmit((e)=>onSubmit(e))}
+      className="p-6"
+    >
       <div className="space-y-4">
-        {/* Error Summary */}
-        {hasErrors && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-red-900 mb-1">
-                  Veuillez corriger les erreurs suivantes :
-                </h3>
-                <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
-                  {Object.entries(errors).map(([key, error]) => (
-                    <li key={key}>
-                      <span className="font-medium capitalize">{key}</span>: {error?.message as string}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Server validation errors */}
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
@@ -155,9 +192,7 @@ export default function CreateBlogPostForm() {
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
-              {tabErrors[tab.id] && (
-                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-              )}
+              {tabErrors[tab.id] && <span className="w-2 h-2 bg-red-500 rounded-full"></span>}
             </button>
           ))}
         </div>
@@ -168,42 +203,25 @@ export default function CreateBlogPostForm() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                    Titre de l'article *
-                  </label>
-                  <input
+                  <Input
                     id="title"
-                    {...register("title")}
+                    label="Titre de l'article *"
                     placeholder="Ex: Les 10 meilleures pratiques entrepreneuriales"
-                    className={getInputClasses("title")}
+                    error={!!errors.title?.message}
+                    {...register("title")}
                   />
-                  {errors.title && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.title.message}
-                    </p>
-                  )}
                 </div>
 
                 <div className="col-span-2">
-                  <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
-                    Slug (URL) *
-                  </label>
-                  <input
+                  <Input
                     id="slug"
-                    {...register("slug")}
+                    label="Slug (URL) *"
                     placeholder="les-10-meilleures-pratiques-entrepreneuriales"
-                    className={`${getInputClasses("slug")} bg-gray-50`}
+                    error={!!errors.slug?.message}
+                    className="bg-gray-50"
+                    {...register("slug")}
+                    hint="Le slug est généré automatiquement à partir du titre"
                   />
-                  {errors.slug && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.slug.message}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    Le slug est généré automatiquement à partir du titre
-                  </p>
                 </div>
 
                 <div>
@@ -213,34 +231,36 @@ export default function CreateBlogPostForm() {
                   <select
                     id="categoryId"
                     {...register("categoryId", { valueAsNumber: true })}
-                    className={getInputClasses("categoryId")}
+                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.categoryId ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
+                    disabled={categoriesLoading}
                   >
-                    <option value={0}>Sélectionnez une catégorie</option>
+                    <option value={0}>{categoriesLoading ? "Chargement..." : "Sélectionnez une catégorie"}</option>
                     {categories.map((cat: any) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.name}
                       </option>
                     ))}
                   </select>
-                  {errors.categoryId && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.categoryId.message}
-                    </p>
-                  )}
+                  {renderErrors("categoryId", errors.categoryId)}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tags
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
                   <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto">
-                    {tags.length === 0 ? (
+                    {tagsLoading ? (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        Chargement des tags...
+                      </div>
+                    ) : tags.length === 0 ? (
                       <p className="text-sm text-gray-500">Aucun tag disponible</p>
                     ) : (
                       <div className="space-y-2">
                         {tags.map((tag: any) => (
-                          <label key={tag.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                          <label
+                            key={tag.id}
+                            className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                          >
                             <input
                               type="checkbox"
                               value={tag.id}
@@ -261,79 +281,51 @@ export default function CreateBlogPostForm() {
                       </div>
                     )}
                   </div>
-                  {errors.tagIds && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.tagIds.message}
-                    </p>
-                  )}
                 </div>
 
                 <div>
                   <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
                     Statut *
                   </label>
-                  <select
-                    id="status"
-                    {...register("status")}
-                    className={getInputClasses("status")}
-                  >
+                  <select id="status" {...register("status")} className={`w-full rounded-lg px-4 py-2.5 border ${errors.status ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}>
                     <option value="draft">Brouillon</option>
                     <option value="published">Publié</option>
                     <option value="archived">Archivé</option>
                   </select>
-                  {errors.status && (
-                    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {errors.status.message}
-                    </p>
-                  )}
+                  {renderErrors("status", errors.status)}
                 </div>
 
                 <div>
-                  <label htmlFor="authorName" className="block text-sm font-medium text-gray-700 mb-1">
-                    Auteur *
-                  </label>
-                  <input
+                  <Input
                     id="authorName"
-                    {...register("authorName")}
+                    label="Auteur *"
                     placeholder="Nom de l'auteur"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    error={!!errors.authorName?.message}
+                    {...register("authorName")}
                   />
-                  {errors.authorName && (
-                    <p className="text-red-600 text-sm mt-1">{errors.authorName.message}</p>
-                  )}
                 </div>
 
                 <div>
-                  <label htmlFor="authorPosition" className="block text-sm font-medium text-gray-700 mb-1">
-                    Poste de l'auteur
-                  </label>
-                  <input
+                  <Input
                     id="authorPosition"
-                    {...register("authorPosition")}
+                    label="Poste de l'auteur"
                     placeholder="Ex: CEO, Consultant, etc."
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    error={!!errors.authorPosition?.message}
+                    {...register("authorPosition")}
                   />
-                  {errors.authorPosition && (
-                    <p className="text-red-600 text-sm mt-1">{errors.authorPosition.message}</p>
-                  )}
+                  {renderErrors("authorPosition", errors.authorPosition)}
                 </div>
 
                 <div>
-                  <label htmlFor="readTimeMinutes" className="block text-sm font-medium text-gray-700 mb-1">
-                    Temps de lecture (minutes)
-                  </label>
-                  <input
+                  <Input
                     id="readTimeMinutes"
+                    label="Temps de lecture (minutes)"
                     type="number"
                     min={1}
+                    error={!!errors.readTimeMinutes?.message}
                     {...register("readTimeMinutes", { valueAsNumber: true })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   />
-                  {errors.readTimeMinutes && (
-                    <p className="text-red-600 text-sm mt-1">{errors.readTimeMinutes.message}</p>
-                  )}
+                  {renderErrors("readTimeMinutes", errors.readTimeMinutes)}
                 </div>
 
                 <div>
@@ -349,29 +341,23 @@ export default function CreateBlogPostForm() {
                         return false;
                       },
                     })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.isFeatured ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
                   >
                     <option value="false">Non</option>
                     <option value="true">Oui</option>
                   </select>
-                  {errors.isFeatured && (
-                    <p className="text-red-600 text-sm mt-1">{errors.isFeatured.message}</p>
-                  )}
+                  {renderErrors("isFeatured", errors.isFeatured)}
                 </div>
 
                 <div className="col-span-2">
-                  <label htmlFor="featuredImage" className="block text-sm font-medium text-gray-700 mb-1">
-                    Image à la une (URL)
-                  </label>
-                  <input
+                  <Input
                     id="featuredImage"
-                    {...register("featuredImage")}
+                    label="Image à la une (URL)"
                     placeholder="https://exemple.com/image.jpg"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    error={!!errors.featuredImage?.message}
+                    {...register("featuredImage")}
                   />
-                  {errors.featuredImage && (
-                    <p className="text-red-600 text-sm mt-1">{errors.featuredImage.message}</p>
-                  )}
+                  {renderErrors("featuredImage", errors.featuredImage)}
                 </div>
 
                 <div className="col-span-2">
@@ -383,11 +369,9 @@ export default function CreateBlogPostForm() {
                     {...register("excerpt")}
                     placeholder="Un court résumé de l'article (2-3 phrases)"
                     rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  />
-                  {errors.excerpt && (
-                    <p className="text-red-600 text-sm mt-1">{errors.excerpt.message}</p>
-                  )}
+                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.excerpt ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
+                  ></textarea>
+                  {renderErrors("excerpt", errors.excerpt)}
                 </div>
               </div>
             </div>
@@ -404,6 +388,7 @@ export default function CreateBlogPostForm() {
                 rows={12}
                 required
               />
+              {renderErrors("content", errors.content)}
             </div>
           )}
 
@@ -411,21 +396,15 @@ export default function CreateBlogPostForm() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                    Titre SEO
-                  </label>
-                  <input
+                  <Input
                     id="metaTitle"
-                    {...register("metaTitle")}
+                    label="Titre SEO"
                     placeholder="Titre optimisé pour les moteurs de recherche"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    error={!!errors.metaTitle?.message}
+                    {...register("metaTitle")}
+                    hint="Laissez vide pour utiliser le titre de l'article par défaut"
                   />
-                  {errors.metaTitle && (
-                    <p className="text-red-600 text-sm mt-1">{errors.metaTitle.message}</p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    Laissez vide pour utiliser le titre de l'article par défaut
-                  </p>
+                  {renderErrors("metaTitle", errors.metaTitle)}
                 </div>
 
                 <div>
@@ -437,46 +416,44 @@ export default function CreateBlogPostForm() {
                     {...register("metaDescription")}
                     placeholder="Description optimisée pour les moteurs de recherche (150-160 caractères recommandés)"
                     rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  />
-                  {errors.metaDescription && (
-                    <p className="text-red-600 text-sm mt-1">{errors.metaDescription.message}</p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    Laissez vide pour utiliser l'extrait par défaut
-                  </p>
+                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.metaDescription ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
+                  ></textarea>
+                  {renderErrors("metaDescription", errors.metaDescription)}
+                  <p className="text-xs text-gray-500 mt-1">Laissez vide pour utiliser l'extrait par défaut</p>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Error Messages */}
-        {createAction.status === "hasErrored" && (
-          <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-red-600 text-sm">
-              {createAction.result?.serverError || "Erreur lors de la création de l'article"}
-            </p>
-          </div>
-        )}
-
         {/* Action Buttons */}
         <div className="flex items-center justify-end gap-3 pt-4 border-t">
           <button
             type="button"
-            onClick={() => router.push("/admin/blog/posts")}
+            onClick={() => {
+              reset();
+              router.push("/admin/blog/posts");
+            }}
             className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
           >
             Annuler
           </button>
           <button
             type="submit"
-            disabled={createAction.status === "executing"}
+            disabled={createMutation.isPending}
             className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-6 py-2.5 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Save className="w-4 h-4" />
-            {createAction.status === "executing" ? "Création..." : "Créer l'article"}
+            {createMutation.isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Création en cours...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Créer l'article
+              </>
+            )}
           </button>
         </div>
       </div>

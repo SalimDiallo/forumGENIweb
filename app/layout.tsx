@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Raleway } from 'next/font/google';
 import './globals.css';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Providers from './Providers';
+import { Toaster } from 'sonner';
 
 // Raleway comme police secondaire (Google Fonts)
 const raleway = Raleway({
@@ -35,8 +37,10 @@ export default function RootLayout({
       <body className="antialiased min-h-screen">
         <Providers>
           <>
+            <Header />
             {children}
             <Footer />
+            <Toaster />
           </>
         </Providers>
       </body>

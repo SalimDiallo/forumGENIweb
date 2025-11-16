@@ -72,6 +72,7 @@ function cleanDefaultValues<T extends Record<string, any>>(obj: T): T {
 export default function EditEventForm({ event }: EditEventFormProps) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
   const cleanedDefaultValues = cleanDefaultValues(event);
+  console.log(cleanedDefaultValues);
   const router = useRouter();
   const {
     register,
@@ -93,7 +94,12 @@ export default function EditEventForm({ event }: EditEventFormProps) {
       price: cleanedDefaultValues.price,
       currency: cleanedDefaultValues.currency,
       status: cleanedDefaultValues.status,
-      isFeatured: cleanedDefaultValues.isFeatured,
+      isFeatured: Boolean(cleanedDefaultValues.isFeatured),
+      sponsors: cleanedDefaultValues.sponsors ?? "",
+      agenda: cleanedDefaultValues.agenda ?? "",
+      speakers: cleanedDefaultValues.speakers ?? "",
+      requirements: cleanedDefaultValues.requirements ?? "",
+      whatToBring: cleanedDefaultValues.whatToBring ?? "",
       isVirtual: cleanedDefaultValues.isVirtual,
       shortDescription: cleanedDefaultValues.shortDescription ?? "",
       description: cleanedDefaultValues.description ?? "",

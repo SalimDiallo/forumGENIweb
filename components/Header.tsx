@@ -151,11 +151,6 @@ const Header = () => {
         }}
       >
         {/* Bande décorative supérieure avec animation */}
-        {/* <motion.div 
-          className="h-1 bg-gradient-to-r from-emerald-700 via-emerald-500 to-emerald-700 bg-[length:200%_100%]"
-          animate={{ backgroundPosition: ['0% 50%', '200% 50%'] }}
-          transition={{ duration: 8, ease: 'linear', repeat: Infinity }}
-        /> */}
         
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -319,7 +314,7 @@ const Header = () => {
             >
               <Link href="/events">
                 <motion.button
-                  className="relative px-6 py-3 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold rounded-xl overflow-hidden shadow-lg hover:shadow-emerald-700/30 group"
+                  className="relative px-6 py-3 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold rounded-xl overflow-hidden hover:shadow-emerald-700/30 group"
                   whileHover={{ 
                     scale: 1.05, 
                     y: -2,
@@ -334,12 +329,10 @@ const Header = () => {
                     animate={{ x: ['-100%', '100%'] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
                   />
-                  
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 animate-shimmer" />
-                  
                   <span className="relative flex items-center gap-2">
-                    Participer
+                    Contact
                     <motion.div
                       animate={{ x: [0, 3, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
@@ -511,8 +504,7 @@ const Header = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <span className="relative flex items-center justify-center gap-2">
-                        <Calendar className="w-5 h-5" />
+                      <span className="relative flex items-center justify-center gap-2"> 
                         Participer au Forum 2025
                       </span>
                     </motion.button>

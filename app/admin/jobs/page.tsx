@@ -1,12 +1,6 @@
-"use client";
-import { useAction } from "next-safe-action/hooks";
-import { createJob, deleteJob, listJobs, updateJob, getJobsWithApplicationCount } from "./actions";
-import { useEffect, useState } from "react";
-import { Pagination } from "@/components/admin/Pagination";
 import {
   Plus,
   Edit2,
-  Trash2,
   Briefcase,
   Building2,
   MapPin,
@@ -24,46 +18,38 @@ import {
   Clock,
   Home,
   Eye,
-  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
-import CreateJobModal from "./job/create/CreateJobForm";
+import { prisma } from "@/lib/db";
+import { ServerPaginationClient } from "./ServerPaginationClient";
 
-export default function AdminJobsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
+interface PageProps {
+  searchParams?: Promise<{
+    page?: string;
+  }>;
+}
+
+export default async function AdminJobsPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const page = resolvedSearchParams?.page ? parseInt(resolvedSearchParams.page) : 1;
   const itemsPerPage = 20;
+  const skip = (page - 1) * itemsPerPage;
 
-  const list = useAction(getJobsWithApplicationCount);
-  const create = useAction(createJob);
-  const del = useAction(deleteJob);
+  const [jobs, total] = await Promise.all([
+    prisma.jobOffer.findMany({
+      skip,
+      take: itemsPerPage,
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: { applications: true },
+        },
+      },
+    }),
+    prisma.jobOffer.count(),
+  ]);
 
-  useEffect(() => {
-    list.execute({ page: currentPage, limit: itemsPerPage });
-  }, [currentPage]);
-
-  const [openCreate, setOpenCreate] = useState(false);
-
-  async function onDelete(id: number) {
-    if (confirm("Êtes-vous sûr de vouloir supprimer cette annonce ?")) {
-      del.execute({ id });
-    }
-  }
-
-  useEffect(() => {
-    if (create.status === "hasSucceeded") {
-      list.execute({ page: currentPage, limit: itemsPerPage });
-      setOpenCreate(false);
-    }
-  }, [create.status]);
-
-  useEffect(() => {
-    if (del.status === "hasSucceeded") {
-      list.execute({ page: currentPage, limit: itemsPerPage });
-    }
-  }, [del.status]);
-
-  const totalPages = list.result?.data?.totalPages || 0;
-  const total = list.result?.data?.total || 0;
+  const totalPages = Math.ceil(total / itemsPerPage);
 
   // Options for select fields (should be kept in sync with CreateJobs.tsx and EditJobs.tsx)
   const jobTypeOptions = [
@@ -101,37 +87,19 @@ export default function AdminJobsPage() {
               {total} annonce(s) au total
             </p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setOpenCreate(true)}
-              className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              Nouvelle annonce
-            </button>
-          </div>
+          <Link
+            href="/admin/jobs/job/create"
+            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Nouvelle annonce
+          </Link>
         </div>
       </section>
 
-      {/* Create Modal */}
-      <CreateJobModal
-        open={openCreate}
-        onClose={() => setOpenCreate(false)}
-        onCreated={() => {
-          list.execute({ page: currentPage, limit: itemsPerPage });
-          setOpenCreate(false);
-        }}
-      />
-
       {/* Jobs List */}
       <section className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        {list.status === "executing" && (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          </div>
-        )}
-
-        {list.result?.data?.jobs?.length === 0 && (
+        {jobs?.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             <Briefcase className="w-16 h-16 mx-auto mb-4 text-gray-300" />
             <p className="text-lg font-medium">Aucune annonce</p>
@@ -140,7 +108,7 @@ export default function AdminJobsPage() {
         )}
 
         <div className="divide-y divide-gray-200">
-          {list.result?.data?.jobs?.map((j: any) => {
+          {jobs?.map((j: any) => {
             const jobTypeOpt = jobTypeOptions.find((opt) => opt.value === j.jobType);
             const statusOpt = statusOptions.find((opt) => opt.value === j.status);
             return (
@@ -270,13 +238,6 @@ export default function AdminJobsPage() {
                       <Edit2 className="w-4 h-4" />
                       Éditer
                     </Link>
-                    <button
-                      onClick={() => onDelete(j.id)}
-                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Supprimer
-                    </button>
                   </div>
                 </div>
                 <div className="mt-2 text-sm text-gray-700 line-clamp-2">
@@ -324,15 +285,12 @@ export default function AdminJobsPage() {
         </div>
 
         {totalPages > 1 && (
-          <div className="border-t border-gray-200 p-4">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              totalItems={total}
-              itemsPerPage={itemsPerPage}
-            />
-          </div>
+          <ServerPaginationClient
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={total}
+            itemsPerPage={itemsPerPage}
+          />
         )}
       </section>
     </div>
