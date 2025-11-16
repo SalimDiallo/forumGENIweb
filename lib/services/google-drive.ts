@@ -6,14 +6,19 @@
 import { google } from 'googleapis';
 import type { GalleryStructure, GalleryYear, GalleryCategory, GalleryEvent, GalleryMedia, MediaType } from '@/lib/types/gallery';
 
-// Image and video MIME types we support
-const IMAGE_MIME_TYPES = [
+// Uniquement les images réellement affichables dans la galerie principale (exclus SVG)
+const DISPLAYABLE_IMAGE_MIME_TYPES = [
   'image/jpeg',
   'image/jpg',
   'image/png',
   'image/gif',
   'image/webp',
-  'image/svg+xml',
+  // PAS de SVG ici (pas "image/svg+xml")
+];
+
+const ALL_IMAGE_MIME_TYPES = [
+  ...DISPLAYABLE_IMAGE_MIME_TYPES,
+  'image/svg+xml', // SVG seulement si besoin d'afficher dans un contexte sécurisé (pas galerie)
 ];
 
 const VIDEO_MIME_TYPES = [
@@ -44,32 +49,32 @@ function getDriveClient() {
 }
 
 /**
- * Determine if a file is an image or video
+ * Determine if a file is a displayable image or a video (pour la galerie)
  */
 function getMediaType(mimeType: string): MediaType | null {
-  if (IMAGE_MIME_TYPES.includes(mimeType)) return 'image';
+  if (DISPLAYABLE_IMAGE_MIME_TYPES.includes(mimeType)) return 'image';
   if (VIDEO_MIME_TYPES.includes(mimeType)) return 'video';
   return null;
 }
 
 /**
- * Get direct download URL for a file
- * For videos, we need to use a different URL format that allows streaming
+ * Retourne le vrai lien d'affichage direct de l'image sur Google Drive (non le thumbnail)
+ * Pour les images, on crée l'URL public viewer/export qui retourne l'image full-size pour l'affichage.
+ * Pour les vidéos, utiliser le preview.
  */
 function getFileUrl(fileId: string, mimeType?: string): string {
-  // For videos, use the view URL which can be streamed
   if (mimeType && VIDEO_MIME_TYPES.includes(mimeType)) {
     return `https://drive.google.com/file/d/${fileId}/preview`;
   }
-  // For images, use the direct download URL
+  // Lien d'affichage direct, pour images, compatible avec <img src="...">
   return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }
 
 /**
- * Get thumbnail URL for a file
+ * Get thumbnail URL for a file, par défaut w1920 (HD)
  */
-function getThumbnailUrl(fileId: string): string {
-  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+function getThumbnailUrl(fileId: string, size: string = 'w1920'): string {
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=${size}`;
 }
 
 /**
@@ -82,7 +87,7 @@ async function listFolders(parentId: string): Promise<any[]> {
     const response = await drive.files.list({
       q: `'${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
       fields: 'files(id, name, createdTime, modifiedTime)',
-      orderBy: 'name desc', // Sort by name descending to get recent years first
+      orderBy: 'name desc',
     });
 
     return response.data.files || [];
@@ -93,22 +98,23 @@ async function listFolders(parentId: string): Promise<any[]> {
 }
 
 /**
- * List all media files in a given folder
+ * List all displayable media files in a folder (ignore SVG)
+ * NB: SVG files ne seront PAS inclus ici.
  */
 async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
   const drive = getDriveClient();
 
   try {
-    // Build MIME type filter
-    const mimeTypeFilter = [...IMAGE_MIME_TYPES, ...VIDEO_MIME_TYPES]
+    // Build MIME type filter (pour la galerie: images affichables seulement, PAS SVG)
+    const displayableMimeTypes = [...DISPLAYABLE_IMAGE_MIME_TYPES, ...VIDEO_MIME_TYPES]
       .map(type => `mimeType='${type}'`)
       .join(' or ');
 
     const response = await drive.files.list({
-      q: `'${folderId}' in parents and (${mimeTypeFilter}) and trashed=false`,
+      q: `'${folderId}' in parents and (${displayableMimeTypes}) and trashed=false`,
       fields: 'files(id, name, mimeType, size, createdTime, modifiedTime, thumbnailLink)',
       orderBy: 'createdTime desc',
-      pageSize: 1000, // Max items per folder
+      pageSize: 1000,
     });
 
     const files = response.data.files || [];
@@ -118,19 +124,25 @@ async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
         const mediaType = getMediaType(file.mimeType || '');
         if (!mediaType) return null;
 
-        return {
+        // Lien thumbnail (pour aperçu rapide, petit format)
+        const thumbnailUrl = getThumbnailUrl(file.id || '');
+
+        // Pour l'affichage dans la galerie : on veut le vrai lien image (pour balise <img>)
+        const url = getFileUrl(file.id || '', file.mimeType || '');
+
+        const mediaItem: GalleryMedia = {
           id: file.id || '',
           name: file.name || '',
           type: mediaType,
-          url: getFileUrl(file.id || '', file.mimeType || ''),
-          thumbnailUrl: mediaType === 'image'
-            ? getThumbnailUrl(file.id || '')
-            : file.thumbnailLink || getThumbnailUrl(file.id || ''),
+          url: url,
+          thumbnailUrl: thumbnailUrl,
           mimeType: file.mimeType || '',
           size: parseInt(file.size || '0'),
           createdTime: file.createdTime || '',
           modifiedTime: file.modifiedTime || '',
         };
+
+        return mediaItem;
       })
       .filter((item): item is GalleryMedia => item !== null);
   } catch (error) {
@@ -142,6 +154,7 @@ async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
 /**
  * Get full gallery structure from Google Drive
  * Structure: Root Folder > Year Folders > Category Folders > Event Folders > Media Files
+ * Seuls les médias "displayable" (images previewables, no SVG) sont inclus.
  */
 export async function getGalleryStructure(rootFolderId: string): Promise<GalleryStructure> {
   try {
@@ -168,7 +181,7 @@ export async function getGalleryStructure(rootFolderId: string): Promise<Gallery
         const eventFolders = await listFolders(categoryFolder.id);
 
         for (const eventFolder of eventFolders) {
-          // 4. Get media files in event folder
+          // 4. Get displayable media files in event folder
           const mediaFiles = await listMediaFiles(eventFolder.id);
 
           events.push({
@@ -219,7 +232,7 @@ export async function getGalleryStructure(rootFolderId: string): Promise<Gallery
 }
 
 /**
- * Get all media files flattened (for easier filtering/display)
+ * Get all displayable media files flattened (for easier filtering/display)
  */
 export async function getAllGalleryMedia(rootFolderId: string) {
   const structure = await getGalleryStructure(rootFolderId);
@@ -244,7 +257,7 @@ export async function getAllGalleryMedia(rootFolderId: string) {
 }
 
 /**
- * Get media files filtered by year, category, or event
+ * Get displayable media files filtered by year, category, or event
  */
 export async function getFilteredGalleryMedia(
   rootFolderId: string,

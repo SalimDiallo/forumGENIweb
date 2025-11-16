@@ -1,9 +1,8 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Download, AlertCircle, Loader2 } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import ShareButton from '../ui/ShareButton';
 import type { GalleryItem } from '@/lib/types/gallery';
 
 interface GalleryModalProps {
@@ -12,8 +11,7 @@ interface GalleryModalProps {
   closeModal: () => void;
   nextImage: () => void;
   prevImage: () => void;
-  downloadImage: (src: string, title: string) => void;
-  shareImage: (item: GalleryItem) => void;
+  // downloadImage and shareImage removed per instruction
 }
 
 export default function GalleryModal({
@@ -22,9 +20,7 @@ export default function GalleryModal({
   closeModal,
   nextImage,
   prevImage,
-  downloadImage,
-  shareImage,
-}: GalleryModalProps) {
+}: Omit<GalleryModalProps, 'downloadImage' | 'shareImage'>) {
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [currentItem, setCurrentItem] = useState<GalleryItem | null>(null);
@@ -70,7 +66,11 @@ export default function GalleryModal({
     return null;
   }
 
-  const safeImageSrc = currentItem.thumbnail || currentItem.src;
+  // Pour les images, prioriser le thumbnail qui fonctionne mieux avec Google Drive
+  // Pour les vidéos, utiliser src directement
+  const safeImageSrc = currentItem.type === 'image'
+    ? (currentItem.thumbnail || currentItem.src)
+    : (currentItem.thumbnail || currentItem.src);
 
   return (
     <AnimatePresence mode="wait">
@@ -92,25 +92,6 @@ export default function GalleryModal({
         >
           {/* Contrôles supérieurs */}
           <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex gap-2 z-20">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                downloadImage(currentItem.src, currentItem.title);
-              }}
-              className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 backdrop-blur-sm text-white rounded-lg flex items-center justify-center hover:bg-white/20 transition-all duration-200"
-              title="Télécharger"
-            >
-              <Download size={18} className="sm:hidden" />
-              <Download size={20} className="hidden sm:block" />
-            </button>
-            <div className="inline-block">
-              <ShareButton
-                title={currentItem.title}
-                description={`${currentItem.category} - ${currentItem.year}`}
-                size="sm"
-                className="!bg-white/10 !text-white hover:!bg-white/20 !border-0 backdrop-blur-sm rounded-lg"
-              />
-            </div>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -257,7 +238,7 @@ export default function GalleryModal({
                         style={{ maxHeight: '70vh' }}
                       >
                         Votre navigateur ne supporte pas la lecture de vidéos.
-                        <a href={currentItem.src} download>Télécharger la vidéo</a>
+                        {/* Le bouton de téléchargement de vidéo est supprimé */}
                       </video>
                       {imageError && (
                         <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">

@@ -1,10 +1,30 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import GalleryFilters from './gallery/GalleryFilters';
-import GalleryGrid from './gallery/GalleryGrid';
 import GalleryModal from './gallery/GalleryModal';
 import type { GalleryItem } from '@/lib/types/gallery';
+
+/**
+ * Répartition aléatoire (déterministe) pour effet visuel du bento grid.
+ * Peut être modifié pour adapter les formes selon le type, etc.
+ */
+function getBentoGridArea(index: number) {
+  // Un motif de tuiles façon bento, répétitif tous les 10 éléments
+  // Les motifs sont Tailwind grid-area classes (col-span, row-span)
+  const patterns = [
+    'col-span-2 row-span-2', // Large
+    'col-span-1 row-span-2', // Haute
+    'col-span-1 row-span-1', // Petite
+    'col-span-2 row-span-1', // Largeur
+    '',                      // Standard 1x1
+    '',                      // Standard 1x1
+    'col-span-1 row-span-2', // Haute
+    '',                      // Standard 1x1
+    'col-span-2 row-span-1', // Wide
+    '',                      // Standard 1x1
+  ];
+  return patterns[index % patterns.length];
+}
 
 interface GalleryProps {
   items: GalleryItem[];
@@ -13,94 +33,83 @@ interface GalleryProps {
 
 const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Catégorie de l'image ouverte dans la modal
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Catégorie ouverte dans la modal
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [likedItems, setLikedItems] = useState<Set<string>>(new Set());
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filtrage - Affichage d'une seule image par catégorie sur la page principale
-  const filteredItems = React.useMemo(() => {
-    let items = galleryItems;
+  // Grouper les items par ÉVÉNEMENT (dossiers qui contiennent directement les médias)
+  // Chaque événement (ex: "Forum Spring 2025") sera représenté par une carte
+  const eventsWithFirstImage = React.useMemo(() => {
+    const eventsMap = new Map<string, { 
+      event: { id: string; name: string; count: number; category: string; year: string }; 
+      firstImage: GalleryItem | null; 
+      count: number 
+    }>();
 
-    if (activeCategory !== 'all') {
-      items = items.filter(item => item.category === activeCategory);
-    }
-
-    if (searchQuery) {
-      items = items.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    }
-
-    // Si aucun filtre actif, afficher seulement la première image de chaque catégorie
-    if (activeCategory === 'all' && !searchQuery) {
-      const firstImagePerCategory = new Map<string, GalleryItem>();
-      items.forEach(item => {
-        if (!firstImagePerCategory.has(item.category)) {
-          firstImagePerCategory.set(item.category, item);
+    galleryItems.forEach(item => {
+      const eventId = item.event.toLowerCase().replace(/\s+/g, '-');
+      const existing = eventsMap.get(eventId);
+      if (existing) {
+        if (!existing.firstImage) {
+          existing.firstImage = item;
+        } else if (item.type === 'image' && existing.firstImage.type === 'video') {
+          existing.firstImage = item;
         }
-      });
-      return Array.from(firstImagePerCategory.values());
-    }
+        existing.count++;
+      } else {
+        eventsMap.set(eventId, {
+          event: {
+            id: eventId,
+            name: item.event,
+            count: 1,
+            category: item.category,
+            year: item.year
+          },
+          firstImage: item,
+          count: 1
+        });
+      }
+    });
 
-    return items;
+    const result = Array.from(eventsMap.values())
+      .filter(eventData => {
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          return eventData.event.name.toLowerCase().includes(query) ||
+                 eventData.event.category.toLowerCase().includes(query) ||
+                 eventData.event.year.includes(query) ||
+                 eventData.firstImage?.title.toLowerCase().includes(query);
+        }
+        return true;
+      })
+      .filter(eventData => {
+        if (activeCategory !== 'all') {
+          const normalizedCategory = eventData.event.category.toLowerCase().replace(/\s+/g, '-');
+          return normalizedCategory === activeCategory;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        const yearCompare = b.event.year.localeCompare(a.event.year);
+        if (yearCompare !== 0) return yearCompare;
+        return a.event.name.localeCompare(b.event.name);
+      });
+
+    return result;
   }, [galleryItems, activeCategory, searchQuery]);
 
-  // Items de la catégorie sélectionnée pour la navigation dans la modal
-  const categoryItems = React.useMemo(() => {
-    if (!selectedCategory) {
-      // Si aucune catégorie sélectionnée, retourner les items filtrés
-      return filteredItems;
-    }
-    // Filtrer par catégorie exacte (avec normalisation)
-    const normalizedCategory = selectedCategory.toLowerCase().replace(/\s+/g, '-');
+  const eventItems = React.useMemo(() => {
+    if (!selectedCategory) return [];
     const items = galleryItems.filter(item => {
-      const itemCategory = item.category.toLowerCase().replace(/\s+/g, '-');
-      return itemCategory === normalizedCategory;
+      const itemEventId = item.event.toLowerCase().replace(/\s+/g, '-');
+      return itemEventId === selectedCategory;
     });
-    console.log('CategoryItems calculé:', {
-      selectedCategory,
-      normalizedCategory,
-      itemsCount: items.length,
-      firstItem: items[0] ? { id: items[0].id, src: items[0].src, category: items[0].category } : null
-    });
-    return items.length > 0 ? items : filteredItems;
-  }, [galleryItems, selectedCategory, filteredItems]);
+    return items;
+  }, [galleryItems, selectedCategory]);
 
-  const openModal = (index: number) => {
-    const item = filteredItems[index];
-    if (!item) {
-      console.error('Item not found at index:', index, 'filteredItems length:', filteredItems.length);
-      return;
-    }
-    
-    console.log('Ouverture modal:', {
-      index,
-      itemId: item.id,
-      itemCategory: item.category,
-      itemSrc: item.src,
-      filteredItemsCount: filteredItems.length,
-      galleryItemsCount: galleryItems.length
-    });
-    
-    setSelectedCategory(item.category); // Mémoriser la catégorie de l'image sélectionnée
-    // Trouver l'index dans les items de la catégorie (filtrer directement ici)
-    const normalizedCategory = item.category.toLowerCase().replace(/\s+/g, '-');
-    const itemsInCategory = galleryItems.filter(catItem => {
-      const catItemCategory = catItem.category.toLowerCase().replace(/\s+/g, '-');
-      return catItemCategory === normalizedCategory;
-    });
-    
-    console.log('Items dans la catégorie:', {
-      category: normalizedCategory,
-      itemsCount: itemsInCategory.length,
-      items: itemsInCategory.map(i => ({ id: i.id, src: i.src }))
-    });
-    
-    const categoryIndex = itemsInCategory.findIndex(catItem => catItem.id === item.id);
-    setSelectedImage(categoryIndex >= 0 ? categoryIndex : 0);
+  const openEventModal = (eventId: string) => {
+    setSelectedCategory(eventId);
+    setSelectedImage(0);
   };
 
   const closeModal = useCallback(() => {
@@ -109,18 +118,17 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
   }, []);
 
   const nextImage = useCallback(() => {
-    if (selectedImage !== null && categoryItems.length > 0) {
-      setSelectedImage((selectedImage + 1) % categoryItems.length);
+    if (selectedImage !== null && eventItems.length > 0) {
+      setSelectedImage((selectedImage + 1) % eventItems.length);
     }
-  }, [selectedImage, categoryItems.length]);
+  }, [selectedImage, eventItems.length]);
 
   const prevImage = useCallback(() => {
-    if (selectedImage !== null && categoryItems.length > 0) {
-      setSelectedImage(selectedImage === 0 ? categoryItems.length - 1 : selectedImage - 1);
+    if (selectedImage !== null && eventItems.length > 0) {
+      setSelectedImage(selectedImage === 0 ? eventItems.length - 1 : selectedImage - 1);
     }
-  }, [selectedImage, categoryItems.length]);
+  }, [selectedImage, eventItems.length]);
 
-  // Navigation clavier
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selectedImage === null) return;
@@ -145,52 +153,18 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedImage, prevImage, nextImage, closeModal]);
 
-  const toggleLike = (itemId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setLikedItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(itemId)) {
-        newSet.delete(itemId);
-      } else {
-        newSet.add(itemId);
-      }
-      return newSet;
-    });
-  };
-
-  const downloadImage = async (src: string, title: string) => {
-    try {
-      const response = await fetch(src);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${title}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Erreur lors du téléchargement:', error);
+  const handleCardImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const img = e.currentTarget;
+    if (img.src !== window.location.origin + '/fallback-image.jpg') {
+      img.src = '/fallback-image.jpg';
     }
+    // eslint-disable-next-line no-console
+    console.error('Erreur chargement image carte:', { src: img.src });
   };
 
-  const shareImage = async (item: any) => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: item.title,
-          text: `Découvrez cette image: ${item.title}`,
-          url: window.location.href
-        });
-      } catch (error) {
-        console.error('Erreur lors du partage:', error);
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-    }
-  };
-
+  // --- BENTO GRID ---
+  // Largeur max : 5 colonnes sur desktop, 2 sur mobile
+  // Inspiration bento grid, styles flexibles (motif via getBentoGridArea)
   return (
     <section className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 sm:py-16">
@@ -204,29 +178,95 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
           </p>
         </div>
 
-        {/* Filtres */}
-        <GalleryFilters
-          categories={categories}
-          activeCategory={activeCategory}
-          setActiveCategory={setActiveCategory}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-        />
+        {/* Filtres - Recherche d'événements */}
+        <div className="mb-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Rechercher un événement..."
+                className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition-all duration-300"
+              />
+            </div>
+          </div>
+        </div>
 
-        {/* Grille */}
-        <GalleryGrid
-          items={filteredItems}
-          viewMode={viewMode}
-          openModal={openModal}
-          likedItems={likedItems}
-          toggleLike={toggleLike}
-        />
+        {/* Bento Grid */}
+        <div
+          className={`
+            grid
+            grid-cols-2
+            sm:grid-cols-3
+            md:grid-cols-4
+            lg:grid-cols-5
+            auto-rows-[120px]
+            gap-4
+            mb-8
+          `}
+        >
+          {eventsWithFirstImage.map((eventData, index) => {
+            const bentoClass = getBentoGridArea(index);
+            return (
+              <div
+                key={eventData.event.id}
+                className={`
+                  group
+                  relative
+                  overflow-hidden
+                  rounded-2xl
+                  shadow-md
+                  bg-white
+                  cursor-pointer
+                  transition
+                  hover:shadow-xl
+                  ${bentoClass}
+                  flex
+                  items-stretch
+                  min-h-0
+                `}
+                tabIndex={0}
+                aria-label={eventData.event.name}
+                onClick={() => openEventModal(eventData.event.id)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openEventModal(eventData.event.id)}
+              >
+                {eventData.firstImage && (
+                  <img
+                    src={eventData.firstImage?.src || '/fallback-image.jpg'}
+                    alt={eventData.firstImage?.alt || eventData.event.name}
+                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                    onError={handleCardImageError}
+                    draggable={false}
+                  />
+                )}
+                {/* Overlay */}
+                <div className={`
+                  absolute inset-0
+                  bg-gradient-to-t
+                  from-black via-transparent to-transparent
+                  opacity-70
+                  pointer-events-none
+                `} />
+                {/* Texte événement */}
+                <div className="absolute bottom-0 left-0 w-full p-4 flex flex-col space-y-2 z-10 text-white">
+                  <span className="font-bold text-base md:text-lg truncate">{eventData.event.name}</span>
+                  <div className="flex items-center space-x-2 text-xs md:text-sm">
+                    <span className="bg-emerald-600/80 rounded px-2 py-0.5 mr-1">{eventData.event.category}</span>
+                    <span>{eventData.event.year}</span>
+                    <span>•</span>
+                    <span>{eventData.count} media{eventData.count > 1 ? 's' : ''}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
         {/* Message si aucun résultat */}
-        {filteredItems.length === 0 && (
+        {eventsWithFirstImage.length === 0 && (
           <div className="text-center py-12">
+            <p className="text-gray-600 mb-4">Aucun événement trouvé</p>
             <button
               onClick={() => {
                 setSearchQuery('');
@@ -239,16 +279,14 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
           </div>
         )}
 
-        {/* Modal - Utilise categoryItems pour la navigation dans la catégorie sélectionnée */}
-        {selectedImage !== null && categoryItems.length > 0 && (
+        {/* Modal - Utilise eventItems pour la navigation dans l'événement sélectionné */}
+        {selectedImage !== null && eventItems.length > 0 && (
           <GalleryModal
             selectedImage={selectedImage}
-            items={categoryItems}
+            items={eventItems}
             closeModal={closeModal}
             nextImage={nextImage}
             prevImage={prevImage}
-            downloadImage={downloadImage}
-            shareImage={shareImage}
           />
         )}
       </div>

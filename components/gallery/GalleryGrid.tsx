@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Play, Heart } from 'lucide-react';
 import type { GalleryItem } from '@/lib/types/gallery';
@@ -30,28 +31,55 @@ function GridItem({ item, index, openModal, likedItems, toggleLike }: {
     >
       <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
         <div className="relative h-48 overflow-hidden bg-gray-200">
-          {(item.type === 'video' ? item.thumbnail || item.src : item.src) ? (
-            <img
-              src={item.type === 'video' ? (item.thumbnail || item.src) : item.src}
-              alt={item.alt}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-              onError={(e) => {
-                console.error('Erreur chargement image grille:', {
-                  type: item.type,
-                  src: item.src,
-                  thumbnail: item.thumbnail,
-                  itemId: item.id
-                });
-                // Afficher une image de placeholder si l'image ne charge pas
-                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
-              }}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-sm">
-              Image non disponible
-            </div>
-          )}
+          {(() => {
+            // Pour les images : utiliser thumbnail si disponible, sinon src
+            // Pour les vidéos : toujours utiliser thumbnail
+            const imageSrc = item.type === 'image' 
+              ? (item.thumbnail || item.src)
+              : (item.thumbnail || item.src);
+            
+            return imageSrc ? (
+              <img
+                src={imageSrc}
+                alt={item.alt}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                onError={(e) => {
+                  console.error('Erreur chargement image grille:', {
+                    type: item.type,
+                    src: item.src,
+                    thumbnail: item.thumbnail,
+                    itemId: item.id,
+                    imageSrc
+                  });
+                  
+                  // Essayer l'autre source si disponible
+                  if (item.thumbnail && e.currentTarget.src !== item.thumbnail) {
+                    e.currentTarget.src = item.thumbnail;
+                    return;
+                  }
+                  if (item.src && e.currentTarget.src !== item.src) {
+                    e.currentTarget.src = item.src;
+                    return;
+                  }
+                  
+                  // Sinon, afficher placeholder
+                  e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
+                }}
+                onLoad={() => {
+                  console.log('Image chargée avec succès:', {
+                    type: item.type,
+                    src: imageSrc,
+                    itemId: item.id
+                  });
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-sm">
+                Image non disponible
+              </div>
+            );
+          })()}
 
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
 
@@ -99,27 +127,52 @@ function ListItem({ item, index, openModal, likedItems, toggleLike }: {
         <div className="flex flex-col sm:flex-row">
           {/* Image/Thumbnail */}
           <div className="relative w-full sm:w-48 h-32 sm:h-24 flex-shrink-0 overflow-hidden bg-gray-200">
-            {(item.type === 'video' ? item.thumbnail || item.src : item.src) ? (
-              <img
-                src={item.type === 'video' ? (item.thumbnail || item.src) : item.src}
-                alt={item.alt}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-                onError={(e) => {
-                  console.error('Erreur chargement image liste:', {
-                    type: item.type,
-                    src: item.src,
-                    thumbnail: item.thumbnail,
-                    itemId: item.id
-                  });
-                  e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
-                }}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-xs">
-                Image non disponible
-              </div>
-            )}
+            {(() => {
+              const imageSrc = item.type === 'image' 
+                ? (item.thumbnail || item.src)
+                : (item.thumbnail || item.src);
+              
+              return imageSrc ? (
+                <img
+                  src={imageSrc}
+                  alt={item.alt}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                  onError={(e) => {
+                    console.error('Erreur chargement image liste:', {
+                      type: item.type,
+                      src: item.src,
+                      thumbnail: item.thumbnail,
+                      itemId: item.id,
+                      imageSrc
+                    });
+                    
+                    // Essayer l'autre source si disponible
+                    if (item.thumbnail && e.currentTarget.src !== item.thumbnail) {
+                      e.currentTarget.src = item.thumbnail;
+                      return;
+                    }
+                    if (item.src && e.currentTarget.src !== item.src) {
+                      e.currentTarget.src = item.src;
+                      return;
+                    }
+                    
+                    e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
+                  }}
+                  onLoad={() => {
+                    console.log('Image liste chargée:', {
+                      type: item.type,
+                      src: imageSrc,
+                      itemId: item.id
+                    });
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-xs">
+                  Image non disponible
+                </div>
+              );
+            })()}
 
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
 
@@ -172,6 +225,20 @@ export default function GalleryGrid({
   likedItems,
   toggleLike,
 }: GalleryGridProps) {
+  // Debug: log des items reçus
+  React.useEffect(() => {
+    if (items.length > 0) {
+      console.log('GalleryGrid - Items reçus:', items.length);
+      console.log('Premier item:', {
+        id: items[0].id,
+        type: items[0].type,
+        src: items[0].src,
+        thumbnail: items[0].thumbnail,
+        title: items[0].title
+      });
+    }
+  }, [items]);
+
   return (
     <>
       {viewMode === 'grid' ? (
