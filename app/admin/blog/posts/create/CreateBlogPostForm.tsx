@@ -192,7 +192,7 @@ export default function CreateBlogPostForm() {
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
-              {tabErrors[tab.id] && <span className="w-2 h-2 bg-red-500 rounded-full"></span>}
+              {tabErrors[tab.id] && <span className="w-2 h-2 bg-red-500 "></span>}
             </button>
           ))}
         </div>
@@ -249,7 +249,7 @@ export default function CreateBlogPostForm() {
                   <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto">
                     {tagsLoading ? (
                       <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600  animate-spin" />
                         Chargement des tags...
                       </div>
                     ) : tags.length === 0 ? (
@@ -445,7 +445,7 @@ export default function CreateBlogPostForm() {
           >
             {createMutation.isPending ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent  animate-spin" />
                 Création en cours...
               </>
             ) : (

@@ -27,8 +27,7 @@ type CreateEventFormInput = z.infer<typeof createEventSchema>;
 
 export default function CreateEventForm({}: CreateEventFormProps) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
-    const router = useRouter();
-
+  const router = useRouter();
 
   // Gestion du mode édition/auto du slug
   const [slugMode, setSlugMode] = useState<"auto" | "custom">("auto");
@@ -64,6 +63,7 @@ export default function CreateEventForm({}: CreateEventFormProps) {
       registrationEnd: "",
       maxParticipants: undefined,
       location: "",
+      registrationLink: "", // Add registration link default
     },
   });
 
@@ -102,12 +102,9 @@ export default function CreateEventForm({}: CreateEventFormProps) {
       const result = await doCreateEvent(data);
       if (result.serverError) {
         throw new Error("Failed to create event");
-      }else{
-      router.push("/admin/events");
+      } else {
+        router.push("/admin/events");
       }
-   
-   
-
     }
   });
 
@@ -127,7 +124,7 @@ export default function CreateEventForm({}: CreateEventFormProps) {
   const tabErrors = {
     basic: !!(errors.title || errors.eventType || errors.status || errors.organizerName || errors.featuredImage || errors.shortDescription || errors.description),
     details: !!(errors.startDate || errors.endDate || errors.location || errors.isVirtual || errors.isFeatured),
-    registration: !!(errors.registrationStart || errors.registrationEnd || errors.maxParticipants || errors.isFree || errors.price || errors.currency),
+    registration: !!(errors.registrationStart || errors.registrationEnd || errors.maxParticipants || errors.isFree || errors.price || errors.currency || errors.registrationLink),
   };
 
   const hasErrors = Object.values(errors).length > 0;
@@ -184,7 +181,7 @@ export default function CreateEventForm({}: CreateEventFormProps) {
               <tab.icon className="w-4 h-4" />
               {tab.label}
               {tabErrors[tab.id] && (
-                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                <span className="w-2 h-2 bg-red-500 "></span>
               )}
             </button>
           ))}
@@ -602,6 +599,24 @@ export default function CreateEventForm({}: CreateEventFormProps) {
                     </p>
                   )}
                 </div>
+                {/* Registration Link input START */}
+                <div className="col-span-2">
+                  <label htmlFor="registrationLink" className="block text-sm font-medium text-gray-700 mb-1">
+                    Lien d'inscription (URL)
+                  </label>
+                  <input
+                    id="registrationLink"
+                    {...register("registrationLink")}
+                    placeholder="https://inscription.exemple.com"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  {errors.registrationLink && (
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors.registrationLink.message as string}
+                    </p>
+                  )}
+                </div>
+                {/* Registration Link input END */}
               </div>
             </div>
           )}

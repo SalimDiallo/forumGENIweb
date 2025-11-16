@@ -1,8 +1,10 @@
-import { Calendar, MapPin, Globe, DollarSign, Edit, Tag, Building, AlertCircle, Download, Share2, Bell, Users, Clock } from "lucide-react";
+import { Calendar, MapPin, Globe, DollarSign, Edit, Tag, Building, AlertCircle, Bell, Users, Clock } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { statusOptions } from "@/lib/utils";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import ShareButton from "@/components/ui/ShareButton";
+import ExportButton from "@/components/ui/ExportButton";
 
 export default async function EventDetailsPage(props: { params: Promise<{ eventId: string }> }) {
   const params = await props.params;
@@ -13,7 +15,6 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
     event = await prisma.event.findUnique({
       where: { id: eventId },
       include: {
-        registrations: true,
         media: true,
       }
     });
@@ -61,14 +62,25 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
               Retour aux événements
             </Link>
             <div className="flex gap-2">
-              <button className="inline-flex items-center gap-2 border border-gray-300 text-gray-700 font-medium rounded-lg px-4 py-2.5 hover:bg-gray-50 transition shadow-sm">
-                <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Partager</span>
-              </button>
-              <button className="inline-flex items-center gap-2 border border-gray-300 text-gray-700 font-medium rounded-lg px-4 py-2.5 hover:bg-gray-50 transition shadow-sm">
-                <Download className="w-4 h-4" />
-                <span className="hidden sm:inline">Exporter</span>
-              </button>
+              <ShareButton
+                title={event.title}
+                description={event.shortDescription || ''}
+                size="md"
+              />
+              <ExportButton
+                data={[{
+                  titre: event.title,
+                  type: event.eventType,
+                  statut: event.status,
+                  dateDebut: event.startDate.toISOString(),
+                  dateFin: event.endDate.toISOString(),
+                  lieu: event.location,
+                  participants: `${event.currentParticipants}/${event.maxParticipants || 'illimité'}`,
+                }]}
+                filename={`evenement-${event.slug}`}
+                variant="full"
+                size="md"
+              />
               <Link
                 href={`/admin/events/event/${eventId}/edit`}
                 className="inline-flex items-center gap-2 bg-emerald-600 text-white font-semibold rounded-lg px-4 py-2.5 hover:bg-emerald-700 transition shadow-sm"
@@ -80,15 +92,15 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
           </div>
 
           {/* Titre et badges */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white  shadow-sm border border-gray-200 p-6">
             <div className="flex flex-wrap items-start gap-3 mb-4">
               <h1 className="text-4xl font-bold text-gray-900 flex-1">{event.title}</h1>
               <div className="flex gap-2 items-center">
-                <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${statusOption?.color} shadow-sm`}>
+                <span className={`px-3 py-1.5  text-sm font-medium ${statusOption?.color} shadow-sm`}>
                   {statusOption?.label}
                 </span>
                 {event.isFeatured && (
-                  <span className="px-3 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-sm">
+                  <span className="px-3 py-1.5  text-sm font-medium bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-sm">
                     ⭐ Événement vedette
                   </span>
                 )}
@@ -136,7 +148,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
 
         {/* Image principale */}
         {event.featuredImage && (
-          <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
+          <div className="mb-8  overflow-hidden shadow-lg">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={event.featuredImage}
@@ -148,7 +160,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
 
         {/* Galerie photos */}
         {event.media && event.media.length > 1 && (
-          <div className="mb-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="mb-8 bg-white  shadow-sm border border-gray-200 p-6">
             <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
               <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -171,7 +183,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
         )}
 
         {/* Description */}
-        <div className="mb-8 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <div className="mb-8 bg-white  shadow-sm border border-gray-200 p-8">
           {event.shortDescription && (
             <div className="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg">
               <p className="text-lg text-emerald-900 font-medium">{event.shortDescription}</p>
@@ -187,7 +199,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
         {/* Informations détaillées en onglets visuels */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Détails de l'événement */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white  shadow-sm border border-gray-200 p-6">
             <h3 className="font-bold text-xl mb-6 flex items-center gap-2 text-gray-900">
               <Tag className="w-5 h-5 text-emerald-600" />
               Détails de l'événement
@@ -243,19 +255,19 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
         {(event.agenda || event.speakers || event.sponsors) && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {event.agenda && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white  shadow-sm border border-gray-200 p-6">
                 <h4 className="font-bold text-lg mb-3 text-gray-900">📋 Agenda</h4>
                 <div className="text-sm text-gray-700 whitespace-pre-wrap">{event.agenda}</div>
               </div>
             )}
             {event.speakers && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white  shadow-sm border border-gray-200 p-6">
                 <h4 className="font-bold text-lg mb-3 text-gray-900">🎤 Intervenants</h4>
                 <div className="text-sm text-gray-700 whitespace-pre-wrap">{event.speakers}</div>
               </div>
             )}
             {event.sponsors && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white  shadow-sm border border-gray-200 p-6">
                 <h4 className="font-bold text-lg mb-3 text-gray-900">🤝 Sponsors</h4>
                 <div className="text-sm text-gray-700 whitespace-pre-wrap">{event.sponsors}</div>
               </div>
@@ -267,7 +279,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
         {(event.requirements || event.whatToBring) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {event.requirements && (
-              <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
+              <div className="bg-blue-50  border border-blue-200 p-6">
                 <h4 className="font-bold text-lg mb-3 text-blue-900 flex items-center gap-2">
                   <AlertCircle className="w-5 h-5" />
                   Pré-requis
@@ -276,7 +288,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
               </div>
             )}
             {event.whatToBring && (
-              <div className="bg-amber-50 rounded-xl border border-amber-200 p-6">
+              <div className="bg-amber-50  border border-amber-200 p-6">
                 <h4 className="font-bold text-lg mb-3 text-amber-900 flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />

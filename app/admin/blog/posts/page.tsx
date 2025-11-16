@@ -147,7 +147,7 @@ export default function AdminBlogPostsPage() {
         {isLoading ? (
           <div className="p-12">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+              <div className="animate-spin  h-12 w-12 border-b-2 border-gray-900"></div>
               <span className="ml-4 text-gray-600">Chargement des articles...</span>
             </div>
           </div>
@@ -227,7 +227,7 @@ export default function AdminBlogPostsPage() {
                           {post.tags.map(({ tag }) => (
                             <span
                               key={tag.id}
-                              className="px-2 py-1 text-xs font-medium rounded-full border border-gray-300 text-gray-700"
+                              className="px-2 py-1 text-xs font-medium  border border-gray-300 text-gray-700"
                             >
                               {tag.name}
                             </span>
@@ -244,7 +244,7 @@ export default function AdminBlogPostsPage() {
                           )}
                         </div>
                         <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          className={`px-2 py-1 text-xs font-medium  ${
                             post.status === "published"
                               ? "bg-green-100 text-green-800 border border-green-200"
                               : post.status === "draft"

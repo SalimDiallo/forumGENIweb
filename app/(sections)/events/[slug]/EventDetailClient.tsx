@@ -9,7 +9,6 @@ import {
   MapPin,
   Users,
   ArrowLeft,
-  Share2,
   Bookmark,
   ChevronRight,
   Tag,
@@ -23,6 +22,7 @@ import {
 // RegistrationForm import supprimé
 import { EventDetailType, RelatedEventsType } from './event-detail.query';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
+import ShareButton from '@/components/ui/ShareButton';
 
 interface Props {
   event: NonNullable<EventDetailType>;
@@ -30,7 +30,6 @@ interface Props {
 }
 
 const EventDetailClient = ({ event, relatedEvents }: Props) => {
-  const [showShareMenu, setShowShareMenu] = useState(false);
 
   // Calcul si l'événement est passé
   const isPast = new Date(event.endDate) < new Date();
@@ -84,28 +83,11 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
             </Link>
 
             <div className="flex items-center gap-3">
-        
-              <div className="relative">
-                <button
-                  onClick={() => setShowShareMenu(!showShareMenu)}
-                  className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-emerald-50 hover:text-emerald-700 transition-all"
-                >
-                  <Share2 className="w-4 h-4" />
-                </button>
-
-                {showShareMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute right-0 mt-2 bg-white rounded-lg  border border-emerald-100 p-2 min-w-[200px]"
-                  >
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-emerald-50 transition-all">
-                      <Share2 className="w-4 h-4" />
-                      <span className="text-sm font-medium">Partager</span>
-                    </button>
-                  </motion.div>
-                )}
-              </div>
+              <ShareButton
+                title={event.title}
+                description={event.shortDescription || ''}
+                size="md"
+              />
             </div>
           </div>
         </div>
@@ -131,21 +113,21 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
         <div className="max-w-6xl mx-auto">
           {/* Statut et catégorie */}
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-700 to-emerald-600 text-white text-sm font-semibold rounded-full ">
+            <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-700 to-emerald-600 text-white text-sm font-semibold  ">
               {getEventTypeLabel(event.eventType)}
             </span>
             {isPast && (
-              <span className="px-4 py-1.5 bg-gray-600 text-white text-sm font-semibold rounded-full">
+              <span className="px-4 py-1.5 bg-gray-600 text-white text-sm font-semibold ">
                 Événement passé
               </span>
             )}
             {isFull && !isPast && (
-              <span className="px-4 py-1.5 bg-red-600 text-white text-sm font-semibold rounded-full">
+              <span className="px-4 py-1.5 bg-red-600 text-white text-sm font-semibold ">
                 Complet
               </span>
             )}
             {event.isFeatured && (
-              <span className="px-4 py-1.5 bg-amber-500 text-white text-sm font-semibold rounded-full">
+              <span className="px-4 py-1.5 bg-amber-500 text-white text-sm font-semibold ">
                 À la une
               </span>
             )}
@@ -216,7 +198,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
             <img
               src={event.featuredImage}
               alt={event.title}
-              className="w-full h-[400px] md:h-[600px] object-cover rounded-2xl l"
+              className="w-full h-[400px] md:h-[600px] object-cover  l"
             />
           </div>
         </motion.div>
@@ -234,7 +216,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="bg-white rounded-2xl  p-6 md:p-8"
+                  className="bg-white   p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
                     <AlertCircle className="w-6 h-6" />
@@ -252,7 +234,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="bg-white rounded-2xl  p-6 md:p-8"
+                  className="bg-white   p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center gap-2">
                     <Clock className="w-6 h-6" />
@@ -270,7 +252,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="bg-white rounded-2xl  p-6 md:p-8"
+                  className="bg-white   p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center gap-2">
                     <UserCheck className="w-6 h-6" />
@@ -288,7 +270,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
-                  className="bg-white rounded-2xl  p-6 md:p-8"
+                  className="bg-white   p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center gap-2">
                     <CheckCircle2 className="w-6 h-6" />
@@ -317,7 +299,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 }}
-                  className="bg-white rounded-2xl  p-6 md:p-8"
+                  className="bg-white   p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-bold text-emerald-900 mb-6">Sponsors</h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -335,7 +317,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                 transition={{ delay: 0.3 }}
                 className="sticky top-24"
               >
-                <div className="bg-white rounded-2xl  p-6">
+                <div className="bg-white   p-6">
                   <h2 className="text-2xl font-bold text-emerald-900 mb-4">
                     {isPast ? 'Événement terminé' : 'Inscription'}
                   </h2>
@@ -367,7 +349,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                       href={event.registrationLink || "#"}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block w-full text-center border border-gray-300 bg-white hover:bg-gray-100 text-gray-900 font-semibold py-3 px-6 rounded-xl transition-all duration-150 text-lg shadow-sm hover:shadow md:text-base focus:outline-none focus:ring-2 focus:ring-gray-400"
+                      className="inline-block w-full text-center border border-gray-300 bg-white hover:bg-gray-100 text-gray-900 font-semibold py-3 px-6  transition-all duration-150 text-lg shadow-sm hover:shadow md:text-base focus:outline-none focus:ring-2 focus:ring-gray-400"
                     >
                       S'inscrire à l'événement
                     </a>
@@ -381,7 +363,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                 </div>
 
                 {/* Organisateur */}
-                <div className="bg-white rounded-2xl  p-6 mt-6">
+                <div className="bg-white   p-6 mt-6">
                   <h3 className="text-lg font-bold text-emerald-900 mb-4">Organisateur</h3>
                   <p className="text-gray-700 font-medium">{event.organizerName}</p>
                 </div>
@@ -406,7 +388,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   <Link
                     key={related.id}
                     href={`/events/${related.slug}`}
-                    className="group bg-white rounded-xl overflow-hidden  hover: transition-all duration-300"
+                    className="group bg-white  overflow-hidden  hover: transition-all duration-300"
                   >
                     <div className="relative h-48 overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
                       {related.featuredImage ? (
@@ -421,11 +403,11 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                         </div>
                       )}
                       <div className="absolute top-3 left-3">
-                        <span className="px-3 py-1 bg-emerald-700 text-white text-xs font-semibold rounded-full">
+                        <span className="px-3 py-1 bg-emerald-700 text-white text-xs font-semibold ">
                           {getEventTypeLabel(related.eventType)}
                         </span>
                       </div>
-                      <div className="absolute top-3 right-3 bg-white/95 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">
+                      <div className="absolute top-3 right-3 bg-white/95 text-emerald-800 px-3 py-1  text-xs font-bold">
                         {related.isFree ? 'Gratuit' : `${related.price} ${related.currency}`}
                       </div>
                     </div>

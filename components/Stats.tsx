@@ -122,11 +122,11 @@ const Stats = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -4 }}
-              className="bg-white rounded-xl p-8 shadow-sm border border-slate-200 text-center hover:shadow-md transition-all duration-300"
+              className="bg-white  p-8 shadow-sm border border-slate-200 text-center hover:shadow-md transition-all duration-300"
             >
               {/* Icône */}
               <div className="flex justify-center mb-4">
-                <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-800">
+                <div className="w-14 h-14 bg-emerald-100  flex items-center justify-center text-emerald-800">
                   {stat.icon}
                 </div>
               </div>
@@ -155,7 +155,7 @@ const Stats = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          className="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-slate-200"
+          className="bg-white  p-8 md:p-12 shadow-sm border border-slate-200"
         >
           <h3 className="text-2xl md:text-3xl font-bold text-center text-slate-900 mb-12">
             Excellence & Performance

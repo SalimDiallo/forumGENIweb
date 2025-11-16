@@ -119,7 +119,7 @@ const EventsList = ({ events }: { events: EventsType }) => {
         transition={{ duration: 0.3, delay: index * 0.05 }}
       >
         <Link href={`/events/${event.slug}`} className="block group">
-          <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+          <div className="bg-white  overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
             {/* Image */}
             <div className="relative h-48 overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
               {event.image ? (
@@ -138,18 +138,18 @@ const EventsList = ({ events }: { events: EventsType }) => {
 
               {/* Badges */}
               <div className="absolute top-3 left-3 flex flex-col gap-2">
-                <div className="bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                <div className="bg-emerald-700 text-white px-3 py-1  text-xs font-semibold">
                   {event.category}
                 </div>
                 {isPast && (
-                  <div className="bg-gray-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                  <div className="bg-gray-600 text-white px-3 py-1  text-xs font-semibold">
                     Passé
                   </div>
                 )}
               </div>
 
               {/* Badge prix */}
-              <div className="absolute top-3 right-3 bg-white/95 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">
+              <div className="absolute top-3 right-3 bg-white/95 text-emerald-800 px-3 py-1  text-xs font-bold">
                 {event.price}
               </div>
             </div>
@@ -201,7 +201,7 @@ const EventsList = ({ events }: { events: EventsType }) => {
         transition={{ duration: 0.3, delay: index * 0.05 }}
       >
         <Link href={`/events/${event.slug}`} className="block group">
-          <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
+          <div className="bg-white  overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
             <div className="flex flex-col sm:flex-row">
               {/* Image */}
               <div className="relative w-full sm:w-64 h-40 sm:h-auto flex-shrink-0 overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
@@ -221,11 +221,11 @@ const EventsList = ({ events }: { events: EventsType }) => {
 
                 {/* Badges */}
                 <div className="absolute top-2 left-2 flex flex-col gap-2">
-                  <div className="bg-emerald-700 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                  <div className="bg-emerald-700 text-white px-2 py-1  text-xs font-semibold">
                     {event.category}
                   </div>
                   {isPast && (
-                    <div className="bg-gray-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                    <div className="bg-gray-600 text-white px-2 py-1  text-xs font-semibold">
                       Passé
                     </div>
                   )}
@@ -291,7 +291,7 @@ const EventsList = ({ events }: { events: EventsType }) => {
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
             Découvrez nos événements passés et à venir, réservez votre place en quelques clics
           </p>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-200 text-gray-700 text-sm font-medium mt-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white  shadow-sm border border-gray-200 text-gray-700 text-sm font-medium mt-4">
             <Calendar className="w-4 h-4 text-emerald-600" />
             {upcomingEvents.length} événement(s) • {upcomingEvents.filter(e => !e.isPast).length} à venir • {upcomingEvents.filter(e => e.isPast).length} passé(s)
           </div>
@@ -346,7 +346,7 @@ const EventsList = ({ events }: { events: EventsType }) => {
                 <button
                   key={category.id}
                   onClick={() => setActiveCategory(category.id)}
-                  className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                  className={`px-3 sm:px-4 py-2  text-xs sm:text-sm font-medium transition-colors ${
                     activeCategory === category.id
                       ? 'bg-emerald-700 text-white'
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'

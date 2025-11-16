@@ -107,7 +107,7 @@ const CareerAdvice = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white rounded-xl p-6 border border-emerald-100 hover:shadow-lg transition-shadow"
+              className="bg-white  p-6 border border-emerald-100 hover:shadow-lg transition-shadow"
             >
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -123,7 +123,7 @@ const CareerAdvice = () => {
                   <ul className="space-y-2">
                     {tip.tips.map((item, itemIndex) => (
                       <li key={itemIndex} className="flex items-center gap-2 text-black">
-                        <span className="w-2 h-2 bg-black rounded-full"></span>
+                        <span className="w-2 h-2 bg-black "></span>
                         {item}
                       </li>
                     ))}
@@ -140,7 +140,7 @@ const CareerAdvice = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-white rounded-xl p-8 border border-emerald-100"
+          className="bg-white  p-8 border border-emerald-100"
         >
           <h3 className="text-2xl font-bold text-emerald-900 mb-6 text-center">
             Ressources Gratuites
@@ -173,31 +173,7 @@ const CareerAdvice = () => {
           </div>
         </motion.div>
 
-        {/* CTA Coaching */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mt-12"
-        >
-          <div className="bg-emerald-800 rounded-xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">
-              Besoin d'un accompagnement personnalisé ?
-            </h3>
-            <p className="text-emerald-200 mb-6">
-              Nos experts sont disponibles pour vous conseiller dans votre développement de carrière
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-3 bg-white text-emerald-800 rounded-lg font-medium hover:bg-emerald-50 transition-colors">
-                Réserver un coaching
-              </button>
-              <button className="px-8 py-3 border border-white text-white rounded-lg font-medium hover:bg-white/10 transition-colors">
-                En savoir plus
-              </button>
-            </div>
-          </div>
-        </motion.div>
+      
       </div>
     </section>
   );

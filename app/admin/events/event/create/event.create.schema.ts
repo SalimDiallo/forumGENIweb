@@ -20,6 +20,7 @@ export const createEventSchema = z.object({
     price: z.number().default(0),
     currency: z.string().default("MAD"),
     status: EventStatusEnum.default("draft"),
+    registrationLink:z.string().optional(),
     isFeatured: z.boolean().default(false),
     organizerName: z.string().min(2),
     agenda: z.string().optional(),

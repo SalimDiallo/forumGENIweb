@@ -42,8 +42,8 @@ const Contact = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center p-1 bg-emerald-100 rounded-full mb-4">
-            <span className="px-3 py-1 text-sm font-medium bg-emerald-800 text-white rounded-full">
+          <div className="inline-flex items-center p-1 bg-emerald-100  mb-4">
+            <span className="px-3 py-1 text-sm font-medium bg-emerald-800 text-white ">
               Contact
             </span>
           </div>
@@ -63,7 +63,7 @@ const Contact = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white rounded-xl p-6 border border-emerald-100 text-center hover:shadow-lg transition-shadow"
+              className="bg-white  p-6 border border-emerald-100 text-center hover:shadow-lg transition-shadow"
             >
               <div className="flex justify-center mb-4">
                 {info.icon}
@@ -87,7 +87,7 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-white rounded-xl overflow-hidden border border-emerald-100"
+          className="bg-white  overflow-hidden border border-emerald-100"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-8">

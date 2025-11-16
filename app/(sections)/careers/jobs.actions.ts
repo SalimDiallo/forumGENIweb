@@ -14,7 +14,7 @@ const getJobsSchema = z.object({
 
 export const getPublicJobs = actionClient
   .metadata({ actionName: "get-public-jobs" })
-  .schema(getJobsSchema)
+  .inputSchema(getJobsSchema)
   .action(async ({ parsedInput }) => {
     const { search, jobType, limit, offset } = parsedInput;
 
@@ -24,6 +24,7 @@ export const getPublicJobs = actionClient
       const transformedJobs = cachedJobs.map(job => ({
         id: job.id,
         title: job.title,
+        slug: job.slug,
         company: job.companyName,
         location: job.location || "Non spécifié",
         type: job.jobType || "autre",
@@ -37,7 +38,6 @@ export const getPublicJobs = actionClient
         featured: job.isFeatured || false,
         urgent: isUrgent(job.applicationDeadline),
         remote: job.isRemote || false,
-        rating: 4.5,
         applicants: Math.floor(Math.random() * 50) + 10,
         applicationEmail: job.applicationEmail,
         applicationUrl: job.applicationUrl,
@@ -120,6 +120,7 @@ export const getPublicJobs = actionClient
     const transformedJobs = jobs.map(job => ({
       id: job.id,
       title: job.title,
+      slug: job.slug,
       company: job.companyName,
       location: job.location || "Non spécifié",
       type: job.jobType || "autre",

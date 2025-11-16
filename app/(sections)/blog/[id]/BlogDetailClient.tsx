@@ -9,18 +9,14 @@ import {
   Clock,
   Tag,
   ArrowLeft,
-  Share2,
   Bookmark,
   Heart,
   Eye,
   MessageCircle,
-  Twitter,
-  Facebook,
-  Linkedin,
-  Link2 as LinkIcon,
   ChevronRight
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
+import ShareButton from '@/components/ui/ShareButton';
 type BlogPost = {
   id: number;
   title: string;
@@ -71,20 +67,12 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(post.likesCount);
-  const [showShareMenu, setShowShareMenu] = useState(false);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikes(isLiked ? likes - 1 : likes + 1);
     // TODO: Implémenter l'action de like côté serveur
   };
-
-  const shareOptions = [
-    { icon: Twitter, name: 'Twitter', color: 'hover:bg-blue-400' },
-    { icon: Facebook, name: 'Facebook', color: 'hover:bg-blue-600' },
-    { icon: Linkedin, name: 'LinkedIn', color: 'hover:bg-blue-700' },
-    { icon: LinkIcon, name: 'Copier le lien', color: 'hover:bg-gray-600' }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-emerald-50/30">
@@ -102,33 +90,11 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
             </Link>
 
             <div className="flex items-center gap-3">
-          
-              <div className="relative">
-                <button
-                  onClick={() => setShowShareMenu(!showShareMenu)}
-                  className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-emerald-50 hover:text-emerald-700 transition-all"
-                >
-                  <Share2 className="w-4 h-4" />
-                </button>
-
-                {showShareMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute right-0 mt-2 bg-white rounded-lg shadow-xl border border-emerald-100 p-2 min-w-[200px]"
-                  >
-                    {shareOptions.map((option, index) => (
-                      <button
-                        key={index}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 ${option.color} hover:text-white transition-all`}
-                      >
-                        <option.icon className="w-4 h-4" />
-                        <span className="text-sm font-medium">{option.name}</span>
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </div>
+              <ShareButton
+                title={post.title}
+                description={post.excerpt || ''}
+                size="md"
+              />
             </div>
           </div>
         </div>
@@ -155,7 +121,7 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
           {/* Catégorie et stats */}
           <div className="flex flex-wrap items-center gap-4 mb-4">
             <span
-              className="px-4 py-1.5 text-white text-sm font-semibold rounded-full shadow-md"
+              className="px-4 py-1.5 text-white text-sm font-semibold  shadow-md"
               style={{ backgroundColor: post.category.color }}
             >
               {post.category.name}
@@ -183,7 +149,7 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
           {/* Métadonnées auteur */}
           <div className="flex flex-wrap items-center gap-6 pb-6 border-b border-emerald-100">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-emerald-200 rounded-full flex items-center justify-center border-2 border-emerald-300">
+              <div className="w-12 h-12 bg-emerald-200  flex items-center justify-center border-2 border-emerald-300">
                 <User className="w-6 h-6 text-emerald-800" />
               </div>
               <div>
@@ -224,7 +190,7 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
             <img
               src={post.featuredImage}
               alt={post.title}
-              className="w-full h-[400px] md:h-[600px] object-cover rounded-2xl shadow-2xl"
+              className="w-full h-[400px] md:h-[600px] object-cover  shadow-2xl"
             />
           </div>
         </motion.div>
@@ -263,9 +229,9 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
             )}
 
             {/* Bio auteur */}
-            <div className="mt-8 p-4 rounded-xl border">
+            <div className="mt-8 p-4  border">
               <div className="flex gap-4">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center border">
+                <div className="w-16 h-16 bg-gray-200  flex items-center justify-center border">
                   <User className="w-8 h-8 text-gray-700" />
                 </div>
                 <div className="flex-1">
@@ -293,7 +259,7 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 + index * 0.1 }}
-                    className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+                    className="group bg-white  overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                   >
                     <Link href={`/blog/${related.id}`}>
                       <div className="relative h-48 overflow-hidden">
@@ -304,7 +270,7 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
                         />
                         <div className="absolute top-3 left-3">
                           <span
-                            className="px-3 py-1 backdrop-blur-sm text-white text-xs font-medium rounded-full"
+                            className="px-3 py-1 backdrop-blur-sm text-white text-xs font-medium "
                             style={{ backgroundColor: related.category.color }}
                           >
                             {related.category.name}

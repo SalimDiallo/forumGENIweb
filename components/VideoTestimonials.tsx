@@ -56,15 +56,15 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
     <section className="py-16 bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-20 w-40 h-40 bg-emerald-600 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 right-10 w-24 h-24 bg-emerald-300 rounded-full blur-2xl"></div>
+        <div className="absolute top-10 left-10 w-32 h-32 bg-white  blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-emerald-600  blur-3xl"></div>
+        <div className="absolute top-1/2 right-10 w-24 h-24 bg-emerald-300  blur-2xl"></div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm  px-4 py-2 mb-6">
             <Users className="text-yellow-300" size={20} />
             <span className="text-white font-medium">Association GENI</span>
           </div>
@@ -81,7 +81,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
         {/* Stats Section */}
         {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {stats.map((stat, index) => (
-            <div key={index} className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 hover:bg-white/15 transition-all duration-300">
+            <div key={index} className="bg-white/10 backdrop-blur-sm  p-6 text-center border border-white/20 hover:bg-white/15 transition-all duration-300">
               <stat.icon className="text-yellow-300 mx-auto mb-3" size={32} />
               <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
               <div className="text-emerald-200">{stat.label}</div>
@@ -94,13 +94,13 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
           {displayTestimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
-              className="group bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-emerald-600/40 transition-all duration-300 hover:scale-105"
+              className="group bg-white/5 backdrop-blur-sm  overflow-hidden border border-white/10 hover:border-emerald-600/40 transition-all duration-300 hover:scale-105"
             >
               {/* Video Thumbnail */}
               <div className="relative cursor-pointer overflow-hidden">
                 <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 mb-3 group-hover:bg-white/20 transition-colors">
+                    <div className="bg-white/10 backdrop-blur-sm  p-4 mb-3 group-hover:bg-white/20 transition-colors">
                       <Play className="text-white mx-auto" size={32} />
                     </div>
                     <p className="text-white font-medium">Voir le témoignage</p>
@@ -108,7 +108,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                 </div>
                 
                 {/* Achievement Badge */}
-                <div className="absolute top-3 right-3 bg-emerald-700 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute top-3 right-3 bg-emerald-700 text-white text-xs font-bold px-2 py-1 ">
                   {testimonial.achievement}
                 </div>
               </div>
@@ -127,7 +127,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                   <p className="text-gray-400 text-sm">{testimonial.role}</p>
                   <p className="text-gray-400 text-sm font-medium">{testimonial.company}</p>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="text-emerald-600 text-xs font-semibold bg-emerald-600/10 px-2 py-1 rounded-full">
+                    <span className="text-emerald-600 text-xs font-semibold bg-emerald-600/10 px-2 py-1 ">
                       {testimonial.year}
                     </span>
                   </div>
@@ -151,7 +151,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
               </p>
 
               <div className="flex items-center justify-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-700 to-emerald-800 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-700 to-emerald-800  flex items-center justify-center">
                   <span className="text-white font-bold text-xl">
                     {displayTestimonials[currentTestimonial]?.name.charAt(0) || 'G'}
                   </span>
@@ -174,7 +174,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
             <div className="flex items-center justify-center gap-4 mt-8">
               <button
                 onClick={prevTestimonial}
-                className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-full p-3 transition-colors"
+                className="bg-white/5 hover:bg-white/10 border border-white/10  p-3 transition-colors"
               >
                 <ChevronLeft className="text-white" size={20} />
               </button>
@@ -184,7 +184,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                   <button
                     key={index}
                     onClick={() => setCurrentTestimonial(index)}
-                    className={`w-3 h-3 rounded-full transition-all ${
+                    className={`w-3 h-3  transition-all ${
                       index === currentTestimonial
                         ? 'bg-emerald-600'
                         : 'bg-white/20 hover:bg-white/40'
@@ -195,7 +195,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
               
               <button
                 onClick={nextTestimonial}
-                className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-full p-3 transition-colors"
+                className="bg-white/5 hover:bg-white/10 border border-white/10  p-3 transition-colors"
               >
                 <ChevronRight className="text-white" size={20} />
               </button>

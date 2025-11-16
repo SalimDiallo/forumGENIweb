@@ -48,7 +48,7 @@ export default function AdminBlogDashboard() {
       {isLoading ? (
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-12">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+            <div className="animate-spin  h-12 w-12 border-b-2 border-gray-900"></div>
             <span className="ml-4 text-gray-600">Chargement des statistiques...</span>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function AdminBlogDashboard() {
               </div>
               <div className="text-2xl font-bold text-gray-900 mb-1">{stats.categories.total}</div>
               <div className="text-sm text-gray-600 mb-2">Catégories</div>
-              <div className="text-xs font-medium bg-gray-100 text-gray-700 rounded-full px-2 py-1 inline-block border border-gray-200">
+              <div className="text-xs font-medium bg-gray-100 text-gray-700  px-2 py-1 inline-block border border-gray-200">
                 {stats.categories.active} actives
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function AdminBlogDashboard() {
                 <p className="text-sm text-gray-600 mb-2">
                   Gérer les catégories d'articles
                 </p>
-                <span className="text-xs font-medium bg-gray-100 text-gray-700 rounded-full px-2 py-1 border border-gray-200">
+                <span className="text-xs font-medium bg-gray-100 text-gray-700  px-2 py-1 border border-gray-200">
                   {stats.categories.total} catégories
                 </span>
               </Link>
@@ -133,7 +133,7 @@ export default function AdminBlogDashboard() {
                 <p className="text-sm text-gray-600 mb-2">
                   Gérer les tags d'articles
                 </p>
-                <span className="text-xs font-medium bg-gray-100 text-gray-700 rounded-full px-2 py-1 border border-gray-200">
+                <span className="text-xs font-medium bg-gray-100 text-gray-700  px-2 py-1 border border-gray-200">
                   {stats.tags.total} tags
                 </span>
               </Link>
@@ -152,7 +152,7 @@ export default function AdminBlogDashboard() {
                 <p className="text-sm text-gray-600 mb-2">
                   Gérer tous les articles
                 </p>
-                <span className="text-xs font-medium bg-gray-100 text-gray-700 rounded-full px-2 py-1 border border-gray-200">
+                <span className="text-xs font-medium bg-gray-100 text-gray-700  px-2 py-1 border border-gray-200">
                   Articles de blog
                 </span>
               </Link>
@@ -180,14 +180,14 @@ export default function AdminBlogDashboard() {
                         className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-100"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                          <div className="w-2 h-2  bg-gray-400"></div>
                           <div>
                             <div className="font-medium text-gray-900">{cat.name}</div>
                             <div className="text-xs text-gray-500">/{cat.slug}</div>
                           </div>
                         </div>
                         {cat.isActive && (
-                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                          <span className="px-2 py-0.5  text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                             Active
                           </span>
                         )}
@@ -220,7 +220,7 @@ export default function AdminBlogDashboard() {
                     {tags.result?.data?.tags?.slice(0, 10).map((tag: any) => (
                       <span
                         key={tag.id}
-                        className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 border border-gray-200"
+                        className="px-3 py-1.5  text-sm font-medium bg-gray-100 text-gray-700 border border-gray-200"
                       >
                         {tag.name}
                       </span>

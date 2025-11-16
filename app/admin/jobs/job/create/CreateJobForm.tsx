@@ -182,7 +182,7 @@ export default function CreateJobForm() {
           >
             {createMutation.isPending ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent  animate-spin" />
                 Création en cours...
               </>
             ) : (

@@ -88,7 +88,7 @@ const BlogHero = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-sm font-medium mb-8 shadow-lg"
+            className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20  text-sm font-medium mb-8 shadow-lg"
           >
             <Star className="w-4 h-4 text-yellow-400 mr-2 animate-pulse" />
             <span className="bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text text-transparent">

@@ -37,7 +37,6 @@ export default function RootLayout({
       <body className="antialiased min-h-screen">
         <Providers>
           <>
-            <Header />
             {children}
             <Footer />
             <Toaster />

@@ -40,11 +40,6 @@ export default async function AdminJobsPage({ searchParams }: PageProps) {
       skip,
       take: itemsPerPage,
       orderBy: { createdAt: "desc" },
-      include: {
-        _count: {
-          select: { applications: true },
-        },
-      },
     }),
     prisma.jobOffer.count(),
   ]);
@@ -123,17 +118,17 @@ export default async function AdminJobsPage({ searchParams }: PageProps) {
                         {j.title}
                       </h3>
                       {jobTypeOpt && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                        <span className="px-2 py-1  text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                           {jobTypeOpt.label}
                         </span>
                       )}
                       {statusOpt && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                        <span className="px-2 py-1  text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                           {statusOpt.label}
                         </span>
                       )}
                       {j.isFeatured && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200 flex items-center gap-1">
+                        <span className="px-2 py-1  text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200 flex items-center gap-1">
                           <Star className="w-3 h-3" />
                           Vedette
                         </span>
@@ -239,9 +234,6 @@ export default async function AdminJobsPage({ searchParams }: PageProps) {
                       Éditer
                     </Link>
                   </div>
-                </div>
-                <div className="mt-2 text-sm text-gray-700 line-clamp-2">
-                  {j.description}
                 </div>
                 {j.requirements && (
                   <div className="mt-1 text-xs text-gray-500">

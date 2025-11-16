@@ -103,8 +103,8 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
           viewport={{ once: true }}
           className="mb-16 text-center"
         >
-          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-100 to-emerald-100 rounded-full mb-6 border border-emerald-200/50">
-            <div className="w-2 h-2 bg-emerald-700 rounded-full mr-3 animate-pulse"></div>
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-100 to-emerald-100  mb-6 border border-emerald-200/50">
+            <div className="w-2 h-2 bg-emerald-700  mr-3 animate-pulse"></div>
             <span className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
               Agenda 2025
             </span>
@@ -129,7 +129,7 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: index * 0.15, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-200/50"
+              className="group bg-white  overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-200/50"
             >
               {/* Image Container */}
               <div className="relative h-64 overflow-hidden">
@@ -146,7 +146,7 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
                 
                 {/* Top Badges */}
                 <div className="absolute top-4 left-4 flex gap-2">
-                  <div className={`px-3 py-1 rounded-full text-xs font-semibold border ${getPriorityColor(event.priority)}`}>
+                  <div className={`px-3 py-1  text-xs font-semibold border ${getPriorityColor(event.priority)}`}>
                     {event.type}
                   </div>
                 </div>
@@ -201,13 +201,13 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
                 {/* CTA */}
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-orange-400 "></div>
                     <span>Inscription requise</span>
                   </div>
                   
                   <Link href={event.link}>
                     <motion.button 
-                      className="group/btn px-6 py-3 bg-gradient-to-r from-emerald-800 to-emerald-900 hover:from-emerald-900 hover:to-emerald-800 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
+                      className="group/btn px-6 py-3 bg-gradient-to-r from-emerald-800 to-emerald-900 hover:from-emerald-900 hover:to-emerald-800 text-white font-semibold  transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
                       whileHover={{ scale: 1.02, y: -1 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -227,7 +227,7 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
           viewport={{ once: true }}
-          className="text-center bg-gradient-to-r from-slate-50 to-emerald-50/50 rounded-2xl p-8 border border-slate-200/50"
+          className="text-center bg-gradient-to-r from-slate-50 to-emerald-50/50  p-8 border border-slate-200/50"
         >
           <h3 className="text-2xl font-bold text-slate-800 mb-4">
             Ne manquez aucun événement
@@ -238,7 +238,7 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
           
           <Link href="/evenements">
             <motion.button 
-              className="group/main px-8 py-4 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-3 mx-auto shadow-lg hover:shadow-xl"
+              className="group/main px-8 py-4 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white font-semibold  transition-all duration-300 flex items-center gap-3 mx-auto shadow-lg hover:shadow-xl"
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >

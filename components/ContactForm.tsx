@@ -85,7 +85,7 @@ const ContactForm = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="bg-emerald-50 rounded-xl p-8 border border-emerald-100"
+            className="bg-emerald-50  p-8 border border-emerald-100"
           >
             {/* Status messages */}
             {submitStatus.type && (

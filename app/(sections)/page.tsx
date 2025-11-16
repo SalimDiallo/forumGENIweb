@@ -12,7 +12,7 @@ const TeamsMembres = lazy(() => import('@/components/TeamsMembres'));
 // Composant de loading simple
 const SimpleLoader = () => (
   <div className="flex justify-center items-center py-8">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-800"></div>
+    <div className="animate-spin  h-8 w-8 border-b-2 border-emerald-800"></div>
   </div>
 );
 

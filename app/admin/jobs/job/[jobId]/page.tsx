@@ -2,6 +2,7 @@ import { Briefcase, MapPin, DollarSign, Edit, AlertCircle, Calendar, Building, G
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import BackButton from "@/components/BackButton";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 export default async function JobDetailsPage(props: { params: Promise<{ jobId: string }> }) {
   const params = await props.params;
@@ -45,18 +46,41 @@ export default async function JobDetailsPage(props: { params: Promise<{ jobId: s
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <BackButton />
-            <Link
-              href={`/admin/jobs/job/${jobId}/edit`}
-              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-6 py-2.5 font-semibold transition shadow-lg"
-            >
-              <Edit className="w-4 h-4" />
-              Modifier
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href={`/admin/jobs/job/${jobId}/edit`}
+                className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-6 py-2.5 font-semibold transition shadow-lg"
+              >
+                <Edit className="w-4 h-4" />
+                Modifier
+              </Link>
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg px-6 py-2.5 font-semibold transition shadow-lg"
+                // onClick={() => {
+                //   if (typeof window !== "undefined") {
+                //     navigator.clipboard.writeText(window.location.href);
+                //   }
+                // }}
+                title="Partager"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 8a3 3 0 10-6 0v8a3 3 0 006 0m6-5l-3-3m0 0l-3 3m3-3V21" />
+                </svg>
+                Partager
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div className="bg-white rounded-lg overflow-hidden border border-gray-100">
           {/* Header Section */}
           <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 p-8">
             <div className="flex items-start justify-between">
@@ -119,7 +143,7 @@ export default async function JobDetailsPage(props: { params: Promise<{ jobId: s
               {job.description && (
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-                  <p className="text-gray-700 whitespace-pre-wrap">{job.description}</p>
+                  <MarkdownRenderer content={job.description} />
                 </div>
               )}
             </div>
@@ -143,7 +167,7 @@ export default async function JobDetailsPage(props: { params: Promise<{ jobId: s
 
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Statut</h3>
-                <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                <span className={`inline-block px-3 py-1  text-sm font-medium ${
                   job.status === 'published' ? 'bg-green-100 text-green-800' :
                   job.status === 'draft' ? 'bg-gray-100 text-gray-800' :
                   'bg-yellow-100 text-yellow-800'

@@ -1,7 +1,8 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Download, Share2 } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import ShareButton from '../ui/ShareButton';
 
 interface GalleryItem {
   id: number;
@@ -60,21 +61,22 @@ export default function GalleryModal({
                 items[selectedImage].src,
                 items[selectedImage].title
               )}
-              className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+              className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 text-white  flex items-center justify-center hover:bg-white/30 transition-colors"
             >
               <Download size={16} className="sm:hidden" />
               <Download size={18} className="hidden sm:block" />
             </button>
-            <button
-              onClick={() => shareImage(items[selectedImage])}
-              className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
-            >
-              <Share2 size={16} className="sm:hidden" />
-              <Share2 size={18} className="hidden sm:block" />
-            </button>
+            <div className="inline-block">
+              <ShareButton
+                title={items[selectedImage].title}
+                description={`${items[selectedImage].category} - ${items[selectedImage].year}`}
+                size="sm"
+                className="!bg-white/20 !text-white hover:!bg-white/30 !border-0"
+              />
+            </div>
             <button
               onClick={closeModal}
-              className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+              className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 text-white  flex items-center justify-center hover:bg-white/30 transition-colors"
             >
               <X size={16} className="sm:hidden" />
               <X size={18} className="hidden sm:block" />
@@ -86,7 +88,7 @@ export default function GalleryModal({
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors z-10"
+                className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 text-white  flex items-center justify-center hover:bg-white/30 transition-colors z-10"
               >
                 <ChevronLeft size={20} className="sm:hidden" />
                 <ChevronLeft size={24} className="hidden sm:block" />
@@ -94,7 +96,7 @@ export default function GalleryModal({
 
               <button
                 onClick={nextImage}
-                className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors z-10"
+                className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 text-white  flex items-center justify-center hover:bg-white/30 transition-colors z-10"
               >
                 <ChevronRight size={20} className="sm:hidden" />
                 <ChevronRight size={24} className="hidden sm:block" />

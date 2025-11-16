@@ -1,3 +1,4 @@
+import Header from '@/components/Header';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -16,8 +17,12 @@ export default function SectionsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className='py-18'>
-      {children}
-    </div>
+    <>
+            <Header />
+            <div className='py-18'>
+                {children}
+          </div>
+    </>
+    
   );
 }

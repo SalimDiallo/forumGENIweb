@@ -136,7 +136,7 @@ const Partners = () => {
       <div className="absolute right-0 top-1/2 w-1/3 h-80 bg-emerald-800/5 rounded-l-full -z-10"></div>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center text-center mb-12">
-          <div className="inline-flex items-center mb-4 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+          <div className="inline-flex items-center mb-4 bg-emerald-50 px-3 py-1  border border-emerald-100">
             <span className="text-emerald-800 text-sm font-medium">Ensemble pour l'excellence</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -153,7 +153,7 @@ const Partners = () => {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`px-5 py-2  text-sm font-medium transition-all ${
                 activeCategory === category
                   ? 'bg-emerald-800 text-white '
                   : 'bg-white text-gray-700 border border-gray-200 hover:border-emerald-300'
@@ -177,7 +177,7 @@ const Partners = () => {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
               whileHover={{ y: -5, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
-              className="bg-white rounded-xl p-6 border border-gray-100 flex flex-col"
+              className="bg-white  p-6 border border-gray-100 flex flex-col"
             >
               <div className="relative h-24 mb-4 flex items-center justify-center">
                 <Image
@@ -227,9 +227,9 @@ const Partners = () => {
           </div>
           {/* Carrousel de témoignages */}
           <div className="relative">
-            <div className="mx-auto max-w-4xl bg-white rounded-xl p-8 border border-gray-100">
+            <div className="mx-auto max-w-4xl bg-white  p-8 border border-gray-100">
               <div className="flex flex-col md:flex-row gap-8 items-center">
-                <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden flex-shrink-0">
+                <div className="w-24 h-24 md:w-32 md:h-32  overflow-hidden flex-shrink-0">
                   <Image 
                     src={partners[0].logo}
                     width={128}
@@ -255,15 +255,15 @@ const Partners = () => {
               </div>
               {/* Navigation carrousel (non fonctionnelle) */}
               <div className="flex justify-center mt-8 gap-2">
-                <button className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center hover:bg-emerald-200 transition-colors">
+                <button className="w-8 h-8  bg-emerald-100 text-emerald-800 flex items-center justify-center hover:bg-emerald-200 transition-colors">
                   <ChevronLeft size={16} />
                 </button>
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 rounded-full bg-emerald-800"></div>
-                  <div className="w-2 h-2 rounded-full bg-emerald-200"></div>
-                  <div className="w-2 h-2 rounded-full bg-emerald-200"></div>
+                  <div className="w-2 h-2  bg-emerald-800"></div>
+                  <div className="w-2 h-2  bg-emerald-200"></div>
+                  <div className="w-2 h-2  bg-emerald-200"></div>
                 </div>
-                <button className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center hover:bg-emerald-200 transition-colors">
+                <button className="w-8 h-8  bg-emerald-100 text-emerald-800 flex items-center justify-center hover:bg-emerald-200 transition-colors">
                   <ChevronRight size={16} />
                 </button>
               </div>

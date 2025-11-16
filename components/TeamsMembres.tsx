@@ -418,14 +418,14 @@ const TeamsMembres = () => {
             <div className="bg-white rounded-3xl p-8 h-full">
               <div className="text-center">
                 <div className="relative inline-block mb-6">
-                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                  <div className="w-32 h-32  overflow-hidden border-4 border-white shadow-2xl">
                     <img
                       src={member.image}
                       alt={member.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="absolute -top-2 -right-2 w-10 h-10 bg-gray-400  flex items-center justify-center shadow-lg">
                     <IconComponent className="w-5 h-5 text-white" />
                   </div>
                 </div>
@@ -435,7 +435,7 @@ const TeamsMembres = () => {
                 <p className="text-gray-600 mb-4 leading-relaxed whitespace-pre-line">{member.description}</p>
                 
                 {member.specialty && (
-                  <div className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium mb-4">
+                  <div className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800  text-sm font-medium mb-4">
                     <Award className="w-4 h-4 mr-1 text-gray-500" />
                     {member.specialty}
                   </div>
@@ -445,7 +445,7 @@ const TeamsMembres = () => {
                   {member.email && (
                   <a
                     href={`mailto:${member.email}`}
-                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200  flex items-center justify-center transition-all duration-300 hover:scale-110"
                   >
                     <Mail className="w-4 h-4 text-gray-600 hover:text-gray-800" />
                   </a>
@@ -453,7 +453,7 @@ const TeamsMembres = () => {
                   {member.linkedin && (
                   <a
                     href={member.linkedin}
-                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200  flex items-center justify-center transition-all duration-300 hover:scale-110"
                   >
                     <Linkedin className="w-4 h-4 text-gray-600 hover:text-gray-800" />
                   </a>
@@ -473,7 +473,7 @@ const TeamsMembres = () => {
           onMouseEnter={() => setHoveredCard(member.id)}
           onMouseLeave={() => setHoveredCard(null)}
         >
-          <div className={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden ${
+          <div className={`relative bg-white  shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden ${
             isHovered ? 'transform -translate-y-2' : ''
           }`}>
             <div className="absolute inset-0 bg-gray-100 opacity-60"></div>
@@ -481,7 +481,7 @@ const TeamsMembres = () => {
             <div className="relative p-6">
               <div className="text-center">
                 <div className="relative inline-block mb-4">
-                  <div className="w-24 h-24 rounded-2xl overflow-hidden border-3 border-white shadow-lg">
+                  <div className="w-24 h-24  overflow-hidden border-3 border-white shadow-lg">
                     <img
                       src={member.image}
                       alt={member.name}
@@ -532,13 +532,13 @@ const TeamsMembres = () => {
         onMouseEnter={() => setHoveredCard(member.id)}
         onMouseLeave={() => setHoveredCard(null)}
       >
-        <div className={`bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden ${
+        <div className={`bg-white  shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden ${
           isHovered ? 'transform -translate-y-1' : ''
         }`}>
           <div className="p-5">
             <div className="text-center">
               <div className="relative inline-block mb-3">
-                <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-100">
+                <div className="w-20 h-20  overflow-hidden border-2 border-gray-100">
                   <img
                     src={member.image}
                     alt={member.name}
@@ -584,12 +584,12 @@ const TeamsMembres = () => {
       {/* Hero Section */}
       <section className="relative py-16 bg-gray-100 overflow-hidden">
         {/* Decorative elements */}
-        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10  blur-xl"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/5  blur-2xl"></div>
         
         <div className="relative container mx-auto px-4 md:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm  mb-6">
               <Users className="w-5 h-5 text-gray-700" />
               <span className="text-sm font-medium text-gray-700">Notre Équipe de Direction</span>
             </div>
@@ -611,7 +611,7 @@ const TeamsMembres = () => {
             <button
               key={year}
               onClick={() => setSelectedYear(year)}
-              className={`px-5 py-2 rounded-full font-semibold transition-colors duration-200 ${
+              className={`px-5 py-2  font-semibold transition-colors duration-200 ${
                 selectedYear === year
                   ? "bg-gray-800 text-white shadow"
                   : "bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -702,10 +702,10 @@ const TeamsMembres = () => {
             Nous sommes toujours à la recherche de talents exceptionnels.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href={"/contact"} className="bg-white text-gray-800 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-200">
+            <Link href={"/contact"} className="bg-white text-gray-800 px-8 py-3  font-semibold hover:bg-gray-100 transition-colors duration-200">
               Nous contactez
             </Link>
-            <Link href={"/about"} className="border-2 border-gray-700 text-gray-700 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200">
+            <Link href={"/about"} className="border-2 border-gray-700 text-gray-700 px-8 py-3  font-semibold hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200">
               En Savoir Plus
             </Link>
           </div>

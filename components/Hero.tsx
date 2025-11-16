@@ -56,7 +56,7 @@ const Hero = () => {
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-emerald-500/30 rounded-full"
+            className="absolute w-1 h-1 bg-emerald-500/30 "
             initial={{
               x: Math.random() * window.innerWidth,
               y: Math.random() * window.innerHeight,
@@ -89,12 +89,12 @@ const Hero = () => {
               className="inline-flex items-center mb-4 sm:mb-6"
             >
               <div className="relative group">
-                <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-emerald-600/10 to-emerald-500/10 backdrop-blur-2xl border border-emerald-500/30 rounded-full shadow-2xl shadow-emerald-500/20">
+                <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-emerald-600/10 to-emerald-500/10 backdrop-blur-2xl border border-emerald-500/30  shadow-2xl shadow-emerald-500/20">
                   <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 animate-pulse" />
                   <span className="text-white font-semibold text-sm sm:text-base tracking-wide">Forum INSEA 2025</span>
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-400"></div>
+                  <div className="w-2 h-2 bg-emerald-400  animate-pulse shadow-lg shadow-emerald-400"></div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/30 to-emerald-400/30 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-500 -z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/30 to-emerald-400/30  blur-2xl group-hover:blur-3xl transition-all duration-500 -z-10"></div>
               </div>
             </motion.div>
 
@@ -166,7 +166,7 @@ const Hero = () => {
             >
               <Link href="/events" prefetch={true}>
                 <motion.button
-                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold rounded-2xl overflow-hidden shadow-2xl shadow-emerald-600/30 hover:shadow-emerald-500/50 transition-all duration-500 text-sm sm:text-base"
+                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold  overflow-hidden shadow-2xl shadow-emerald-600/30 hover:shadow-emerald-500/50 transition-all duration-500 text-sm sm:text-base"
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -184,7 +184,7 @@ const Hero = () => {
 
               <Link href="/events" prefetch={true}>
                 <motion.button
-                  className="group px-6 sm:px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-2xl border-2 border-white/30 text-white font-semibold rounded-2xl hover:bg-white/20 hover:border-white/50 transition-all duration-500 shadow-2xl text-sm sm:text-base"
+                  className="group px-6 sm:px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-2xl border-2 border-white/30 text-white font-semibold  hover:bg-white/20 hover:border-white/50 transition-all duration-500 shadow-2xl text-sm sm:text-base"
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -242,9 +242,9 @@ const Hero = () => {
                 className="group relative"
                 whileHover={{ y: -8 }}
               >
-                <div className="relative p-4 sm:p-5 md:p-6 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl">
+                <div className="relative p-4 sm:p-5 md:p-6 bg-white/5 backdrop-blur-3xl border border-white/10  hover:bg-white/10 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl">
                   {/* Icon avec gradient */}
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 mb-3 sm:mb-4 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 mb-3 sm:mb-4  bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
                     <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
 
@@ -257,10 +257,10 @@ const Hero = () => {
                   </p>
 
                   {/* Glow effect au hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-500 blur-2xl -z-10`}></div>
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-100  transition-opacity duration-500 blur-2xl -z-10`}></div>
 
                   {/* Border glow */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-20 rounded-2xl transition-opacity duration-500`}></div>
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-20  transition-opacity duration-500`}></div>
                 </div>
               </motion.div>
             ))}
@@ -279,9 +279,9 @@ const Hero = () => {
           className="flex flex-col items-center gap-2"
         >
           <span className="text-white/60 text-xs sm:text-sm font-light tracking-wider">Scroll</span>
-          <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/40 rounded-full flex justify-center relative group hover:border-emerald-400 transition-colors duration-300">
+          <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/40  flex justify-center relative group hover:border-emerald-400 transition-colors duration-300">
             <motion.div
-              className="w-1 h-2 bg-white rounded-full mt-2 group-hover:bg-emerald-400 transition-colors duration-300"
+              className="w-1 h-2 bg-white  mt-2 group-hover:bg-emerald-400 transition-colors duration-300"
               animate={{ y: [0, 12, 0], opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />

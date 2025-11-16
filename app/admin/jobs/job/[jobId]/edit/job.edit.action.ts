@@ -7,13 +7,17 @@ import { updateJobOfferSchema } from "./job.edit.schema";
 
 export const doEditJob = adminAction
     .metadata({ actionName: "edit-job-admin" })
-    .schema(updateJobOfferSchema)
+    .inputSchema(updateJobOfferSchema)
     .action(async ({ parsedInput }) => {
-        const { id, ...data } = parsedInput;
+        const { id, ...job } = parsedInput;
 
         const editedJob = await prisma.jobOffer.update({
             where: { id },
-            data
+            data:{
+                ...job,
+                applicationDeadline : job.applicationDeadline ? new Date(job.applicationDeadline) : null,
+                startDate: job.startDate ? new Date(job.startDate) : null,
+            }
         });
 
         revalidatePath("/admin/jobs");

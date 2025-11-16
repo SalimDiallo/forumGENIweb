@@ -157,10 +157,10 @@ const Header = () => {
             {/* Logo amélioré avec micro-interactions */}
             <Link href="/" className="flex items-center gap-3 group">
               <motion.div 
-                className={`relative transition-all duration-500 ${
+                className={`relative transition-all duration-500  rounded-xl ${
                   scrolled 
-                    ? 'p-3 bg-white/80 backdrop-blur-2xl rounded-2xl border border-white/30 shadow-lg' 
-                    : 'p-2 bg-white/80 backdrop-blur-2xl rounded-2xl shadow-emerald-700/10 shadow-lg'
+                    ? 'p-3 bg-white/80 backdrop-blur-2xl  border border-white/30 shadow-lg' 
+                    : 'p-2 bg-white/80 backdrop-blur-2xl  shadow-emerald-700/10 shadow-lg'
                 }`}
                 whileHover={{ 
                   scale: 1.05,
@@ -174,13 +174,13 @@ const Header = () => {
                   alt="Forum GENI Entreprises" 
                   width={180} 
                   height={50} 
-                  className="h-10 w-auto transition-all duration-500 filter drop-shadow-sm"
+                  className="h-10 w-auto transition-all duration-500 filter drop-shadow-sm rounded-xl"
                   priority
                 />
                 
                 {/* Glow effect */}
                 <motion.div 
-                  className={`absolute inset-0 rounded-2xl blur-xl transition-opacity duration-500 -z-10 ${scrolled ? 'bg-white/0' : 'bg-gradient-to-br from-emerald-700/20 to-emerald-500/20 opacity-80'}`}
+                  className={`absolute inset-0  blur-xl transition-opacity duration-500 -z-10 ${scrolled ? 'bg-white/0' : 'bg-gradient-to-br from-emerald-700/20 to-emerald-500/20 opacity-80'}`}
                   animate={scrolled ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -202,7 +202,7 @@ const Header = () => {
                       <button
                         onClick={() => handleDropdownToggle(item.name)}
                         onMouseEnter={() => setActiveDropdown(item.name)}
-                        className={`relative group px-4 py-3 font-medium rounded-xl transition-all duration-300 flex items-center gap-2 ${
+                        className={`relative group px-4 py-3 font-medium  transition-all duration-300 flex items-center gap-2 ${
                           isActive(item.path)
                             ? scrolled 
                               ? 'text-emerald-800 bg-emerald-50 border border-emerald-200' 
@@ -224,7 +224,7 @@ const Header = () => {
                         {/* Active indicator */}
                         {isActive(item.path) && (
                           <motion.div
-                            className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-700 rounded-full"
+                            className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-700 "
                             layoutId="activeTab"
                             initial={false}
                             style={{ x: '-50%' }}
@@ -240,7 +240,7 @@ const Header = () => {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
                             transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="absolute top-full left-0 mt-2 w-72 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-200/50 overflow-hidden"
+                            className="absolute top-full left-0 mt-2 w-72 bg-white/95 backdrop-blur-2xl  shadow-2xl border border-gray-200/50 overflow-hidden"
                             onMouseLeave={() => setActiveDropdown(null)}
                           >
                             <div className="p-2">
@@ -253,7 +253,7 @@ const Header = () => {
                                 >
                                   <Link
                                     href={dropdownItem.path}
-                                    className="group flex items-center justify-between p-3 rounded-xl hover:bg-emerald-50 transition-all duration-200"
+                                    className="group flex items-center justify-between p-3  hover:bg-emerald-50 transition-all duration-200"
                                     onClick={() => setActiveDropdown(null)}
                                   >
                                     <div>
@@ -277,7 +277,7 @@ const Header = () => {
                     <Link
                       href={item.path}
                       prefetch={true}
-                      className={`relative group px-4 py-3 font-medium rounded-xl transition-all duration-300 flex items-center gap-2 ${
+                      className={`relative group px-4 py-3 font-medium  transition-all duration-300 flex items-center gap-2 ${
                         isActive(item.path)
                           ? scrolled 
                             ? 'text-emerald-800 bg-emerald-50 border border-emerald-200' 
@@ -293,7 +293,7 @@ const Header = () => {
                       {/* Active indicator */}
                       {isActive(item.path) && (
                         <motion.div
-                          className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-700 rounded-full"
+                          className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-700 "
                           layoutId="activeTab"
                           initial={false}
                           style={{ x: '-50%' }}
@@ -314,7 +314,7 @@ const Header = () => {
             >
               <Link href="/events">
                 <motion.button
-                  className="relative px-6 py-3 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold rounded-xl overflow-hidden hover:shadow-emerald-700/30 group"
+                  className="relative px-6 py-3 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold  overflow-hidden hover:shadow-emerald-700/30 group"
                   whileHover={{ 
                     scale: 1.05, 
                     y: -2,
@@ -347,7 +347,7 @@ const Header = () => {
             {/* Mobile Menu Button amélioré */}
             <motion.button
               onClick={toggleMenu}
-              className={`lg:hidden p-3 transition-all duration-300 rounded-xl relative overflow-hidden ${
+              className={`lg:hidden p-3 transition-all duration-300  relative overflow-hidden ${
                 scrolled 
                   ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50' 
                   : 'text-white/90 hover:text-white hover:bg-slate-900/40'
@@ -414,7 +414,7 @@ const Header = () => {
 
           <motion.button
               onClick={toggleMenu}
-              className={`lg:hidden py-6 transition-all duration-300 rounded-xl relative overflow-hidden flex justify-end w-full px-8 ${
+              className={`lg:hidden py-6 transition-all duration-300  relative overflow-hidden flex justify-end w-full px-8 ${
                 scrolled 
                   ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50' 
                   : 'text-white/90 hover:text-white hover:bg-slate-900/40'
@@ -464,7 +464,7 @@ const Header = () => {
                       <Link
                         href={item.path}
                         prefetch={true}
-                        className={`group flex items-center justify-between px-4 py-4 transition-all duration-300 rounded-xl ${
+                        className={`group flex items-center justify-between px-4 py-4 transition-all duration-300  ${
                           isActive(item.path)
                             ? 'text-emerald-800 bg-emerald-50 border border-emerald-200'
                             : 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50/50'
@@ -499,7 +499,7 @@ const Header = () => {
                 >
                   <Link href="/events" onClick={() => setIsMenuOpen(false)}>
                     <motion.button
-                      className="w-full py-4 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-700/30 transition-all duration-300 relative overflow-hidden group"
+                      className="w-full py-4 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold  shadow-lg hover:shadow-emerald-700/30 transition-all duration-300 relative overflow-hidden group"
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                     >

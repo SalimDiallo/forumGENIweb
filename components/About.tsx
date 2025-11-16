@@ -83,14 +83,14 @@ const About = () => {
     >
       {/* Animated background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-700/5 via-transparent to-white-500/5"></div>
-      <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-64 md:h-64 bg-emerald-700/10 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-24 h-24 md:w-48 md:h-48 bg-white-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-64 md:h-64 bg-emerald-700/10  blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-24 h-24 md:w-48 md:h-48 bg-white-500/10  blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 relative z-10">
         
         {/* Hero Section */}
         <div className={`text-center mb-16 sm:mb-24 md:mb-32 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <div className="inline-flex items-center px-3 sm:px-4 md:px-6 py-2 bg-emerald-700/10 border border-emerald-700/20 text-emerald-600 rounded-full mb-6 sm:mb-8 text-xs sm:text-sm font-medium backdrop-blur-sm">
+          <div className="inline-flex items-center px-3 sm:px-4 md:px-6 py-2 bg-emerald-700/10 border border-emerald-700/20 text-emerald-600  mb-6 sm:mb-8 text-xs sm:text-sm font-medium backdrop-blur-sm">
             2002 → 2025 • 23 ans d'excellence
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight">
@@ -106,7 +106,7 @@ const About = () => {
           {stats.map((stat, index) => (
             <div 
               key={index}
-              className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 md:p-6 text-center transform transition-all duration-700 hover:scale-105 hover:bg-white/10 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+              className={`bg-white/5 backdrop-blur-sm border border-white/10  p-3 sm:p-4 md:p-6 text-center transform transition-all duration-700 hover:scale-105 hover:bg-white/10 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
               <div className="flex justify-center mb-2 sm:mb-3 text-emerald-600">
@@ -135,13 +135,13 @@ const About = () => {
                 <div className="hidden sm:block absolute left-6 md:left-8 top-12 md:top-16 w-0.5 h-full bg-gradient-to-b from-emerald-700/50 to-transparent"></div>
                 
                 {/* Icon */}
-                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-emerald-700 to-white-600 rounded-full flex items-center justify-center text-white shadow-lg border-2 sm:border-4 border-slate-800 z-10 mb-4 sm:mb-0 mx-auto sm:mx-0">
+                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-emerald-700 to-white-600  flex items-center justify-center text-white shadow-lg border-2 sm:border-4 border-slate-800 z-10 mb-4 sm:mb-0 mx-auto sm:mx-0">
                   {event.icon}
                 </div>
                 
                 {/* Content */}
                 <div 
-                  className="sm:ml-6 md:ml-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6 hover:bg-white/10 transition-all duration-300 flex-1 relative overflow-hidden w-full"
+                  className="sm:ml-6 md:ml-8 bg-white/5 backdrop-blur-sm border border-white/10  p-4 sm:p-6 hover:bg-white/10 transition-all duration-300 flex-1 relative overflow-hidden w-full"
                   style={{
                     backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4)), url('${event.bgImage}')`,
                     backgroundSize: 'cover',
@@ -158,7 +158,7 @@ const About = () => {
                     <p className="text-gray-300 mb-4 leading-relaxed text-sm sm:text-base">{event.description}</p>
                     
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <span className="px-3 sm:px-4 py-2 bg-emerald-700/20 border border-emerald-700/30 rounded-full text-emerald-300 text-xs sm:text-sm font-medium text-center backdrop-blur-sm">
+                      <span className="px-3 sm:px-4 py-2 bg-emerald-700/20 border border-emerald-700/30  text-emerald-300 text-xs sm:text-sm font-medium text-center backdrop-blur-sm">
                         {event.participants}
                       </span>
                       <ArrowRight className="text-gray-400 hidden sm:block" size={20} />
@@ -172,7 +172,7 @@ const About = () => {
 
         {/* Call to Action */}
         <div 
-          className="text-center mt-16 sm:mt-24 md:mt-32 rounded-2xl p-6 sm:p-8 md:p-12 border border-white/10 relative overflow-hidden"
+          className="text-center mt-16 sm:mt-24 md:mt-32  p-6 sm:p-8 md:p-12 border border-white/10 relative overflow-hidden"
           style={{
             backgroundImage: `
               linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1)),
@@ -182,14 +182,14 @@ const About = () => {
             backgroundPosition: 'center'
           }}
         >
-          <div className="relative z-10 backdrop-blur-sm bg-black/20 rounded-xl p-6 sm:p-8">
+          <div className="relative z-10 backdrop-blur-sm bg-black/20  p-6 sm:p-8">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4">
               Rejoignez l'Aventure
             </h3>
             <p className="text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
               Participez à la prochaine édition et faites partie de cette histoire exceptionnelle
             </p>
-            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-emerald-700 to-white-600 text-white font-semibold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 text-sm sm:text-base">
+            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-emerald-700 to-white-600 text-white font-semibold  hover:shadow-xl hover:scale-105 transition-all duration-300 text-sm sm:text-base">
               En Savoir Plus
             </button>
           </div>

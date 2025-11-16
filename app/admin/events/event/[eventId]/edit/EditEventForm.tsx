@@ -1,6 +1,5 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Settings, UserCheck, FileText } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -13,7 +12,6 @@ import { useRouter } from "next/navigation";
 import EventBasicFields from "./components/EventBasicFields";
 import EventAdvancedFields from "./components/EventAdvancedFields";
 import EventRegistrationFields from "./components/EventRegistrationFields";
-
 
 type FormTab = "basic" | "details" | "registration";
 
@@ -48,6 +46,7 @@ function cleanDefaultValues<T extends Record<string, any>>(obj: T): T {
     "requirements",
     "whatToBring",
     "virtualLink",
+    "registrationLink"
   ];
   for (const key of stringFields) {
     if (key in cleaned && cleaned[key] === null) {
@@ -105,9 +104,10 @@ export default function EditEventForm({ event }: EditEventFormProps) {
       description: cleanedDefaultValues.description ?? "",
       featuredImage: cleanedDefaultValues.featuredImage ?? "",
       registrationStart: cleanedDefaultValues.registrationStart ? new Date(cleanedDefaultValues.registrationStart).toISOString().slice(0, 16) : undefined,
-      registrationEnd:cleanedDefaultValues.registrationEnd ? new Date(cleanedDefaultValues.registrationEnd).toISOString().slice(0, 16) : undefined,
+      registrationEnd: cleanedDefaultValues.registrationEnd ? new Date(cleanedDefaultValues.registrationEnd).toISOString().slice(0, 16) : undefined,
       maxParticipants: cleanedDefaultValues.maxParticipants ?? undefined,
       location: cleanedDefaultValues.location ?? undefined,
+      registrationLink: cleanedDefaultValues.registrationLink ?? "",
     },
   });
 
@@ -116,10 +116,9 @@ export default function EditEventForm({ event }: EditEventFormProps) {
       const result = await doEditEvent(data);
       if (result.serverError) {
         throw new Error("Failed to create event");
-      }else{
-        router.push("/admin/events")
+      } else {
+        router.push("/admin/events");
       }
-
     }
   });
 
@@ -192,10 +191,30 @@ export default function EditEventForm({ event }: EditEventFormProps) {
           )}
 
           {activeTab === "registration" && (
-            <EventRegistrationFields
-              register={register}
-              errors={errors}
-            />
+            <>
+              <EventRegistrationFields
+                register={register}
+                errors={errors}
+              />
+              {/* Ajout du champ "Registration Link" (URL d'inscription) */}
+              <div className="my-4">
+                <label htmlFor="registrationLink" className="block text-sm font-medium text-gray-700 mb-1">
+                  Lien d'inscription <span className="text-gray-400 italic">(optionnel)</span>
+                </label>
+                <input
+                  id="registrationLink"
+                  type="url"
+                  placeholder="https://..."
+                  {...register("registrationLink")}
+                  className={`block w-full px-3 py-3 my-3 border ${
+                    errors.registrationLink ? "border-red-500" : "border-gray-300"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500`}
+                />
+                {errors.registrationLink && (
+                  <p className="text-red-500 text-xs mt-1">{errors.registrationLink.message as string}</p>
+                )}
+              </div>
+            </>
           )}
         </div>
 

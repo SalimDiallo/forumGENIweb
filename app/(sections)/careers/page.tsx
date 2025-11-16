@@ -14,9 +14,9 @@ function JobOffersSkeleton() {
         </div>
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white border-2 border-gray-200 rounded-2xl p-5">
+            <div key={i} className="bg-white border-2 border-gray-200  p-5">
               <div className="flex gap-4">
-                <div className="w-14 h-14 bg-gray-200 rounded-2xl"></div>
+                <div className="w-14 h-14 bg-gray-200 "></div>
                 <div className="flex-1">
                   <div className="h-6 bg-gray-200 rounded-lg w-48 mb-2"></div>
                   <div className="h-4 bg-gray-200 rounded-lg w-32 mb-2"></div>

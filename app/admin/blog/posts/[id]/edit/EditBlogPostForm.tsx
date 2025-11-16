@@ -126,7 +126,7 @@ export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
     return (
       <div className="p-12">
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="animate-spin  h-12 w-12 border-b-2 border-gray-900"></div>
           <span className="ml-4 text-gray-600">Chargement de l'article...</span>
         </div>
       </div>
@@ -189,7 +189,7 @@ export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
               <tab.icon className="w-4 h-4" />
               {tab.label}
               {tabErrors[tab.id] && (
-                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                <span className="w-2 h-2 bg-red-500 "></span>
               )}
             </button>
           ))}

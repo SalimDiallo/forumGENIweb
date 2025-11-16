@@ -111,7 +111,7 @@ export default function AdminContactsPage() {
         <div className="p-2 sm:p-4">
           {isLoading && (
             <div className="flex items-center justify-center py-24">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin  h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
           )}
           {!isLoading && allMessages.length === 0 && (
@@ -229,7 +229,7 @@ export default function AdminContactsPage() {
                       <button
                         onClick={() => handleDelete(m.id)}
                         disabled={delC.status === "executing"}
-                        className="p-1 rounded-full hover:bg-red-100 transition-colors text-red-600 disabled:opacity-50"
+                        className="p-1  hover:bg-red-100 transition-colors text-red-600 disabled:opacity-50"
                         title="Supprimer"
                         aria-label="Supprimer"
                       >

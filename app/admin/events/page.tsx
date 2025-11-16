@@ -72,11 +72,11 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
                       <h3 className="text-lg font-semibold text-gray-900 truncate">
                         {e.title}
                       </h3>
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                      <span className="px-2 py-1  text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                         {statusOption?.label}
                       </span>
                       {e.isFeatured && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                        <span className="px-2 py-1  text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                           ⭐ Vedette
                         </span>
                       )}

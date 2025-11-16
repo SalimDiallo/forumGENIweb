@@ -164,7 +164,7 @@ const BookHistory = () => {
         {[...Array(20)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-neutral-300/20 rounded-full"
+            className="absolute w-2 h-2 bg-neutral-300/20 "
             style={{
               left: `${Math.random() * 98}%`,
               top: `${Math.random() * 98}%`
@@ -193,7 +193,7 @@ const BookHistory = () => {
           data-parallax="0.3"
         >
           <div 
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-md border-2 border-neutral-200 rounded-full mb-6 shadow"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-md border-2 border-neutral-200  mb-6 shadow"
           >
             <BookOpen className="w-5 h-5 text-black" />
             <span className="text-black font-bold text-sm tracking-wider">2002 - 2025 • 23 ANS D'EXCELLENCE</span>
@@ -273,7 +273,7 @@ const BookHistory = () => {
                   
                   {/* Image */}
                   <div 
-                    className="mb-8 rounded-xl overflow-hidden shadow"
+                    className="mb-8  overflow-hidden shadow"
                     data-parallax="0.4"
                   >
                     <img
@@ -285,7 +285,7 @@ const BookHistory = () => {
                   
                   {/* Badge */}
                   <div className="text-center">
-                    <div className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-neutral-100 to-neutral-200 border border-neutral-300 rounded-full shadow relative overflow-hidden group-hover:shadow-md transition-shadow">
+                    <div className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-neutral-100 to-neutral-200 border border-neutral-300  shadow relative overflow-hidden group-hover:shadow-md transition-shadow">
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                       <Sparkles className="w-5 h-5 text-neutral-700" />
                       <span className="text-neutral-800 font-bold text-base relative z-10">

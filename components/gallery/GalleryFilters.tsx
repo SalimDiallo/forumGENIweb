@@ -75,7 +75,7 @@ export default function GalleryFilters({
           <button
             key={category.id}
             onClick={() => setActiveCategory(category.id)}
-            className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-2  text-xs sm:text-sm font-medium transition-colors ${
               activeCategory === category.id
                 ? 'bg-emerald-700 text-white'
                 : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'

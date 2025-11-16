@@ -202,7 +202,7 @@ const BlogList = () => {
               >
                 <IconComponent className="w-3.5 h-3.5" />
                 {category.name}
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                <span className={`text-xs px-1.5 py-0.5  ${
                   activeCategory === category.id
                     ? 'bg-white/20 text-white'
                     : 'bg-emerald-100 text-emerald-800'
@@ -225,11 +225,11 @@ const BlogList = () => {
               transition={{ duration: 0.5 }}
               className="mb-8"
             >
-              <div className="relative bg-gradient-to-br from-emerald-800 via-black to-emerald-800 rounded-xl overflow-hidden shadow-lg">
+              <div className="relative bg-gradient-to-br from-emerald-800 via-black to-emerald-800  overflow-hidden shadow-lg">
                 {/* Background pattern */}
                 <div className="absolute inset-0 opacity-10 pointer-events-none">
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-300 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-white  -translate-y-1/2 translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-300  translate-y-1/2 -translate-x-1/2"></div>
                 </div>
                 
                 <div className="relative grid grid-cols-1 md:grid-cols-3">
@@ -247,10 +247,10 @@ const BlogList = () => {
                   
                   <div className="relative p-4 md:col-span-2 flex flex-col justify-center">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-1 bg-gradient-to-r from-emerald-700 to-emerald-700 text-white text-xs font-semibold rounded-full shadow">
+                      <span className="px-2 py-1 bg-gradient-to-r from-emerald-700 to-emerald-700 text-white text-xs font-semibold  shadow">
                         ⭐ Article vedette
                       </span>
-                      <span className="px-2 py-0.5 bg-white/20 backdrop-blur-sm text-white text-xs rounded-full">
+                      <span className="px-2 py-0.5 bg-white/20 backdrop-blur-sm text-white text-xs ">
                         {featuredPost.views} vues
                       </span>
                     </div>
@@ -265,7 +265,7 @@ const BlogList = () => {
                     
                     <div className="flex flex-wrap items-center gap-4 text-emerald-200 text-xs mb-3">
                       <div className="flex items-center gap-1">
-                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                        <div className="w-6 h-6 bg-white/20  flex items-center justify-center">
                           <User size={12} />
                         </div>
                         {featuredPost.author}
@@ -284,7 +284,7 @@ const BlogList = () => {
                       {featuredPost.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="px-2 py-0.5 bg-white/10 backdrop-blur-sm text-white text-xs rounded-full border border-white/20"
+                          className="px-2 py-0.5 bg-white/10 backdrop-blur-sm text-white text-xs  border border-white/20"
                         >
                           #{tag}
                         </span>
@@ -316,7 +316,7 @@ const BlogList = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, delay: index * 0.07 }}
-                className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-400 border border-emerald-100/50 hover:border-emerald-200"
+                className="group bg-white  overflow-hidden shadow-sm hover:shadow-lg transition-all duration-400 border border-emerald-100/50 hover:border-emerald-200"
               >
                 <div className="relative overflow-hidden">
                   <BlogImage
@@ -330,13 +330,13 @@ const BlogList = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
                   <div className="absolute top-2 left-2 flex items-center gap-1">
-                    <span className="px-2 py-0.5 bg-black/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                    <span className="px-2 py-0.5 bg-black/90 backdrop-blur-sm text-white text-xs font-medium ">
                       {categories.find(cat => cat.id === post.category)?.name}
                     </span>
                   </div>
                   
                   <div className="absolute top-2 right-2">
-                    <span className="px-1.5 py-0.5 bg-black/50 backdrop-blur-sm text-white text-xs rounded-full">
+                    <span className="px-1.5 py-0.5 bg-black/50 backdrop-blur-sm text-white text-xs ">
                       {post.views}
                     </span>
                   </div>
@@ -353,7 +353,7 @@ const BlogList = () => {
                   
                   <div className="flex items-center gap-2 text-xs text-emerald-800 mb-2">
                     <div className="flex items-center gap-1">
-                      <div className="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center">
+                      <div className="w-5 h-5 bg-emerald-100  flex items-center justify-center">
                         <User size={10} />
                       </div>
                       {post.author}
@@ -397,7 +397,7 @@ const BlogList = () => {
             animate={{ opacity: 1 }}
             className="text-center py-10"
           >
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-emerald-100  flex items-center justify-center mx-auto mb-4">
               <Search className="w-8 h-8 text-emerald-800" />
             </div>
             <h3 className="text-lg font-semibold text-emerald-900 mb-1">Aucun article trouvé</h3>
@@ -428,7 +428,7 @@ const BlogList = () => {
               <motion.div
                 animate={{ rotate: [0, 360] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                className="w-4 h-4 border-2 border-white/30 border-t-white "
               />
             </button>
           </motion.div>

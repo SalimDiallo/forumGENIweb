@@ -100,9 +100,9 @@ export default function AdminDashboard() {
 
       {/* Stats Overview */}
       {isLoading ? (
-        <div className="bg-white rounded-xl border shadow-sm p-12">
+        <div className="bg-white  border shadow-sm p-12">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+            <div className="animate-spin  h-12 w-12 border-b-2 border-gray-900"></div>
             <span className="ml-4 text-gray-600">
               Chargement des statistiques...
             </span>
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
               <div className="text-2xl font-bold text-gray-900 mb-1">{stats.contacts.total}</div>
               <div className="text-sm text-gray-600 mb-2">Messages de contact</div>
               {stats.contacts.new > 0 && (
-                <div className="text-xs font-medium text-gray-700 bg-gray-100 rounded-full px-2 py-1 inline-block">
+                <div className="text-xs font-medium text-gray-700 bg-gray-100  px-2 py-1 inline-block">
                   +{stats.contacts.new} nouveaux
                 </div>
               )}
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
               </div>
               <div className="text-2xl font-bold text-gray-900 mb-1">{stats.jobs.total}</div>
               <div className="text-sm text-gray-600 mb-2">Offres d&apos;emploi</div>
-              <div className="text-xs font-medium text-gray-700 bg-gray-100 rounded-full px-2 py-1 inline-block">
+              <div className="text-xs font-medium text-gray-700 bg-gray-100  px-2 py-1 inline-block">
                 {stats.jobs.applications} candidatures
               </div>
             </div>
@@ -148,7 +148,7 @@ export default function AdminDashboard() {
               </div>
               <div className="text-2xl font-bold text-gray-900 mb-1">-</div>
               <div className="text-sm text-gray-600 mb-2">Événements</div>
-              <div className="text-xs font-medium text-gray-700 bg-gray-100 rounded-full px-2 py-1 inline-block">
+              <div className="text-xs font-medium text-gray-700 bg-gray-100  px-2 py-1 inline-block">
                 Gérer les événements
               </div>
             </div>
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
               </div>
               <div className="text-2xl font-bold text-gray-900 mb-1">{stats.blog.categories}</div>
               <div className="text-sm text-gray-600 mb-2">Catégories du blog</div>
-              <div className="text-xs font-medium text-gray-700 bg-gray-100 rounded-full px-2 py-1 inline-block">
+              <div className="text-xs font-medium text-gray-700 bg-gray-100  px-2 py-1 inline-block">
                 {stats.blog.categories} catégories
               </div>
             </div>
@@ -191,7 +191,7 @@ export default function AdminDashboard() {
                     </h3>
                     <p className="text-sm text-gray-600 mb-2">{link.stats}</p>
                     {link.badge && (
-                      <span className="text-xs font-medium bg-gray-100 text-gray-700 rounded-full px-2 py-1 border border-gray-200">
+                      <span className="text-xs font-medium bg-gray-100 text-gray-700  px-2 py-1 border border-gray-200">
                         {link.badge}
                       </span>
                     )}
