@@ -4,118 +4,19 @@ import React, { useState, useEffect, useCallback } from 'react';
 import GalleryFilters from './gallery/GalleryFilters';
 import GalleryGrid from './gallery/GalleryGrid';
 import GalleryModal from './gallery/GalleryModal';
+import type { GalleryItem } from '@/lib/types/gallery';
 
-const Gallery = () => {
+interface GalleryProps {
+  items: GalleryItem[];
+  categories: Array<{ id: string; name: string; count: number }>;
+}
+
+const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [likedItems, setLikedItems] = useState<Set<number>>(new Set());
+  const [likedItems, setLikedItems] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-
-  const categories = [
-    { id: 'all', name: 'Tout', count: 9 },
-    { id: 'forums', name: 'Forums', count: 3 },
-    { id: 'workshops', name: 'Ateliers', count: 2 },
-    { id: 'networking', name: 'Networking', count: 2 },
-    { id: 'ceremonies', name: 'Cérémonies', count: 2 }
-  ];
-
-  const galleryItems = [
-    {
-      id: 1,
-      type: 'image' as const,
-      src: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
-      alt: 'Forum 2024 - Conférence principale',
-      category: 'forums',
-      title: 'Forum 2024 - Conférence principale',
-      year: '2024',
-      tags: ['conférence', 'innovation', 'technologie']
-    },
-    {
-      id: 2,
-      type: 'image' as const,
-      src: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
-      alt: 'Atelier Innovation et Entrepreneuriat',
-      category: 'workshops',
-      title: 'Atelier Innovation et Entrepreneuriat',
-      year: '2024',
-      tags: ['atelier', 'entrepreneuriat', 'startup']
-    },
-    {
-      id: 3,
-      type: 'video' as const,
-      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-      thumbnail: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop',
-      alt: 'Highlights Forum 2024',
-      category: 'forums',
-      title: 'Highlights Forum 2024',
-      year: '2024',
-      duration: '3:24',
-      tags: ['highlights', 'résumé', 'moments forts']
-    },
-    {
-      id: 4,
-      type: 'image' as const,
-      src: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=600&fit=crop',
-      alt: 'Session Networking',
-      category: 'networking',
-      title: 'Session Networking',
-      year: '2024',
-      tags: ['networking', 'échanges', 'professionnels']
-    },
-    {
-      id: 5,
-      type: 'image' as const,
-      src: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=600&fit=crop',
-      alt: 'Cérémonie de remise des prix',
-      category: 'ceremonies',
-      title: 'Cérémonie de remise des prix',
-      year: '2023',
-      tags: ['cérémonie', 'prix', 'récompenses']
-    },
-    {
-      id: 6,
-      type: 'image' as const,
-      src: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop',
-      alt: 'Panel Discussion - Forum 2023',
-      category: 'forums',
-      title: 'Panel Discussion - Forum 2023',
-      year: '2023',
-      tags: ['panel', 'discussion', 'débat']
-    },
-    {
-      id: 7,
-      type: 'video' as const,
-      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
-      thumbnail: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop',
-      alt: 'Témoignages participants',
-      category: 'networking',
-      title: 'Témoignages participants',
-      year: '2023',
-      duration: '5:12',
-      tags: ['témoignages', 'participants', 'expériences']
-    },
-    {
-      id: 8,
-      type: 'image' as const,
-      src: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=600&fit=crop',
-      alt: 'Atelier Technologies Émergentes',
-      category: 'workshops',
-      title: 'Atelier Technologies Émergentes',
-      year: '2023',
-      tags: ['technologie', 'innovation', 'futur']
-    },
-    {
-      id: 9,
-      type: 'image' as const,
-      src: 'https://images.unsplash.com/photo-1559223607-a43c990c692c?w=800&h=600&fit=crop',
-      alt: 'Startup Pitch Competition',
-      category: 'ceremonies',
-      title: 'Concours de Pitch Startups',
-      year: '2024',
-      tags: ['startup', 'pitch', 'compétition']
-    }
-  ];
 
   // Filtrage
   const filteredItems = React.useMemo(() => {
@@ -180,7 +81,7 @@ const Gallery = () => {
     }
   }, [selectedImage, filteredItems.length]);
 
-  const toggleLike = (itemId: number, e: React.MouseEvent) => {
+  const toggleLike = (itemId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setLikedItems(prev => {
       const newSet = new Set(prev);

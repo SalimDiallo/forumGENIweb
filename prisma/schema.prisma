@@ -253,7 +253,6 @@ model Event {
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   
-  media               MediaGallery[]
 
   @@index([slug])
   @@index([eventType])
@@ -342,58 +341,6 @@ model ContactMessage {
   @@map("contact_messages")
 }
 
-// =====================================
-// MEDIA & TESTIMONIALS
-// =====================================
-
-model MediaGallery {
-  id             Int       @id @default(autoincrement())
-  title          String
-  description    String?
-  mediaType      MediaType
-  fileUrl        String
-  thumbnailUrl   String?
-  fileSize       Int?
-  mimeType       String?
-  altText        String?
-  eventId        Int?
-  album          String?
-  isFeatured     Boolean   @default(false)
-  isPublic       Boolean   @default(true)
-  sortOrder      Int       @default(0)
-  uploadedByName String?
-  uploadedAt     DateTime  @default(now())
-  
-  event          Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
-
-  @@index([mediaType])
-  @@index([eventId])
-  @@index([album])
-  @@index([isFeatured])
-  @@map("media_gallery")
-}
-
-model VideoTestimonial {
-  id              Int       @id @default(autoincrement())
-  name            String
-  position        String?
-  company         String?
-  graduationYear  Int?
-  videoUrl        String
-  thumbnailUrl    String?
-  quote           String?
-  fullTranscript  String?
-  isFeatured      Boolean   @default(false)
-  isActive        Boolean   @default(true)
-  sortOrder       Int       @default(0)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  @@index([isFeatured])
-  @@index([isActive])
-  @@index([graduationYear])
-  @@map("video_testimonials")
-}
 
 
 // =====================================

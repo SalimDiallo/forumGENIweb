@@ -2,26 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { Play, Heart } from 'lucide-react';
-
-interface GalleryItem {
-  id: number;
-  type: 'image' | 'video';
-  src: string;
-  thumbnail?: string;
-  alt: string;
-  category: string;
-  title: string;
-  year: string;
-  tags: string[];
-  duration?: string;
-}
+import type { GalleryItem } from '@/lib/types/gallery';
 
 interface GalleryGridProps {
   items: GalleryItem[];
   viewMode: 'grid' | 'list';
   openModal: (index: number) => void;
-  likedItems: Set<number>;
-  toggleLike: (itemId: number, e: React.MouseEvent) => void;
+  likedItems: Set<string>;
+  toggleLike: (itemId: string, e: React.MouseEvent) => void;
 }
 
 // Composant pour les éléments de la grille
@@ -29,8 +17,8 @@ function GridItem({ item, index, openModal, likedItems, toggleLike }: {
   item: GalleryItem;
   index: number;
   openModal: (index: number) => void;
-  likedItems: Set<number>;
-  toggleLike: (itemId: number, e: React.MouseEvent) => void;
+  likedItems: Set<string>;
+  toggleLike: (itemId: string, e: React.MouseEvent) => void;
 }) {
   return (
     <motion.div
@@ -65,7 +53,7 @@ function GridItem({ item, index, openModal, likedItems, toggleLike }: {
 
           {item.type === 'video' && (
             <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
-              {item.duration}
+              {item?.duration}
             </div>
           )}
         </div>

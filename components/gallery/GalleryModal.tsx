@@ -3,19 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import ShareButton from '../ui/ShareButton';
-
-interface GalleryItem {
-  id: number;
-  type: 'image' | 'video';
-  src: string;
-  thumbnail?: string;
-  alt: string;
-  category: string;
-  title: string;
-  year: string;
-  tags: string[];
-  duration?: string;
-}
+import type { GalleryItem } from '@/lib/types/gallery';
 
 interface GalleryModalProps {
   selectedImage: number | null;

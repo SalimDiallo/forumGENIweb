@@ -60,21 +60,8 @@ const navItems: NavItem[] = [
     label: "Emplois",
     icon: Briefcase
   },
-  {
-    href: "/admin/media",
-    label: "Médias",
-    icon: Image
-  },
-  {
-    href: "/admin/testimonials",
-    label: "Témoignages",
-    icon: Video
-  },
-  {
-    href: "/admin/newsletter",
-    label: "Newsletter",
-    icon: Mail
-  },
+ 
+  
 ];
 
 function AdminNav() {

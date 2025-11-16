@@ -1,14 +1,13 @@
 // components/Footer.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Twitter, Linkedin, Instagram, Youtube, Heart, Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Instagram, Youtube, Heart, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const [email, setEmail] = useState('');
 
   const socialLinks = [
     { name: 'Facebook', icon: Facebook, url: '#' },
@@ -17,12 +16,6 @@ const Footer = () => {
     { name: 'Instagram', icon: Instagram, url: '#' },
     { name: 'YouTube', icon: Youtube, url: '#' }
   ];
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Newsletter logic here
-    setEmail('');
-  };
 
   return (
     <footer className="bg-slate-900 text-white py-10">
@@ -46,31 +39,6 @@ const Footer = () => {
             <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-emerald-800" /> contact@forum-geni.ma</span>
             <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-emerald-800" /> +212 5 37 77 XX XX</span>
           </div>
-        </div>
-
-        {/* Newsletter */}
-        <div className="flex flex-col items-center gap-4 w-full max-w-xs">
-          <h4 className="font-semibold mb-2">Newsletter</h4>
-          <p className="text-gray-400 text-sm text-center">
-            Recevez les dernières actualités et annonces du Forum GENI × INSEA.
-          </p>
-          <form onSubmit={handleNewsletterSubmit} className="flex w-full">
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Votre email"
-              className="flex-1 px-3 py-2 rounded-l-md bg-white/10 text-white placeholder-gray-400 focus:outline-none"
-              required
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-emerald-600 rounded-r-md hover:bg-emerald-700 transition flex items-center"
-              aria-label="S'abonner"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
         </div>
 
         {/* Social & Copyright */}
