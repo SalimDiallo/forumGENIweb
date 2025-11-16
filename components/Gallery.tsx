@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import GalleryModal from './gallery/GalleryModal';
 import type { GalleryItem } from '@/lib/types/gallery';
 
@@ -155,11 +156,26 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
 
   const handleCardImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const img = e.currentTarget;
+    const originalSrc = img.src;
+
+    // eslint-disable-next-line no-console
+    console.error('Erreur chargement image carte:', {
+      originalSrc,
+      alt: img.alt,
+      dataset: img.dataset
+    });
+
+    // Try thumbnail URL first if available
+    const thumbnailUrl = img.dataset.thumbnail;
+    if (thumbnailUrl && img.src !== thumbnailUrl) {
+      img.src = thumbnailUrl;
+      return;
+    }
+
+    // Fallback to placeholder
     if (img.src !== window.location.origin + '/fallback-image.jpg') {
       img.src = '/fallback-image.jpg';
     }
-    // eslint-disable-next-line no-console
-    console.error('Erreur chargement image carte:', { src: img.src });
   };
 
   // --- BENTO GRID ---
@@ -232,12 +248,17 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
                 onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openEventModal(eventData.event.id)}
               >
                 {eventData.firstImage && (
-                  <img
-                    src={eventData.firstImage?.src || '/fallback-image.jpg'}
+                  <Image
+                    src={eventData.firstImage?.thumbnail || eventData.firstImage?.src || '/fallback-image.jpg'}
                     alt={eventData.firstImage?.alt || eventData.event.name}
-                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                     onError={handleCardImageError}
                     draggable={false}
+                    unoptimized
+                    data-thumbnail={eventData.firstImage?.thumbnail}
+                    data-src={eventData.firstImage?.src}
                   />
                 )}
                 {/* Overlay */}

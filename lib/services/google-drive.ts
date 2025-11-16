@@ -66,15 +66,17 @@ function getFileUrl(fileId: string, mimeType?: string): string {
   if (mimeType && VIDEO_MIME_TYPES.includes(mimeType)) {
     return `https://drive.google.com/file/d/${fileId}/preview`;
   }
-  // Lien d'affichage direct, pour images, compatible avec <img src="...">
-  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  // Utiliser l'URL de thumbnail haute résolution comme source principale
+  // Plus fiable que uc?export=view pour les fichiers avec permissions
+  return `https://lh3.googleusercontent.com/d/${fileId}=w2000`;
 }
 
 /**
- * Get thumbnail URL for a file, par défaut w1920 (HD)
+ * Get thumbnail URL for a file
+ * Utilise l'API googleusercontent qui fonctionne mieux avec les permissions Service Account
  */
-function getThumbnailUrl(fileId: string, size: string = 'w1920'): string {
-  return `https://drive.google.com/thumbnail?id=${fileId}&sz=${size}`;
+function getThumbnailUrl(fileId: string, size: number = 1920): string {
+  return `https://lh3.googleusercontent.com/d/${fileId}=w${size}`;
 }
 
 /**
