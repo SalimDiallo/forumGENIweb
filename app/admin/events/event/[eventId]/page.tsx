@@ -1,16 +1,14 @@
-import { Calendar, MapPin, Users, Globe, DollarSign, Edit, UserCheck, XCircle, Mail, Clock, Tag, Building, AlertCircle, Download, Share2, Bell } from "lucide-react";
+import { Calendar, MapPin, Globe, DollarSign, Edit, Tag, Building, AlertCircle, Download, Share2, Bell, Users, Clock } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { statusOptions } from "@/lib/utils";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
-import BackButton from "@/components/BackButton";
 
 export default async function EventDetailsPage(props: { params: Promise<{ eventId: string }> }) {
   const params = await props.params;
   const eventId = parseInt(params.eventId, 10);
 
   let event = null;
-  let registrations: any[] = [];
   if (eventId && !isNaN(eventId)) {
     event = await prisma.event.findUnique({
       where: { id: eventId },
@@ -19,9 +17,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
         media: true,
       }
     });
-    if (event) {
-      registrations = event.registrations ?? [];
-    } else {
+    if (!event) {
       return (
         <div className="container py-12 text-center">
           <AlertCircle className="w-16 h-16 mx-auto text-red-500 mb-4" />
@@ -47,9 +43,6 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
   }
 
   const statusOption = statusOptions.find((s) => s.value === event.status);
-  const confirmedCount = registrations.filter(r => r.registrationStatus === "confirmed").length;
-  const pendingCount = registrations.filter(r => r.registrationStatus === "pending").length;
-  const cancelledCount = registrations.filter(r => r.registrationStatus === "cancelled").length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-50">
@@ -103,7 +96,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
             </div>
 
             {/* Informations clés en cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
               <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg p-4 border border-blue-200">
                 <div className="flex items-center gap-2 text-blue-700 mb-2">
                   <Calendar className="w-5 h-5" />
@@ -125,20 +118,6 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
                 </div>
                 <p className="text-sm text-purple-900 font-medium">
                   {event.isVirtual ? "Événement virtuel" : (event.location || "Non défini")}
-                </p>
-              </div>
-
-              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-lg p-4 border border-emerald-200">
-                <div className="flex items-center gap-2 text-emerald-700 mb-2">
-                  <Users className="w-5 h-5" />
-                  <span className="font-semibold text-sm">Participants</span>
-                </div>
-                <p className="text-sm text-emerald-900 font-medium">
-                  {typeof event.currentParticipants === "number" ? event.currentParticipants : 0}
-                  {event.maxParticipants ? ` / ${event.maxParticipants}` : ""}
-                </p>
-                <p className="text-xs text-emerald-700">
-                  {event.maxParticipants ? `${Math.round((event.currentParticipants / event.maxParticipants) * 100)}% rempli` : "Sans limite"}
                 </p>
               </div>
 
@@ -257,42 +236,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
             </div>
           </div>
 
-          {/* Inscription */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="font-bold text-xl mb-6 flex items-center gap-2 text-gray-900">
-              <Bell className="w-5 h-5 text-emerald-600" />
-              Inscription
-            </h3>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                <div className="text-gray-400 mt-0.5">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Ouverture des inscriptions</p>
-                  <p className="text-gray-900">{event.registrationStart ? new Date(event.registrationStart).toLocaleString("fr-FR") : "—"}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                <div className="text-gray-400 mt-0.5">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Clôture des inscriptions</p>
-                  <p className="text-gray-900">{event.registrationEnd ? new Date(event.registrationEnd).toLocaleString("fr-FR") : "—"}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                <div className="text-gray-400 mt-0.5">
-                  <Users className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Limite de participants</p>
-                  <p className="text-gray-900 font-semibold">{event.maxParticipants || "Sans limite"}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+         
         </div>
 
         {/* Sections additionnelles */}
@@ -344,147 +288,6 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
             )}
           </div>
         )}
-
-        {/* Statistiques des inscriptions */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <h3 className="font-bold text-xl mb-6 flex items-center gap-2">
-            <Users className="w-6 h-6 text-emerald-600" />
-            Statistiques des inscriptions
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg border border-emerald-200">
-              <p className="text-3xl font-bold text-emerald-700">{registrations.length}</p>
-              <p className="text-sm text-emerald-600 font-medium mt-1">Total</p>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
-              <p className="text-3xl font-bold text-green-700">{confirmedCount}</p>
-              <p className="text-sm text-green-600 font-medium mt-1">Confirmés</p>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
-              <p className="text-3xl font-bold text-orange-700">{pendingCount}</p>
-              <p className="text-sm text-orange-600 font-medium mt-1">En attente</p>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-lg border border-red-200">
-              <p className="text-3xl font-bold text-red-700">{cancelledCount}</p>
-              <p className="text-sm text-red-600 font-medium mt-1">Annulés</p>
-            </div>
-          </div>
-        </div>
-
-        {/* TABLEAU DES INSCRITS - Version améliorée */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-teal-50">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-xl flex items-center gap-2">
-                <Users className="w-6 h-6 text-emerald-600" />
-                Liste des participants ({registrations.length})
-              </h3>
-              <button className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-4 py-2 text-sm font-semibold transition shadow-sm">
-                <Download className="w-4 h-4" />
-                Exporter la liste
-              </button>
-            </div>
-          </div>
-          
-          {registrations.length === 0 ? (
-            <div className="p-12 text-center">
-              <Users className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 text-lg font-medium">Aucun participant inscrit pour le moment</p>
-              <p className="text-gray-400 text-sm mt-2">Les inscriptions apparaîtront ici dès qu'elles seront enregistrées</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Participant</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Contact</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Statut</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Paiement</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Inscrit le</th>
-                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {registrations.map((r: any) => (
-                    <tr key={r.id} className="hover:bg-emerald-50/50 transition">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-sm shadow">
-                              {r.firstName?.[0]}{r.lastName?.[0]}
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-semibold text-gray-900">{r.firstName} {r.lastName}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <a 
-                          href={`mailto:${r.email}`} 
-                          className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline transition"
-                        >
-                          <Mail className="w-4 h-4" />
-                          {r.email}
-                        </a>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          r.registrationStatus === "confirmed" ? "bg-green-100 text-green-800" :
-                          r.registrationStatus === "pending" ? "bg-orange-100 text-orange-800" :
-                          "bg-red-100 text-red-800"
-                        }`}>
-                          {r.registrationStatus === "confirmed" ? "✓ Confirmé" :
-                           r.registrationStatus === "pending" ? "⏳ En attente" :
-                           "✕ Annulé"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          r.paymentStatus === "paid" ? "bg-emerald-100 text-emerald-800" :
-                          r.paymentStatus === "pending" ? "bg-amber-100 text-amber-800" :
-                          "bg-gray-100 text-gray-800"
-                        }`}>
-                          {r.paymentStatus === "paid" ? "💳 Payé" :
-                           r.paymentStatus === "pending" ? "⏳ En attente" :
-                           "—"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {r.registeredAt ? new Date(r.registeredAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : "—"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex gap-2 justify-end">
-                          <button
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition shadow-sm ${
-                              r.registrationStatus === "confirmed" 
-                                ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
-                                : "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"
-                            }`}
-                            title="Confirmer la participation"
-                            disabled={r.registrationStatus === "confirmed"}
-                          >
-                            <UserCheck className="w-3.5 h-3.5" />
-                            Confirmer
-                          </button>
-                          <button
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition shadow-sm"
-                            title="Annuler l'inscription"
-                          >
-                            <XCircle className="w-3.5 h-3.5" />
-                            Annuler
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ import {
   CheckCircle2,
   Video
 } from 'lucide-react';
-import RegistrationForm from '@/components/RegistrationEventForm';
+// RegistrationForm import supprimé
 import { EventDetailType, RelatedEventsType } from './event-detail.query';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
@@ -39,7 +39,6 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
   //   : !isPast;
   const isRegistrationOpen = true;
   const isFull = event.maxParticipants ? event.currentParticipants >= event.maxParticipants : false;
-
 
   // Helper functions
   const formatDate = (date: Date) => {
@@ -328,7 +327,7 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
               )}
             </div>
 
-            {/* Colonne latérale - Formulaire d'inscription */}
+            {/* Colonne latérale - Lien d'inscription */}
             <div className="lg:col-span-1">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -363,8 +362,21 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                         Les inscriptions ne sont pas encore ouvertes ou sont déjà closes.
                       </p>
                     </div>
+                  ) : event?.registrationLink ? (
+                    <a
+                      href={event.registrationLink || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block w-full text-center border border-gray-300 bg-white hover:bg-gray-100 text-gray-900 font-semibold py-3 px-6 rounded-xl transition-all duration-150 text-lg shadow-sm hover:shadow md:text-base focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    >
+                      S'inscrire à l'événement
+                    </a>
                   ) : (
-                    <RegistrationForm eventSlug={event.slug} />
+                    <div className="border border-gray-200 bg-white rounded-lg p-4">
+                      <p className="text-gray-600 text-sm text-center">
+                        Aucun lien d'inscription n'est disponible pour cet événement.
+                      </p>
+                    </div>
                   )}
                 </div>
 

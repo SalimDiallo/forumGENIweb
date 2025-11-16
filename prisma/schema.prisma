@@ -247,6 +247,7 @@ model Event {
   sponsors            String?       // JSON string
   requirements        String?
   whatToBring         String?
+  registrationLink String?
   metaTitle           String?
   metaDescription     String?
   createdAt           DateTime      @default(now())

@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, UserCheck, Plus, Eye } from "lucide-react";
+import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, Plus, Eye } from "lucide-react";
 import Link from "next/link";
 import { statusOptions } from "@/lib/utils";
 import { prisma } from "@/lib/db";
@@ -39,7 +39,7 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
             </p>
           </div>
           <Link
-          href={"/admin/events/event/create"}
+            href={"/admin/events/event/create"}
             className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
           >
             <Plus className="w-5 h-5" />
@@ -48,16 +48,8 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
         </div>
       </section>
 
-    
-
       {/* Events List */}
       <section className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        {/* {events === "executing" && (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          </div>
-        )} */}
-
         {events?.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-300" />
@@ -114,11 +106,8 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
                           </>
                         )}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
-                        {e.currentParticipants}
-                        {e.maxParticipants && `/${e.maxParticipants}`} inscrits
-                      </span>
+                      {/* Suppression de la notion d'inscriptions */}
+                      {/* On ne montre plus currentParticipants/maxParticipants ou "X inscrits" */}
                       {!e.isFree && (
                         <span className="flex items-center gap-1">
                           <DollarSign className="w-4 h-4" />
@@ -129,7 +118,7 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
                   </div>
 
                   <div className="flex items-center gap-2">
-                  <Link
+                    <Link
                       href={`/admin/events/event/${e.id}`}
                       className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
