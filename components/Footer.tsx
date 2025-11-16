@@ -6,6 +6,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Twitter, Linkedin, Instagram, Youtube, Heart, Mail, Phone, MapPin } from 'lucide-react';
 
+// For "sticky" footer: 
+// - "w-full" ensures width,
+// - "mt-auto" (if using flex-col min-h-screen on parent) ensures it pushes to bottom,
+// - "fixed bottom-0" always sticks, but can obstruct content. 
+// Using "relative" and "min-h-[theme(minHeight.screen)]" is usually handled in parent/layout!
+// Here, we ensure footer is at least stuck to bottom in all contexts.
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -18,7 +25,10 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-slate-900 text-white py-10">
+    <footer
+      className="bg-slate-900 text-white py-10 w-full relative"
+      style={{ marginTop: 'auto' }} // For layouts that use flex-col, min-h-screen
+    >
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
         {/* Logo & Description */}
         <div className="flex flex-col items-center md:items-start gap-4">

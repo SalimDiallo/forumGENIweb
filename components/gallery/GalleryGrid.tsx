@@ -29,13 +29,29 @@ function GridItem({ item, index, openModal, likedItems, toggleLike }: {
       onClick={() => openModal(index)}
     >
       <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-        <div className="relative h-48 overflow-hidden">
-          <img
-            src={item.type === 'video' ? item.thumbnail! : item.src}
-            alt={item.alt}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-          />
+        <div className="relative h-48 overflow-hidden bg-gray-200">
+          {(item.type === 'video' ? item.thumbnail || item.src : item.src) ? (
+            <img
+              src={item.type === 'video' ? (item.thumbnail || item.src) : item.src}
+              alt={item.alt}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+              onError={(e) => {
+                console.error('Erreur chargement image grille:', {
+                  type: item.type,
+                  src: item.src,
+                  thumbnail: item.thumbnail,
+                  itemId: item.id
+                });
+                // Afficher une image de placeholder si l'image ne charge pas
+                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-sm">
+              Image non disponible
+            </div>
+          )}
 
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
 
@@ -51,11 +67,6 @@ function GridItem({ item, index, openModal, likedItems, toggleLike }: {
             {item.year}
           </div>
 
-          {item.type === 'video' && (
-            <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
-              {item?.duration}
-            </div>
-          )}
         </div>
 
         <div className="p-4">
@@ -73,8 +84,8 @@ function ListItem({ item, index, openModal, likedItems, toggleLike }: {
   item: GalleryItem;
   index: number;
   openModal: (index: number) => void;
-  likedItems: Set<number>;
-  toggleLike: (itemId: number, e: React.MouseEvent) => void;
+  likedItems: Set<string>;
+  toggleLike: (itemId: string, e: React.MouseEvent) => void;
 }) {
   return (
     <motion.div
@@ -87,13 +98,28 @@ function ListItem({ item, index, openModal, likedItems, toggleLike }: {
       <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
         <div className="flex flex-col sm:flex-row">
           {/* Image/Thumbnail */}
-          <div className="relative w-full sm:w-48 h-32 sm:h-24 flex-shrink-0 overflow-hidden">
-            <img
-              src={item.type === 'video' ? item.thumbnail! : item.src}
-              alt={item.alt}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-            />
+          <div className="relative w-full sm:w-48 h-32 sm:h-24 flex-shrink-0 overflow-hidden bg-gray-200">
+            {(item.type === 'video' ? item.thumbnail || item.src : item.src) ? (
+              <img
+                src={item.type === 'video' ? (item.thumbnail || item.src) : item.src}
+                alt={item.alt}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                onError={(e) => {
+                  console.error('Erreur chargement image liste:', {
+                    type: item.type,
+                    src: item.src,
+                    thumbnail: item.thumbnail,
+                    itemId: item.id
+                  });
+                  e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-xs">
+                Image non disponible
+              </div>
+            )}
 
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
 
@@ -109,11 +135,6 @@ function ListItem({ item, index, openModal, likedItems, toggleLike }: {
               {item.year}
             </div>
 
-            {item.type === 'video' && (
-              <div className="absolute top-1 right-1 bg-black/70 text-white px-1.5 py-0.5 rounded text-xs">
-                {item.duration}
-              </div>
-            )}
           </div>
 
           {/* Contenu */}

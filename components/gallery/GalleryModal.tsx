@@ -1,7 +1,8 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Download, AlertCircle, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import ShareButton from '../ui/ShareButton';
 import type { GalleryItem } from '@/lib/types/gallery';
 
@@ -24,118 +25,303 @@ export default function GalleryModal({
   downloadImage,
   shareImage,
 }: GalleryModalProps) {
-  if (selectedImage === null) return null;
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [currentItem, setCurrentItem] = useState<GalleryItem | null>(null);
+
+  // Vérification de sécurité et mise à jour de l'item courant
+  useEffect(() => {
+    if (selectedImage !== null && items.length > 0 && selectedImage >= 0 && selectedImage < items.length) {
+      setCurrentItem(items[selectedImage]);
+      setImageLoading(true);
+      setImageError(false);
+    } else {
+      setCurrentItem(null);
+    }
+  }, [selectedImage, items]);
+
+  // Gestion de l'erreur de chargement d'image
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageLoading(false);
+    setImageError(true);
+    console.error('Erreur de chargement de l\'image:', currentItem?.src);
+  };
+
+  // Debug: afficher les données en console
+  useEffect(() => {
+    if (currentItem) {
+      console.log('Modal - Item courant:', {
+        id: currentItem.id,
+        src: currentItem.src,
+        thumbnail: currentItem.thumbnail,
+        type: currentItem.type,
+        title: currentItem.title,
+        category: currentItem.category,
+      });
+    }
+  }, [currentItem]);
+
+  if (selectedImage === null || !currentItem || items.length === 0) {
+    return null;
+  }
+
+  const safeImageSrc = currentItem.thumbnail || currentItem.src;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-2 sm:p-4"
+        className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-2 sm:p-4"
         onClick={closeModal}
       >
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
+          key={selectedImage}
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.8, opacity: 0 }}
-          className="relative max-w-4xl max-h-[95vh] w-full"
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="relative max-w-6xl max-h-[95vh] w-full flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Contrôles */}
-          <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex gap-1 sm:gap-2 z-10">
+          {/* Contrôles supérieurs */}
+          <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex gap-2 z-20">
             <button
-              onClick={() => downloadImage(
-                items[selectedImage].src,
-                items[selectedImage].title
-              )}
-              className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 text-white  flex items-center justify-center hover:bg-white/30 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadImage(currentItem.src, currentItem.title);
+              }}
+              className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 backdrop-blur-sm text-white rounded-lg flex items-center justify-center hover:bg-white/20 transition-all duration-200"
+              title="Télécharger"
             >
-              <Download size={16} className="sm:hidden" />
-              <Download size={18} className="hidden sm:block" />
+              <Download size={18} className="sm:hidden" />
+              <Download size={20} className="hidden sm:block" />
             </button>
             <div className="inline-block">
               <ShareButton
-                title={items[selectedImage].title}
-                description={`${items[selectedImage].category} - ${items[selectedImage].year}`}
+                title={currentItem.title}
+                description={`${currentItem.category} - ${currentItem.year}`}
                 size="sm"
-                className="!bg-white/20 !text-white hover:!bg-white/30 !border-0"
+                className="!bg-white/10 !text-white hover:!bg-white/20 !border-0 backdrop-blur-sm rounded-lg"
               />
             </div>
             <button
-              onClick={closeModal}
-              className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 text-white  flex items-center justify-center hover:bg-white/30 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                closeModal();
+              }}
+              className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 backdrop-blur-sm text-white rounded-lg flex items-center justify-center hover:bg-white/20 transition-all duration-200"
+              title="Fermer"
             >
-              <X size={16} className="sm:hidden" />
-              <X size={18} className="hidden sm:block" />
+              <X size={18} className="sm:hidden" />
+              <X size={20} className="hidden sm:block" />
             </button>
           </div>
 
-          {/* Navigation */}
+          {/* Navigation gauche/droite */}
           {items.length > 1 && (
             <>
               <button
-                onClick={prevImage}
-                className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 text-white  flex items-center justify-center hover:bg-white/30 transition-colors z-10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevImage();
+                }}
+                className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-14 sm:h-14 bg-white/10 backdrop-blur-sm text-white rounded-lg flex items-center justify-center hover:bg-white/20 transition-all duration-200 z-20"
+                title="Précédent"
               >
                 <ChevronLeft size={20} className="sm:hidden" />
-                <ChevronLeft size={24} className="hidden sm:block" />
+                <ChevronLeft size={28} className="hidden sm:block" />
               </button>
 
               <button
-                onClick={nextImage}
-                className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 text-white  flex items-center justify-center hover:bg-white/30 transition-colors z-10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextImage();
+                }}
+                className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-14 sm:h-14 bg-white/10 backdrop-blur-sm text-white rounded-lg flex items-center justify-center hover:bg-white/20 transition-all duration-200 z-20"
+                title="Suivant"
               >
                 <ChevronRight size={20} className="sm:hidden" />
-                <ChevronRight size={24} className="hidden sm:block" />
+                <ChevronRight size={28} className="hidden sm:block" />
               </button>
             </>
           )}
 
-          {/* Contenu */}
-          <div className="bg-white rounded-lg overflow-hidden">
-            {items[selectedImage].type === 'image' ? (
-              <img
-                src={items[selectedImage].src}
-                alt={items[selectedImage].alt}
-                className="w-full h-auto max-h-[60vh] sm:max-h-[70vh] object-contain"
-              />
-            ) : (
-              <video
-                src={items[selectedImage].src}
-                controls
-                autoPlay
-                className="w-full h-auto max-h-[60vh] sm:max-h-[70vh]"
-              />
-            )}
+          {/* Contenu principal */}
+          <div className="bg-white rounded-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            {/* Zone média */}
+            <div className="relative flex-1 flex items-center justify-center bg-gray-900 min-h-[50vh] max-h-[70vh] overflow-hidden">
+              {imageLoading && !imageError && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
+                  <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="w-8 h-8 text-white animate-spin" />
+                    <span className="text-white text-sm">Chargement...</span>
+                  </div>
+                </div>
+              )}
+
+              {imageError && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
+                  <div className="flex flex-col items-center gap-3 text-center px-4">
+                    <AlertCircle className="w-12 h-12 text-red-400" />
+                    <div className="text-white">
+                      <p className="font-semibold mb-1">Erreur de chargement</p>
+                      <p className="text-sm text-gray-300 mb-3">L'image n'a pas pu être chargée</p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setImageError(false);
+                          setImageLoading(true);
+                        }}
+                        className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors"
+                      >
+                        Réessayer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentItem.type === 'image' ? (
+                <>
+                  {imageLoading && (
+                    <img
+                      src={safeImageSrc}
+                      alt={currentItem.alt}
+                      className="opacity-0 absolute"
+                      onLoad={handleImageLoad}
+                      onError={handleImageError}
+                    />
+                  )}
+                  <img
+                    src={safeImageSrc}
+                    alt={currentItem.alt}
+                    onLoad={handleImageLoad}
+                    onError={handleImageError}
+                    className={`w-full h-full object-contain transition-opacity duration-300 ${
+                      imageLoading ? 'opacity-0' : 'opacity-100'
+                    }`}
+                    style={{ maxHeight: '70vh' }}
+                  />
+                </>
+              ) : (
+                <>
+                  {/* Pour Google Drive, on utilise un iframe pour la prévisualisation vidéo */}
+                  {currentItem.src.includes('drive.google.com') ? (
+                    <iframe
+                      key={currentItem.id}
+                      src={currentItem.src}
+                      className="w-full h-full border-0"
+                      style={{ maxHeight: '70vh', minHeight: '400px' }}
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                      onLoad={() => {
+                        setImageLoading(false);
+                        setImageError(false);
+                        console.log('Vidéo iframe chargée:', currentItem.src);
+                      }}
+                      onError={handleImageError}
+                    />
+                  ) : (
+                    <>
+                      <video
+                        key={currentItem.src}
+                        src={currentItem.src}
+                        controls
+                        autoPlay
+                        playsInline
+                        onLoadedData={() => {
+                          setImageLoading(false);
+                          setImageError(false);
+                          console.log('Vidéo chargée:', currentItem.src);
+                        }}
+                        onError={(e) => {
+                          console.error('Erreur chargement vidéo:', {
+                            src: currentItem.src,
+                            itemId: currentItem.id,
+                            error: e
+                          });
+                          handleImageError();
+                        }}
+                        onCanPlay={() => {
+                          setImageLoading(false);
+                          setImageError(false);
+                        }}
+                        className="w-full h-full object-contain"
+                        style={{ maxHeight: '70vh' }}
+                      >
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                        <a href={currentItem.src} download>Télécharger la vidéo</a>
+                      </video>
+                      {imageError && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
+                          <div className="flex flex-col items-center gap-3 text-center px-4">
+                            <AlertCircle className="w-12 h-12 text-red-400" />
+                            <div className="text-white">
+                              <p className="font-semibold mb-1">Erreur de chargement vidéo</p>
+                              <p className="text-sm text-gray-300 mb-3">La vidéo n'a pas pu être chargée</p>
+                              <a
+                                href={currentItem.src}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors"
+                              >
+                                Ouvrir dans un nouvel onglet
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
 
             {/* Informations */}
-            <div className="p-4 sm:p-6">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
-                {items[selectedImage].title}
+            <div className="p-4 sm:p-6 bg-white border-t border-gray-200">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">
+                {currentItem.title || 'Sans titre'}
               </h3>
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-600 mb-3">
-                <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
-                  {items[selectedImage].year}
+              
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
+                <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-lg text-sm font-medium">
+                  {currentItem.year}
                 </span>
+                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium capitalize">
+                  {currentItem.category.replace(/-/g, ' ')}
+                </span>
+                {currentItem.event && (
+                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg text-sm font-medium">
+                    {currentItem.event}
+                  </span>
+                )}
               </div>
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {items[selectedImage].tags.map((tag, tagIndex) => (
-                  <span
-                    key={tagIndex}
-                    className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
+              {currentItem.tags && currentItem.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {currentItem.tags.map((tag, tagIndex) => (
+                    <span
+                      key={tagIndex}
+                      className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-lg border border-gray-200"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Compteur */}
-          <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm">
+          {/* Compteur en bas */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-medium z-20">
             {selectedImage + 1} / {items.length}
           </div>
         </motion.div>

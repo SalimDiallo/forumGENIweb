@@ -54,9 +54,15 @@ function getMediaType(mimeType: string): MediaType | null {
 
 /**
  * Get direct download URL for a file
+ * For videos, we need to use a different URL format that allows streaming
  */
-function getFileUrl(fileId: string): string {
-  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+function getFileUrl(fileId: string, mimeType?: string): string {
+  // For videos, use the view URL which can be streamed
+  if (mimeType && VIDEO_MIME_TYPES.includes(mimeType)) {
+    return `https://drive.google.com/file/d/${fileId}/preview`;
+  }
+  // For images, use the direct download URL
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }
 
 /**
@@ -116,7 +122,7 @@ async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
           id: file.id || '',
           name: file.name || '',
           type: mediaType,
-          url: getFileUrl(file.id || ''),
+          url: getFileUrl(file.id || '', file.mimeType || ''),
           thumbnailUrl: mediaType === 'image'
             ? getThumbnailUrl(file.id || '')
             : file.thumbnailLink || getThumbnailUrl(file.id || ''),

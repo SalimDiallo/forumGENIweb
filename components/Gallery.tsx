@@ -13,12 +13,13 @@ interface GalleryProps {
 
 const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Catégorie de l'image ouverte dans la modal
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [likedItems, setLikedItems] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filtrage
+  // Filtrage - Affichage d'une seule image par catégorie sur la page principale
   const filteredItems = React.useMemo(() => {
     let items = galleryItems;
 
@@ -33,8 +34,91 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
       );
     }
 
+    // Si aucun filtre actif, afficher seulement la première image de chaque catégorie
+    if (activeCategory === 'all' && !searchQuery) {
+      const firstImagePerCategory = new Map<string, GalleryItem>();
+      items.forEach(item => {
+        if (!firstImagePerCategory.has(item.category)) {
+          firstImagePerCategory.set(item.category, item);
+        }
+      });
+      return Array.from(firstImagePerCategory.values());
+    }
+
     return items;
-  }, [activeCategory, searchQuery]);
+  }, [galleryItems, activeCategory, searchQuery]);
+
+  // Items de la catégorie sélectionnée pour la navigation dans la modal
+  const categoryItems = React.useMemo(() => {
+    if (!selectedCategory) {
+      // Si aucune catégorie sélectionnée, retourner les items filtrés
+      return filteredItems;
+    }
+    // Filtrer par catégorie exacte (avec normalisation)
+    const normalizedCategory = selectedCategory.toLowerCase().replace(/\s+/g, '-');
+    const items = galleryItems.filter(item => {
+      const itemCategory = item.category.toLowerCase().replace(/\s+/g, '-');
+      return itemCategory === normalizedCategory;
+    });
+    console.log('CategoryItems calculé:', {
+      selectedCategory,
+      normalizedCategory,
+      itemsCount: items.length,
+      firstItem: items[0] ? { id: items[0].id, src: items[0].src, category: items[0].category } : null
+    });
+    return items.length > 0 ? items : filteredItems;
+  }, [galleryItems, selectedCategory, filteredItems]);
+
+  const openModal = (index: number) => {
+    const item = filteredItems[index];
+    if (!item) {
+      console.error('Item not found at index:', index, 'filteredItems length:', filteredItems.length);
+      return;
+    }
+    
+    console.log('Ouverture modal:', {
+      index,
+      itemId: item.id,
+      itemCategory: item.category,
+      itemSrc: item.src,
+      filteredItemsCount: filteredItems.length,
+      galleryItemsCount: galleryItems.length
+    });
+    
+    setSelectedCategory(item.category); // Mémoriser la catégorie de l'image sélectionnée
+    // Trouver l'index dans les items de la catégorie (filtrer directement ici)
+    const normalizedCategory = item.category.toLowerCase().replace(/\s+/g, '-');
+    const itemsInCategory = galleryItems.filter(catItem => {
+      const catItemCategory = catItem.category.toLowerCase().replace(/\s+/g, '-');
+      return catItemCategory === normalizedCategory;
+    });
+    
+    console.log('Items dans la catégorie:', {
+      category: normalizedCategory,
+      itemsCount: itemsInCategory.length,
+      items: itemsInCategory.map(i => ({ id: i.id, src: i.src }))
+    });
+    
+    const categoryIndex = itemsInCategory.findIndex(catItem => catItem.id === item.id);
+    setSelectedImage(categoryIndex >= 0 ? categoryIndex : 0);
+  };
+
+  const closeModal = useCallback(() => {
+    setSelectedImage(null);
+    setSelectedCategory(null);
+  }, []);
+
+  const nextImage = useCallback(() => {
+    if (selectedImage !== null && categoryItems.length > 0) {
+      setSelectedImage((selectedImage + 1) % categoryItems.length);
+    }
+  }, [selectedImage, categoryItems.length]);
+
+  const prevImage = useCallback(() => {
+    if (selectedImage !== null && categoryItems.length > 0) {
+      setSelectedImage(selectedImage === 0 ? categoryItems.length - 1 : selectedImage - 1);
+    }
+  }, [selectedImage, categoryItems.length]);
 
   // Navigation clavier
   useEffect(() => {
@@ -59,27 +143,7 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedImage]);
-
-  const openModal = (index: number) => {
-    setSelectedImage(index);
-  };
-
-  const closeModal = () => {
-    setSelectedImage(null);
-  };
-
-  const nextImage = useCallback(() => {
-    if (selectedImage !== null) {
-      setSelectedImage((selectedImage + 1) % filteredItems.length);
-    }
-  }, [selectedImage, filteredItems.length]);
-
-  const prevImage = useCallback(() => {
-    if (selectedImage !== null) {
-      setSelectedImage(selectedImage === 0 ? filteredItems.length - 1 : selectedImage - 1);
-    }
-  }, [selectedImage, filteredItems.length]);
+  }, [selectedImage, prevImage, nextImage, closeModal]);
 
   const toggleLike = (itemId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -175,16 +239,18 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
           </div>
         )}
 
-        {/* Modal */}
-        <GalleryModal
-          selectedImage={selectedImage}
-          items={filteredItems}
-          closeModal={closeModal}
-          nextImage={nextImage}
-          prevImage={prevImage}
-          downloadImage={downloadImage}
-          shareImage={shareImage}
-        />
+        {/* Modal - Utilise categoryItems pour la navigation dans la catégorie sélectionnée */}
+        {selectedImage !== null && categoryItems.length > 0 && (
+          <GalleryModal
+            selectedImage={selectedImage}
+            items={categoryItems}
+            closeModal={closeModal}
+            nextImage={nextImage}
+            prevImage={prevImage}
+            downloadImage={downloadImage}
+            shareImage={shareImage}
+          />
+        )}
       </div>
     </section>
   );
