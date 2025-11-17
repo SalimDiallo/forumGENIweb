@@ -11,11 +11,39 @@ const TeamsMembres = lazy(() => import('@/components/TeamsMembres'));
 
 // Composant de loading simple
 const SimpleLoader = () => (
- <div className='min-h-screen'>
-   <div className="flex justify-center items-center py-8">
-    <div className="animate-spin  h-8 w-8 border-b-2 border-emerald-800"></div>
+  <div className="min-h-[30vh] flex items-center justify-center px-6">
+    <div className="flex flex-col items-center gap-6">
+      <div className="relative">
+        {/* Modern spinner animation */}
+        <span className="block w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-400 to-emerald-600 opacity-20 absolute top-0 left-0 blur-lg"></span>
+        <svg
+          className="w-16 h-16 animate-spin text-emerald-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 48 48"
+        >
+          <circle
+            className="opacity-20"
+            cx="24"
+            cy="24"
+            r="20"
+            stroke="currentColor"
+            strokeWidth="6"
+          />
+          <path
+            d="M44 24c0-11.046-8.954-20-20-20"
+            stroke="currentColor"
+            strokeWidth="6"
+            strokeLinecap="round"
+            className="opacity-90"
+          />
+        </svg>
+      </div>
+      <div className="text-xl font-semibold text-emerald-800 mt-2">
+        Chargement...
+      </div>
+    </div>
   </div>
- </div>
 );
 
 export default function Home() {

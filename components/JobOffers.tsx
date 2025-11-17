@@ -72,7 +72,7 @@ const JobOffers: React.FC = () => {
     setLoading(true);
     getJobsAction.execute({
       search: searchTerm || undefined,
-      jobType: selectedFilter === 'all' ? undefined : selectedFilter,
+      jobType: selectedFilter === 'all' ? '' : selectedFilter,
       limit: 50,
       offset: 0,
     });

@@ -101,15 +101,24 @@ export default function CreateEventForm({}: CreateEventFormProps) {
     mutationFn: async (data: CreateEventFormInput) => {
       const result = await doCreateEvent(data);
       if (result.serverError) {
-        throw new Error("Failed to create event");
-      } else {
+        toast.error(result.serverError || "Erreur lors de la création de l'événement");
+        throw new Error(result.serverError);
+      } else if (result.data) {
+        toast.success("Événement créé avec succès !");
         router.push("/admin/events");
       }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Erreur lors de la création de l'événement");
     }
   });
 
-  const onSubmit = (data: CreateEventFormInput) => {
-    createEventMutation.mutateAsync(data);
+  const onSubmit = async (data: CreateEventFormInput) => {
+    try {
+      await createEventMutation.mutateAsync(data);
+    } catch (error) {
+      // Error is already handled in onError
+    }
   };
 
   const tabs = [

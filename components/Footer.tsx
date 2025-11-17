@@ -26,7 +26,7 @@ const Footer = () => {
 
   return (
     <footer
-      className="bg-slate-900 text-white py-10 w-full relative"
+      className="bg-slate-900 text-white py-10 w-full mt-auto"
       style={{ marginTop: 'auto' }} // For layouts that use flex-col, min-h-screen
     >
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">

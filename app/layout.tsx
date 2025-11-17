@@ -39,7 +39,10 @@ export default function RootLayout({
           <>
             {children}
             <Footer />
-            <Toaster />
+            <Toaster
+              theme="light"
+              richColors={true}
+            />
           </>
         </Providers>
       </body>

@@ -1,6 +1,6 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
-import { listBlogPosts, deleteBlogPost, toggleFeatured } from "../posts-actions";
+import { listBlogPosts, toggleFeatured } from "../posts-actions";
 import { useEffect, useState, useCallback } from "react";
 import type { BlogPost, BlogCategory } from "@/lib/generated/prisma";
 import { toast } from "sonner";
@@ -10,13 +10,13 @@ import {
   FileText,
   Plus,
   Edit,
-  Trash2,
   Eye,
   Star,
   Calendar,
   Tag,
   FolderOpen,
 } from "lucide-react";
+import { DeleteBlogPostButton } from "./DeleteBlogPostButton";
 
 type BlogPostWithRelations = BlogPost & {
   category: BlogCategory;
@@ -37,7 +37,6 @@ const STATUS_LABELS: Record<string, string> = {
 
 export default function AdminBlogPostsPage() {
   const list = useAction(listBlogPosts);
-  const deleteAction = useAction(deleteBlogPost);
   const toggleFeaturedAction = useAction(toggleFeatured);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,16 +45,6 @@ export default function AdminBlogPostsPage() {
   useEffect(() => {
     list.execute({ page: currentPage, limit: itemsPerPage });
   }, [currentPage]);
-
-  useEffect(() => {
-    if (deleteAction.status === "hasSucceeded") {
-      list.execute({ page: currentPage, limit: itemsPerPage });
-      toast.success("Article supprimé avec succès");
-    }
-    if (deleteAction.status === "hasErrored") {
-      toast.error(deleteAction.result?.serverError || "Erreur lors de la suppression");
-    }
-  }, [deleteAction.status, deleteAction.result]);
 
   useEffect(() => {
     if (toggleFeaturedAction.status === "hasSucceeded") {
@@ -67,18 +56,9 @@ export default function AdminBlogPostsPage() {
     }
   }, [toggleFeaturedAction.status, toggleFeaturedAction.result]);
 
-  const handleDelete = useCallback(
-    (id: number, title: string) => {
-      if (
-        confirm(
-          `Êtes-vous sûr de vouloir supprimer l'article "${title}" ? Cette action est irréversible.`
-        )
-      ) {
-        deleteAction.execute({ id });
-      }
-    },
-    [deleteAction]
-  );
+  const handleRefresh = useCallback(() => {
+    list.execute({ page: currentPage, limit: itemsPerPage });
+  }, [currentPage, itemsPerPage]);
 
   const handleToggleFeatured = useCallback(
     (id: number, currentValue: boolean) => {
@@ -266,13 +246,11 @@ export default function AdminBlogPostsPage() {
                       >
                         <Edit className="w-5 h-5" />
                       </Link>
-                      <button
-                        onClick={() => handleDelete(post.id, post.title)}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                      <DeleteBlogPostButton
+                        postId={post.id}
+                        postTitle={post.title}
+                        onSuccess={handleRefresh}
+                      />
                     </div>
                   </div>
                 </div>

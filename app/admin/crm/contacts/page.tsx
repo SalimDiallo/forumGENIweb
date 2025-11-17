@@ -1,17 +1,17 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
-import { deleteContact, listContacts, updateContact } from "../actions";
+import { listContacts, updateContact } from "../actions";
 import { useEffect, useCallback, useState, useMemo } from "react";
 import type { ContactMessage } from "@/lib/generated/prisma";
 import { toast } from "sonner";
 import { Pagination } from "@/components/admin/Pagination";
-import { Mail, User2, Phone, Trash2 } from "lucide-react";
+import { Mail, User2, Phone } from "lucide-react";
+import { DeleteContactButton } from "./DeleteContactButton";
 
 // NOTE: No reference to createC in this file. Error resolved.
 
 export default function AdminContactsPage() {
   const contacts = useAction(listContacts);
-  const delC = useAction(deleteContact);
   const updateC = useAction(updateContact);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,17 +22,6 @@ export default function AdminContactsPage() {
     contacts.execute();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Recharger après suppression
-  useEffect(() => {
-    if (delC.status === "hasSucceeded") {
-      contacts.execute();
-      toast.success("Message supprimé avec succès");
-    } else if (delC.status === "hasErrored") {
-      toast.error(delC.result?.serverError ?? "Erreur lors de la suppression");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [delC.status]);
 
   // Recharger après modification
   useEffect(() => {
@@ -45,14 +34,9 @@ export default function AdminContactsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateC.status]);
 
-  const handleDelete = useCallback(
-    (id: number) => {
-      if (window.confirm("Êtes-vous sûr de vouloir supprimer ce message ?")) {
-        delC.execute({ id });
-      }
-    },
-    [delC]
-  );
+  const handleRefresh = useCallback(() => {
+    contacts.execute();
+  }, [contacts]);
 
   const handleStatusChange = useCallback(
     (id: number, newStatus: "new" | "in_progress" | "resolved" | "closed") => {
@@ -226,15 +210,11 @@ export default function AdminContactsPage() {
                         <option value="resolved">Résolu</option>
                         <option value="closed">Fermé</option>
                       </select>
-                      <button
-                        onClick={() => handleDelete(m.id)}
-                        disabled={delC.status === "executing"}
-                        className="p-1  hover:bg-red-100 transition-colors text-red-600 disabled:opacity-50"
-                        title="Supprimer"
-                        aria-label="Supprimer"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                      <DeleteContactButton
+                        contactId={m.id}
+                        contactName={m.name}
+                        onSuccess={handleRefresh}
+                      />
                     </div>
                   </article>
                 );

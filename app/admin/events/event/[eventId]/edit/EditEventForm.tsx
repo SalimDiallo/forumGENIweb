@@ -9,6 +9,7 @@ import { updateEventSchema } from "./event.edit.schema";
 import { useMutation } from "@tanstack/react-query";
 import { doEditEvent } from "./event.edit.action";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import EventBasicFields from "./components/EventBasicFields";
 import EventAdvancedFields from "./components/EventAdvancedFields";
 import EventRegistrationFields from "./components/EventRegistrationFields";
@@ -115,10 +116,15 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     mutationFn: async (data: updateEventSchema) => {
       const result = await doEditEvent(data);
       if (result.serverError) {
-        throw new Error("Failed to create event");
-      } else {
+        toast.error(result.serverError || "Erreur lors de la mise à jour de l'événement");
+        throw new Error(result.serverError);
+      } else if (result.data) {
+        toast.success("Événement mis à jour avec succès !");
         router.push("/admin/events");
       }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Erreur lors de la mise à jour de l'événement");
     }
   });
 
@@ -147,7 +153,11 @@ export default function EditEventForm({ event }: EditEventFormProps) {
   ];
 
   async function onSubmit(data: updateEventSchema) {
-    editEventMutation.mutateAsync(data)
+    try {
+      await editEventMutation.mutateAsync(data);
+    } catch (error) {
+      // Error is already handled in onError
+    }
   }
 
   return (

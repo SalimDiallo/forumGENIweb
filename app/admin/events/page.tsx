@@ -3,6 +3,7 @@ import Link from "next/link";
 import { statusOptions } from "@/lib/utils";
 import { prisma } from "@/lib/db";
 import { ServerPaginationClient } from "./ServerPaginationClient";
+import { DeleteEventButton } from "./DeleteEventButton";
 
 interface PageProps {
   searchParams?: Promise<{
@@ -133,13 +134,11 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
                       Éditer
                     </Link>
 
-                    <button
-                      // onClick={() => onDelete(e.id)}
-                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Supprimer
-                    </button>
+                    <DeleteEventButton
+                      eventId={e.id}
+                      eventTitle={e.title}
+                      hasRegistrations={e.currentParticipants > 0}
+                    />
                   </div>
                 </div>
               </div>

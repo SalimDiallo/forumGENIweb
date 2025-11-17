@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ServerPaginationClient } from "./ServerPaginationClient";
+import { DeleteJobButton } from "./DeleteJobButton";
 
 interface PageProps {
   searchParams?: Promise<{
@@ -233,6 +234,10 @@ export default async function AdminJobsPage({ searchParams }: PageProps) {
                       <Edit2 className="w-4 h-4" />
                       Éditer
                     </Link>
+                    <DeleteJobButton
+                      jobId={j.id}
+                      jobTitle={j.title}
+                    />
                   </div>
                 </div>
                 {j.requirements && (

@@ -1,6 +1,6 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
-import { createTag, deleteTag, listTags } from "../tags-actions";
+import { createTag, listTags } from "../tags-actions";
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
 import { useForm } from "react-hook-form";
@@ -8,11 +8,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createTagSchema } from "@/lib/validations/blog";
 import { toast } from "sonner";
+import { DeleteTagButton } from "./DeleteTagButton";
 
 export default function AdminTagsPage() {
   const list = useAction(listTags);
   const create = useAction(createTag);
-  const del = useAction(deleteTag);
 
   useEffect(() => {
     list.execute();
@@ -28,6 +28,10 @@ export default function AdminTagsPage() {
     create.execute(values);
   }
 
+  const handleRefresh = () => {
+    list.execute();
+  };
+
   // Auto-generate slug from name
   const nameValue = form.watch("name");
   useEffect(() => {
@@ -42,12 +46,6 @@ export default function AdminTagsPage() {
     }
   }, [nameValue, form]);
 
-  async function onDelete(id: number, name: string) {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer le tag "${name}" ?`)) {
-      del.execute({ id });
-    }
-  }
-
   useEffect(() => {
     if (create.status === "hasSucceeded") {
       list.execute();
@@ -59,16 +57,6 @@ export default function AdminTagsPage() {
       toast.error(create.result?.serverError || "Erreur lors de la création");
     }
   }, [create.status, create.result]);
-
-  useEffect(() => {
-    if (del.status === "hasSucceeded") {
-      list.execute();
-      toast.success("Tag supprimé avec succès");
-    }
-    if (del.status === "hasErrored") {
-      toast.error(del.result?.serverError || "Erreur lors de la suppression");
-    }
-  }, [del.status, del.result]);
 
   return (
     <div className="space-y-6">
@@ -114,13 +102,12 @@ export default function AdminTagsPage() {
                   )}
                 </p>
               </div>
-              <button
-                onClick={() => onDelete(t.id, t.name)}
-                disabled={del.status === "executing"}
-                className="text-red-600 hover:underline disabled:opacity-50"
-              >
-                Supprimer
-              </button>
+              <DeleteTagButton
+                tagId={t.id}
+                tagName={t.name}
+                postCount={t._count?.posts || 0}
+                onSuccess={handleRefresh}
+              />
             </li>
           ))}
         </ul>
