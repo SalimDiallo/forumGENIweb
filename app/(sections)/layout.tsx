@@ -1,25 +1,21 @@
+"use client";
 import Header from '@/components/Header';
 import type { Metadata } from 'next';
+import { usePathname } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Forum GENI Entreprises | INSEA',
-  description: 'Association professionnelle de l\'INSEA depuis 2002. Connecter l\'excellence académique avec le monde professionnel pour façonner les leaders de demain.',
-  icons: {
-    icon: '/logo-symbol.png',
-    shortcut: '/logo-symbol.png',
-    apple: '/logo-symbol.png',
-  },
-};
+
 
 export default function SectionsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   return (
     <>
             <Header />
-            <div className=''>
+            <div className={`${pathname !=="/" ? "py-18" : ""}`}>
                 {children}
           </div>
     </>

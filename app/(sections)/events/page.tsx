@@ -9,7 +9,7 @@ export default async function EventsPage() {
   
 
   return (
-    <main>
+    <main className=''>
       <EventsList events={events} />
     </main>
   );
