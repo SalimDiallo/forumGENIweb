@@ -1,5 +1,5 @@
 // Server Component Wrapper for Gallery
-import { getAllMedia, getGalleryCategories } from "@/app/actions/gallery";
+import { getCompleteGalleryData } from "@/app/actions/gallery";
 import Gallery from "@/components/Gallery";
 import type { GalleryItem } from "@/lib/types/gallery";
 
@@ -15,7 +15,7 @@ function transformToGalleryItems(media: any[]): GalleryItem[] {
     alt: `${item.event} - ${item.name}`,
     title: item.event,
     year: item.year,
-    category: item.category.toLowerCase().replace(/\s+/g, '-'),
+    category: item.category, // Keep original category name
     event: item.event,
     mimeType: item.mimeType,
     size: item.size,
@@ -30,14 +30,12 @@ function transformToGalleryItems(media: any[]): GalleryItem[] {
 
 export default async function GalleryWrapper() {
   try {
-    // Fetch media and categories in parallel
-    const [mediaResult, categoriesResult] = await Promise.all([
-      getAllMedia(),
-      getGalleryCategories(),
-    ]);
+    // OPTIMIZED: Use single call to get both media and categories
+    // This reduces API calls and improves performance
+    const result = await getCompleteGalleryData();
 
     // Handle errors
-    if (!mediaResult?.data?.media) {
+    if (!result?.data?.media) {
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
@@ -52,8 +50,8 @@ export default async function GalleryWrapper() {
       );
     }
 
-    const galleryItems = transformToGalleryItems(mediaResult.data.media);
-    const categories = categoriesResult?.data?.categories || [
+    const galleryItems = transformToGalleryItems(result.data.media);
+    const categories = result.data.categories || [
       { id: 'all', name: 'Tout', count: galleryItems.length }
     ];
 

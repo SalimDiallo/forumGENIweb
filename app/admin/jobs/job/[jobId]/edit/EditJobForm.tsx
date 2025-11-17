@@ -87,7 +87,7 @@ export default function EditJobForm({ job }: EditJobFormProps) {
   useEffect(() => {
     // Only auto-generate if slug is empty or matches the old slugified title
     const currentSlug = editForm.getValues("slug");
-    if (!currentSlug || currentSlug === slugify(cleanedDefaults.title)) {
+    if (titleValue && (!currentSlug || currentSlug === slugify(cleanedDefaults.title))) {
       editForm.setValue("slug", slugify(titleValue));
     }
     // eslint-disable-next-line

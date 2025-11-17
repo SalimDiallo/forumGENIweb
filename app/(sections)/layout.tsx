@@ -19,7 +19,7 @@ export default function SectionsLayout({
   return (
     <>
             <Header />
-            <div className='py-18'>
+            <div className=''>
                 {children}
           </div>
     </>

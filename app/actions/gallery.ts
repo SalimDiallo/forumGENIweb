@@ -98,3 +98,48 @@ export const getGalleryCategories = actionClient
 
     return { categories };
   });
+
+/**
+ * Get complete gallery data (media + categories) in one optimized call
+ * This avoids duplicate API calls and reduces load time
+ */
+export const getCompleteGalleryData = actionClient
+  .metadata({ actionName: "get-complete-gallery-data" })
+  .action(async () => {
+    const rootFolderId = process.env.GOOGLE_DRIVE_GALLERY_FOLDER_ID;
+
+    if (!rootFolderId) {
+      throw new Error("GOOGLE_DRIVE_GALLERY_FOLDER_ID is not configured");
+    }
+
+    // Get all media (this internally gets the structure and caches it)
+    const media = await getAllGalleryMedia(rootFolderId);
+
+    // Get structure from cache (should hit cache since getAllGalleryMedia called it)
+    const structure = await getGalleryStructure(rootFolderId);
+
+    // Extract unique categories across all years
+    const categoriesMap = new Map<string, number>();
+
+    structure.years.forEach(year => {
+      year.categories.forEach(category => {
+        const current = categoriesMap.get(category.name) || 0;
+        categoriesMap.set(category.name, current + category.totalMediaCount);
+      });
+    });
+
+    const categories = Array.from(categoriesMap.entries()).map(([name, count]) => ({
+      id: name.toLowerCase().replace(/\s+/g, '-'),
+      name,
+      count,
+    }));
+
+    // Add "all" category
+    categories.unshift({
+      id: 'all',
+      name: 'Tout',
+      count: structure.totalMedia,
+    });
+
+    return { media, categories };
+  });

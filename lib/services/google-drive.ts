@@ -4,6 +4,7 @@
  */
 
 import { google } from 'googleapis';
+import { unstable_cache } from 'next/cache';
 import type { GalleryStructure, GalleryYear, GalleryCategory, GalleryEvent, GalleryMedia, MediaType } from '@/lib/types/gallery';
 
 // Uniquement les images réellement affichables dans la galerie principale (exclus SVG)
@@ -28,6 +29,28 @@ const VIDEO_MIME_TYPES = [
   'video/x-matroska',
   'video/webm',
 ];
+
+// Configuration pour limiter les requêtes parallèles (éviter rate limiting Google API)
+const MAX_CONCURRENT_REQUESTS = 10;
+
+/**
+ * Batch processor pour limiter le nombre de requêtes parallèles
+ */
+async function batchProcess<T, R>(
+  items: T[],
+  processor: (item: T) => Promise<R>,
+  concurrency: number = MAX_CONCURRENT_REQUESTS
+): Promise<R[]> {
+  const results: R[] = [];
+
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    const batchResults = await Promise.all(batch.map(processor));
+    results.push(...batchResults);
+  }
+
+  return results;
+}
 
 /**
  * Initialize Google Drive API with Service Account credentials
@@ -58,25 +81,27 @@ function getMediaType(mimeType: string): MediaType | null {
 }
 
 /**
- * Retourne le vrai lien d'affichage direct de l'image sur Google Drive (non le thumbnail)
- * Pour les images, on crée l'URL public viewer/export qui retourne l'image full-size pour l'affichage.
+ * Retourne le vrai lien d'affichage direct de l'image sur Google Drive
+ * Pour les images, utilise le format uc?export=view qui est plus standard
  * Pour les vidéos, utiliser le preview.
+ *
+ * IMPORTANT: Les fichiers doivent être partagés avec le compte de service ou être publics
  */
 function getFileUrl(fileId: string, mimeType?: string): string {
   if (mimeType && VIDEO_MIME_TYPES.includes(mimeType)) {
     return `https://drive.google.com/file/d/${fileId}/preview`;
   }
-  // Utiliser l'URL de thumbnail haute résolution comme source principale
-  // Plus fiable que uc?export=view pour les fichiers avec permissions
-  return `https://lh3.googleusercontent.com/d/${fileId}=w2000`;
+  // Format standard Google Drive pour affichage direct
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }
 
 /**
  * Get thumbnail URL for a file
- * Utilise l'API googleusercontent qui fonctionne mieux avec les permissions Service Account
+ * Utilise l'API thumbnail de Google Drive pour générer des aperçus optimisés
  */
-function getThumbnailUrl(fileId: string, size: number = 1920): string {
-  return `https://lh3.googleusercontent.com/d/${fileId}=w${size}`;
+function getThumbnailUrl(fileId: string, size: number = 800): string {
+  // Format API thumbnail Google Drive
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`;
 }
 
 /**
@@ -154,71 +179,63 @@ async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
 }
 
 /**
- * Get full gallery structure from Google Drive
+ * Get full gallery structure from Google Drive (internal, non-cached version)
  * Structure: Root Folder > Year Folders > Category Folders > Event Folders > Media Files
  * Seuls les médias "displayable" (images previewables, no SVG) sont inclus.
  */
-export async function getGalleryStructure(rootFolderId: string): Promise<GalleryStructure> {
+async function getGalleryStructureInternal(rootFolderId: string): Promise<GalleryStructure> {
   try {
-    const years: GalleryYear[] = [];
-    let totalCategories = 0;
-    let totalEvents = 0;
-    let totalMedia = 0;
-
     // 1. Get year folders (e.g., 2024, 2025)
     const yearFolders = await listFolders(rootFolderId);
 
-    for (const yearFolder of yearFolders) {
-      const categories: GalleryCategory[] = [];
-      let yearMediaCount = 0;
-
-      // 2. Get category folders (e.g., Forum, Workshop, Networking)
+    // 2. OPTIMISATION: Utiliser batchProcess pour limiter les requêtes parallèles
+    const years = await batchProcess(yearFolders, async (yearFolder) => {
       const categoryFolders = await listFolders(yearFolder.id);
 
-      for (const categoryFolder of categoryFolders) {
-        const events: GalleryEvent[] = [];
-        let categoryMediaCount = 0;
-
-        // 3. Get event folders (e.g., Forum Spring 2025)
+      // 3. OPTIMISATION: Paralléliser les catégories avec limite
+      const categories = await batchProcess(categoryFolders, async (categoryFolder) => {
         const eventFolders = await listFolders(categoryFolder.id);
 
-        for (const eventFolder of eventFolders) {
-          // 4. Get displayable media files in event folder
+        // 4. OPTIMISATION: Paralléliser les événements avec limite
+        const events = await batchProcess(eventFolders, async (eventFolder) => {
           const mediaFiles = await listMediaFiles(eventFolder.id);
 
-          events.push({
+          return {
             id: eventFolder.id,
             name: eventFolder.name,
             media: mediaFiles,
             mediaCount: mediaFiles.length,
-          });
+          };
+        });
 
-          categoryMediaCount += mediaFiles.length;
-          totalEvents++;
-        }
+        const categoryMediaCount = events.reduce((sum, event) => sum + event.mediaCount, 0);
 
-        categories.push({
+        return {
           id: categoryFolder.id,
           name: categoryFolder.name,
           events,
           eventCount: events.length,
           totalMediaCount: categoryMediaCount,
-        });
+        };
+      });
 
-        yearMediaCount += categoryMediaCount;
-        totalCategories++;
-      }
+      const yearMediaCount = categories.reduce((sum, cat) => sum + cat.totalMediaCount, 0);
 
-      years.push({
+      return {
         id: yearFolder.id,
         year: yearFolder.name,
         categories,
         categoryCount: categories.length,
         totalMediaCount: yearMediaCount,
-      });
+      };
+    });
 
-      totalMedia += yearMediaCount;
-    }
+    // Calculer les totaux
+    const totalCategories = years.reduce((sum, year) => sum + year.categoryCount, 0);
+    const totalEvents = years.reduce((sum, year) =>
+      sum + year.categories.reduce((catSum, cat) => catSum + cat.eventCount, 0), 0
+    );
+    const totalMedia = years.reduce((sum, year) => sum + year.totalMediaCount, 0);
 
     return {
       years,
@@ -234,10 +251,23 @@ export async function getGalleryStructure(rootFolderId: string): Promise<Gallery
 }
 
 /**
- * Get all displayable media files flattened (for easier filtering/display)
+ * CACHED: Get full gallery structure from Google Drive
+ * Cache de 1 heure (3600 secondes)
  */
-export async function getAllGalleryMedia(rootFolderId: string) {
-  const structure = await getGalleryStructure(rootFolderId);
+export const getGalleryStructure = unstable_cache(
+  async (rootFolderId: string) => getGalleryStructureInternal(rootFolderId),
+  ['gallery-structure'],
+  {
+    revalidate: 3600, // Cache pendant 1 heure
+    tags: ['gallery', 'gallery-structure'],
+  }
+);
+
+/**
+ * Get all displayable media files flattened (internal, for easier filtering/display)
+ */
+async function getAllGalleryMediaInternal(rootFolderId: string) {
+  const structure = await getGalleryStructureInternal(rootFolderId);
   const allMedia: Array<GalleryMedia & { year: string; category: string; event: string }> = [];
 
   for (const year of structure.years) {
@@ -259,7 +289,21 @@ export async function getAllGalleryMedia(rootFolderId: string) {
 }
 
 /**
+ * CACHED: Get all displayable media files flattened
+ * Cache de 1 heure (3600 secondes)
+ */
+export const getAllGalleryMedia = unstable_cache(
+  async (rootFolderId: string) => getAllGalleryMediaInternal(rootFolderId),
+  ['gallery-all-media'],
+  {
+    revalidate: 3600,
+    tags: ['gallery', 'gallery-media'],
+  }
+);
+
+/**
  * Get displayable media files filtered by year, category, or event
+ * Utilise le cache de getAllGalleryMedia pour éviter des appels API supplémentaires
  */
 export async function getFilteredGalleryMedia(
   rootFolderId: string,
@@ -269,6 +313,7 @@ export async function getFilteredGalleryMedia(
     event?: string;
   }
 ) {
+  // Utilise la version cachée pour bénéficier du cache
   const allMedia = await getAllGalleryMedia(rootFolderId);
 
   return allMedia.filter(item => {
@@ -278,3 +323,9 @@ export async function getFilteredGalleryMedia(
     return true;
   });
 }
+
+/**
+ * Fonction utilitaire pour invalider le cache de la galerie
+ * À utiliser quand de nouveaux médias sont ajoutés sur Drive
+ */
+export { revalidateTag } from 'next/cache';

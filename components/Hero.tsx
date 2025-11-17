@@ -22,7 +22,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative flex flex-col justify-end min-h-screen items-center overflow-hidden bg-black pt-30">
+    <section className="relative flex flex-col justify-end min-h-screen items-center overflow-hidden bg-black pt-24">
       {/* Video Background */}
       <motion.div
         className="absolute inset-0 w-full h-full"

@@ -85,8 +85,9 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
       })
       .filter(eventData => {
         if (activeCategory !== 'all') {
-          const normalizedCategory = eventData.event.category.toLowerCase().replace(/\s+/g, '-');
-          return normalizedCategory === activeCategory;
+          // Compare with category ID from categories list
+          const categoryId = eventData.event.category.toLowerCase().replace(/\s+/g, '-');
+          return categoryId === activeCategory;
         }
         return true;
       })
@@ -162,18 +163,31 @@ const Gallery = ({ items: galleryItems, categories }: GalleryProps) => {
     console.error('Erreur chargement image carte:', {
       originalSrc,
       alt: img.alt,
-      dataset: img.dataset
+      thumbnail: img.dataset.thumbnail,
+      src: img.dataset.src,
     });
 
-    // Try thumbnail URL first if available
+    // Try different fallback strategies
     const thumbnailUrl = img.dataset.thumbnail;
-    if (thumbnailUrl && img.src !== thumbnailUrl) {
+    const srcUrl = img.dataset.src;
+
+    // Strategy 1: Try thumbnail if we were using src
+    if (srcUrl && originalSrc.includes(srcUrl.split('=')[0]) && thumbnailUrl) {
+      console.log('Tentative avec thumbnail URL...');
       img.src = thumbnailUrl;
       return;
     }
 
-    // Fallback to placeholder
-    if (img.src !== window.location.origin + '/fallback-image.jpg') {
+    // Strategy 2: Try src if we were using thumbnail
+    if (thumbnailUrl && originalSrc.includes(thumbnailUrl.split('=')[0]) && srcUrl) {
+      console.log('Tentative avec source URL...');
+      img.src = srcUrl;
+      return;
+    }
+
+    // Strategy 3: Fallback to placeholder
+    if (!img.src.includes('/fallback-image.jpg')) {
+      console.log('Utilisation du placeholder');
       img.src = '/fallback-image.jpg';
     }
   };
