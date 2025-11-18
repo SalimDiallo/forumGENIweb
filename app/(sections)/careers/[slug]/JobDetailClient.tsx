@@ -21,6 +21,7 @@ import {
   Bookmark
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
+import ShareButton from '@/components/ui/ShareButton';
 
 interface JobDetailProps {
   job: {
@@ -212,7 +213,14 @@ const JobDetailClient: React.FC<JobDetailProps> = ({ job }) => {
           <div className="lg:col-span-1 space-y-4">
             {/* Application Card */}
             <div className="bg-white  p-4 border border-gray-200 sticky top-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900">Postuler maintenant</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold text-gray-900">Postuler maintenant</h3>
+                <ShareButton
+                  title={`${job.title} - ${job.company}`}
+                  description={job.description.substring(0, 150)}
+                  size="md"
+                />
+              </div>
 
               {job.applicationDeadline && (
                 <div className="rounded border border-gray-200 p-2 mb-3 text-sm text-gray-700 bg-gray-50">

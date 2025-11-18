@@ -158,12 +158,12 @@ const Header = () => {
             {/* Logo amélioré avec micro-interactions */}
             <Link href="/" className="flex items-center gap-3 group">
               <motion.div
-                className={`relative transition-all duration-500  rounded-xl ${
+                className={`relative transition-all duration-500 rounded-xl ${
                   scrolled
-                    ? 'p-3 bg-white/80 backdrop-blur-2xl  border border-white/30 shadow-lg'
+                    ? 'p-3 bg-white/80 backdrop-blur-2xl border border-white/30 shadow-lg'
                     : isHomePage
                       ? 'p-2 bg-transparent shadow-emerald-700/10'
-                      : 'p-2 bg-white/80 backdrop-blur-2xl  shadow-emerald-700/10 shadow-lg'
+                      : 'p-2 bg-white/80 backdrop-blur-2xl shadow-emerald-700/10 shadow-lg'
                 }`}
                 whileHover={{ 
                   scale: 1.05,
@@ -172,17 +172,29 @@ const Header = () => {
                 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Image
-                  src="/logo 4.png" 
-                  alt="Forum GENI Entreprises" 
-                  width={180} 
-                  height={50} 
-                  className="h-10 w-auto transition-all duration-500 filter drop-shadow-sm rounded-xl"
-                  priority
-                />
+                <div className="relative flex items-center">
+                  {/* Effet blur blanc derrière le logo */}
+                  <div className="absolute inset-0 z-0 blur-lg bg-white opacity-60 rounded-xl pointer-events-none" />
+                  <Image
+                    src="/logo.svg" 
+                    alt="Forum GENI Entreprises" 
+                    width={180} 
+                    height={50} 
+                    className="h-10 w-auto transition-all duration-500 filter drop-shadow-sm rounded-xl"
+                    priority
+                  />
+                  {/* Texte du logo avec effet blur blanche (optionnel, surtout si logo SVG contient texte) */}
+                  {/* 
+                  <span className="absolute left-0 top-0 w-full h-full flex items-center justify-center pointer-events-none">
+                    <span className="text-2xl font-bold text-white/90 backdrop-blur-lg opacity-80 px-4 rounded-xl">
+                      Forum GENI Entreprises
+                    </span>
+                  </span>
+                  */}
+                </div>
                 {/* Glow effect */}
                 <motion.div 
-                  className={`absolute inset-0  blur-xl transition-opacity duration-500 -z-10 ${scrolled ? 'bg-white/0' : 'bg-gradient-to-br from-emerald-700/20 to-emerald-500/20 opacity-80'}`}
+                  className={`absolute inset-0 blur-xl transition-opacity duration-500 -z-10 ${scrolled ? 'bg-white/0' : 'bg-gradient-to-br from-emerald-700/20 to-emerald-500/20 opacity-80'}`}
                   animate={scrolled ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 2, repeat: Infinity }}
                 />

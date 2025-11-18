@@ -14,9 +14,6 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
   if (eventId && !isNaN(eventId)) {
     event = await prisma.event.findUnique({
       where: { id: eventId },
-      include: {
-        media: true,
-      }
     });
     if (!event) {
       return (
@@ -158,29 +155,7 @@ export default async function EventDetailsPage(props: { params: Promise<{ eventI
           </div>
         )}
 
-        {/* Galerie photos */}
-        {event.media && event.media.length > 1 && (
-          <div className="mb-8 bg-white  shadow-sm border border-gray-200 p-6">
-            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Galerie photos
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              {event.media
-                .filter((m: any) => m.fileUrl !== event.featuredImage)
-                .map((media: any) => (
-                  <img
-                    key={media.id}
-                    src={media.fileUrl}
-                    alt={media.altText || event.title}
-                    className="rounded-lg w-full h-32 object-cover border border-gray-200 hover:scale-105 transition-transform cursor-pointer shadow-sm"
-                  />
-                ))}
-            </div>
-          </div>
-        )}
+      
 
         {/* Description */}
         <div className="mb-8 bg-white  shadow-sm border border-gray-200 p-8">

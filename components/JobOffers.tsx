@@ -63,16 +63,17 @@ const JobOffers: React.FC = () => {
 
   const getJobsAction = useAction(getPublicJobs);
 
-  // Load jobs from backend
+  // Toujours charger tous les jobs peu importe le filtre sélectionné
   useEffect(() => {
     loadJobs();
-  }, [selectedFilter, searchTerm]);
+  }, [searchTerm]);
 
   const loadJobs = () => {
     setLoading(true);
+    // On ne filtre pas côté backend, on récupère tout et filtre côté client
     getJobsAction.execute({
       search: searchTerm || undefined,
-      jobType: selectedFilter === 'all' ? '' : selectedFilter,
+      jobType: '', // On ne filtre pas ici
       limit: 50,
       offset: 0,
     });
@@ -81,7 +82,6 @@ const JobOffers: React.FC = () => {
   // Handle action result
   useEffect(() => {
     if (getJobsAction.status === "hasSucceeded" && getJobsAction.result?.data?.jobs) {
-      // Map to ensure slug exists (generate from title if missing)
       const mappedJobs: JobOffer[] = getJobsAction.result.data.jobs.map((job: any): JobOffer => ({
         ...job,
         slug: job.slug || `${job.id}-${job.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`
@@ -123,7 +123,15 @@ const JobOffers: React.FC = () => {
     { id: 'freelance', name: 'Freelance', count: filterCounts.freelance || 0, icon: TrendingUp }
   ];
 
-  const filteredJobs = jobs; // Jobs are already filtered by the backend
+  // Filtrage côté client: si "all" on prend tout, sinon on filtre par type
+  const filteredJobs = React.useMemo(() => {
+    let result = jobs;
+    if (selectedFilter !== 'all') {
+      result = result.filter(job => job.type === selectedFilter);
+    }
+    // Si besoin, tu peux aussi filtrer par search ici (mais conservons search côté backend)
+    return result;
+  }, [jobs, selectedFilter]);
 
   const getTypeLabel = (type: string): string => {
     const types: Record<string, string> = {

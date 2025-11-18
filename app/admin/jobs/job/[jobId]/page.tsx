@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import BackButton from "@/components/BackButton";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import ShareJobButton from "./ShareJobButton";
 
 export default async function JobDetailsPage(props: { params: Promise<{ jobId: string }> }) {
   const params = await props.params;
@@ -54,27 +55,12 @@ export default async function JobDetailsPage(props: { params: Promise<{ jobId: s
                 <Edit className="w-4 h-4" />
                 Modifier
               </Link>
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg px-6 py-2.5 font-semibold transition shadow-lg"
-                // onClick={() => {
-                //   if (typeof window !== "undefined") {
-                //     navigator.clipboard.writeText(window.location.href);
-                //   }
-                // }}
-                title="Partager"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 8a3 3 0 10-6 0v8a3 3 0 006 0m6-5l-3-3m0 0l-3 3m3-3V21" />
-                </svg>
-                Partager
-              </button>
+              <ShareJobButton
+                jobSlug={job.slug}
+                jobTitle={job.title}
+                companyName={job.companyName}
+                description={job.description}
+              />
             </div>
           </div>
         </div>
