@@ -15,6 +15,9 @@ export default function ShareJobButton({
   companyName,
   description,
 }: ShareJobButtonProps) {
+  if(!description || description.trim() ===""){
+    return null;
+  }
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
     (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
@@ -22,7 +25,7 @@ export default function ShareJobButton({
     <ShareButton
       url={`${baseUrl}/careers/${jobSlug}`}
       title={`${jobTitle} - ${companyName}`}
-      description={description.substring(0, 150)}
+      description={description?.substring(0, 150)}
       variant="icon"
       size="lg"
       className="!bg-emerald-50 !text-emerald-700 hover:!bg-emerald-100"

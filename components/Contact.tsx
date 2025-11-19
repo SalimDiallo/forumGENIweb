@@ -1,8 +1,19 @@
 'use client';
 
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+
+// Dynamic import to avoid SSR issues with Leaflet
+const InteractiveMap = dynamic(() => import('./InteractiveMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-emerald-100 flex items-center justify-center">
+      <div className="text-emerald-800">Chargement de la carte...</div>
+    </div>
+  ),
+});
 
 const Contact = () => {
   const contactInfo = [
@@ -87,40 +98,48 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-white  overflow-hidden border border-emerald-100"
+          className="bg-white overflow-hidden border border-emerald-100"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="p-8">
-              <h2 className="text-2xl font-bold text-black mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <div className="p-8 lg:p-10 flex flex-col justify-center">
+              <h2 className="text-3xl font-bold text-black mb-6">
                 Venez nous rencontrer
               </h2>
               <div className="space-y-4 text-black/80">
-                <p>
-                  Notre équipe est basée au cœur de l'INSEA à Rabat, dans un environnement 
+                <p className="text-lg">
+                  Notre équipe est basée au cœur de l'<span className="font-semibold text-emerald-800">INSEA</span> à Rabat, dans un environnement
                   propice à l'innovation et à l'excellence académique.
                 </p>
                 <p>
-                  Que vous soyez étudiant, entrepreneur, ou représentant d'entreprise, 
+                  Que vous soyez étudiant, entrepreneur, ou représentant d'entreprise,
                   nos portes sont ouvertes pour discuter de collaborations et d'opportunités.
                 </p>
-                <div className="pt-4">
-                  <h3 className="font-semibold text-black mb-2">Transports</h3>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Tramway : Arrêt INSEA</li>
-                    <li>• Bus : Lignes 12, 23, 45</li>
-                    <li>• Parking gratuit disponible</li>
+                <div className="pt-4 bg-emerald-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-black mb-3 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    Comment s'y rendre
+                  </h3>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-700 font-bold">•</span>
+                      <span><strong>Tramway :</strong> Arrêt INSEA</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-700 font-bold">•</span>
+                      <span><strong>Bus :</strong> Lignes 12, 23, 45</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-700 font-bold">•</span>
+                      <span><strong>Parking :</strong> Gratuit sur place</span>
+                    </li>
                   </ul>
                 </div>
               </div>
             </div>
-            <div className="bg-emerald-100 flex items-center justify-center p-8">
-              <div className="w-full h-64 bg-emerald-200 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="text-black mx-auto mb-2" size={32} />
-                  <p className="text-emerald-800 font-medium">Carte interactive</p>
-                  <p className="text-black text-sm">INSEA, Rabat</p>
-                </div>
-              </div>
+            <div className="relative h-[400px] lg:h-auto">
+              <InteractiveMap />
             </div>
           </div>
         </motion.div>

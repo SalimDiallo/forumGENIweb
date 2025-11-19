@@ -1,5 +1,5 @@
 "use server";
-import { actionClient, adminAction } from "@/lib/safe-action";
+import { actionClient, adminAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createTagSchema, updateTagSchema } from "@/lib/validations/blog";
 
@@ -75,7 +75,7 @@ export const updateTag = adminAction
     }
   });
 
-export const deleteTag = adminAction
+export const deleteTag = deleteAction
   .metadata({ actionName: "delete-tag" })
   .schema(updateTagSchema.pick({ id: true }))
   .action(async ({ parsedInput }) => {

@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   // Optimisations de bundle pour navigation rapide
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
@@ -29,7 +29,10 @@ const nextConfig: NextConfig = {
 
   // Compression et performance
   compress: true,
-  
+
+  // Débogage désactivé
+  debug: false,
+
   // Prefetch automatique de toutes les pages
   async headers() {
     return [

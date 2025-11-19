@@ -3,7 +3,7 @@ import {
   DEFAULT_SERVER_ERROR_MESSAGE,
 } from "next-safe-action";
 import { z } from "zod";
-import { getCurrentUser, requireAdmin, requireSuperAdmin, AuthError } from "./auth";
+import { requireAdmin, requireSuperAdmin, requireDeletePermission, AuthError } from "./auth";
 import { revalidateTag } from "next/cache";
 
 class ActionError extends Error {}
@@ -209,13 +209,10 @@ export const authActionClient = actionClient
       throw new ActionError("l'action n'a pas de nom");
     }
 
-    // // Vérifier l'authentification de l'utilisateur
-    // const user = await getCurrentUser();
-    // if (!user) {
-    //   throw new AuthError("Authentification requise");
-    // }
+    // Vérifier l'authentification de l'utilisateur
+    const session = await import("./auth").then(mod => mod.requireAuth());
 
-    return next({ ctx: { user: null } });
+    return next({ ctx: { session } });
   });
 
 // ✅ Client pour les super-admins
@@ -223,8 +220,8 @@ export const superAdminAction = authActionClient
 .use(rateLimitMiddleware)
   .use(async ({ next, ctx }) => {
     // Vérifier que l'utilisateur est un super admin
-    // const user = await requireSuperAdmin();
-    return next({ ctx: { ...ctx, user:null } });
+    await requireSuperAdmin();
+    return next({ ctx });
   });
 
 // ✅ Client pour les admins avec validation de `metadata`
@@ -232,6 +229,16 @@ export const adminAction = authActionClient
   .use(rateLimitMiddleware)
   .use(async ({ next, ctx }) => {
     // Vérifier que l'utilisateur est au moins admin
-    // const user = await requireAdmin();
-    return next({ ctx: { ...ctx, user:null } });
+    await requireAdmin();
+    return next({ ctx });
+  });
+
+// ✅ Client pour les actions de suppression (interdit aux éditeurs)
+export const deleteAction = authActionClient
+  .use(rateLimitMiddleware)
+  .use(async ({ next, ctx }) => {
+    // Vérifier que l'utilisateur a la permission de supprimer
+    // Les éditeurs ne peuvent pas supprimer
+    await requireDeletePermission();
+    return next({ ctx });
   });

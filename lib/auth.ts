@@ -137,3 +137,27 @@ export async function requireSuperAdmin() {
   }
   return session;
 }
+
+/**
+ * Lance une erreur si l'utilisateur n'a pas la permission de supprimer
+ * Les éditeurs ne peuvent pas supprimer, seuls les admins et super admins le peuvent
+ */
+export async function requireDeletePermission() {
+  const session = await requireAuth();
+  const role = (session.user as any).role;
+  if (role === "editor") {
+    throw new AuthError("Vous n'avez pas la permission de supprimer. Seuls les administrateurs peuvent effectuer cette action.");
+  }
+  if (role !== "admin" && role !== "super_admin") {
+    throw new AuthError("Permission de suppression refusée");
+  }
+  return session;
+}
+
+/**
+ * Récupère l'utilisateur connecté
+ */
+export async function getCurrentUser() {
+  const session = await getSession();
+  return session?.user || null;
+}

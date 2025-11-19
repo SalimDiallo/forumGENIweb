@@ -1,5 +1,5 @@
 "use server";
-import { actionClient, adminAction } from "@/lib/safe-action";
+import { actionClient, adminAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createCategorySchema, updateCategorySchema } from "@/lib/validations/blog";
 
@@ -75,7 +75,7 @@ export const updateCategory = adminAction
     }
   });
 
-export const deleteCategory = adminAction
+export const deleteCategory = deleteAction
   .metadata({ actionName: "delete-category" })
   .schema(updateCategorySchema.pick({ id: true }))
   .action(async ({ parsedInput }) => {

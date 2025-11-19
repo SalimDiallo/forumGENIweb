@@ -4,9 +4,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Briefcase, 
-  TrendingUp,
-  Users,
-  Building2
 } from 'lucide-react';
 
 const JobsHero = () => {
@@ -45,93 +42,98 @@ const JobsHero = () => {
       {/* Grid Pattern Overlay */}
       <div className='absolute inset-0 bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")] opacity-30'></div>
 
-      <div className="relative z-10 container mx-auto px-3 py-8">
-        {/* Main Hero Content */}
-        <div className="max-w-3xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-6"
-          >
-            <motion.div 
-              className="inline-flex items-center p-0.5 bg-white/10 backdrop-blur-xl  mb-3 border border-white/20"
-              whileHover={{ scale: 1.04 }}
+      <div className="relative z-10">
+        {/* Main Hero Content - Conteneur limité */}
+        <div className="container mx-auto px-3 py-8">
+          <div className="max-w-3xl mx-auto">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="text-center mb-6"
             >
-              <span className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-emerald-700 to-emerald-600 text-white  flex items-center gap-1.5">
-                <Briefcase className="w-3.5 h-3.5" />
-                Offres d'emploi
-              </span>
-            </motion.div>
-
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">
-              <span className="bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-400 bg-clip-text text-transparent">
-                Trouvez votre
-              </span>
-              <br />
-              <span className="text-white">carrière idéale</span>
-            </h1>
-
-            <p className="text-base md:text-lg text-gray-300 max-w-xl mx-auto leading-relaxed">
-              Découvrez les meilleures opportunités professionnelles avec nos entreprises partenaires 
-              et donnez un nouvel élan à votre carrière
-            </p>
-          </motion.div>
-
-          {/* Stats Grid */}
-          {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8"
-          >
-            {stats.map((stat, index) => (
               <motion.div
-                key={index}
-                className="bg-white/10 backdrop-blur-xl  p-3 border border-white/20 text-center group hover:bg-white/15 transition-all duration-300"
-                whileHover={{ scale: 1.04, y: -2 }}
-                transition={{ duration: 0.2 }}
+                className="inline-flex items-center p-0.5 bg-white/10 backdrop-blur-xl  mb-3 border border-white/20"
+                whileHover={{ scale: 1.04 }}
               >
-                <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-emerald-700/20 to-emerald-500/20  mb-2 group-hover:scale-105 transition-transform duration-200">
-                  <stat.icon className="w-4 h-4 text-emerald-600" />
-                </div>
-                <div className="text-lg font-bold mb-1 bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text text-transparent">
-                  {stat.number}
-                </div>
-                <div className="text-gray-300 text-xs font-medium">
-                  {stat.label}
-                </div>
+                <span className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-emerald-700 to-emerald-600 text-white  flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5" />
+                  Offres d'emploi
+                </span>
               </motion.div>
-            ))}
-          </motion.div> */}
 
-          {/* Featured Companies */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="text-center"
-          >
-            <h3 className="text-base font-semibold text-emerald-200 mb-4 tracking-wide flex items-center justify-center gap-2">
-              <span className="inline-block w-7 h-0.5 bg-emerald-400  opacity-80" />
-              Nos entreprises partenaires de confiance
-              <span className="inline-block w-7 h-0.5 bg-emerald-400  opacity-80" />
-            </h3>
-            <div className="flex flex-wrap justify-center items-center gap-3 opacity-60">
-              {featuredCompanies.map((company, index) => (
-                <motion.div
-                  key={index}
-                  className="px-3 py-1.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 text-gray-400 text-xs font-medium hover:text-white hover:bg-white/10 transition-all duration-200 cursor-pointer"
-                  whileHover={{ scale: 1.07, y: -1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {company}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                <span className="bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-400 bg-clip-text text-transparent">
+                  Trouvez votre
+                </span>
+                <br />
+                <span className="text-white">carrière idéale</span>
+              </h1>
+
+              <p className="text-base md:text-lg text-gray-300 max-w-xl mx-auto leading-relaxed">
+                Découvrez les meilleures opportunités professionnelles avec nos entreprises partenaires
+                et donnez un nouvel élan à votre carrière
+              </p>
+            </motion.div>
+          </div>
         </div>
+
+        {/* Featured Companies - Pleine largeur */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+          className="w-full mt-4"
+        >
+          <h3 className="text-sm font-semibold text-emerald-200 mb-5 tracking-wide flex items-center justify-center gap-2 px-4">
+            <span className="inline-block w-8 h-px bg-gradient-to-r from-transparent to-emerald-400" />
+            Nos entreprises partenaires de confiance
+            <span className="inline-block w-8 h-px bg-gradient-to-l from-transparent to-emerald-400" />
+          </h3>
+
+          {/* Conteneur avec fade effect sur les bords - Pleine largeur */}
+          <div className="relative w-full overflow-hidden py-2">
+            {/* Gradient fade left */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 md:w-40 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none" />
+
+            {/* Gradient fade right */}
+            <div className="absolute right-0 top-0 bottom-0 w-32 md:w-40 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none" />
+
+            {/* Double ligne de défilement pour effet continu */}
+            <div className="flex flex-col gap-3">
+              {/* Ligne 1 - Défilement de gauche à droite */}
+              <div className="flex animate-marquee-ltr">
+                {[...featuredCompanies.slice(0, 6), ...featuredCompanies.slice(0, 6), ...featuredCompanies.slice(0, 6)].map((company, idx) => (
+                  <div
+                    key={`ltr-${idx}`}
+                    className="flex-shrink-0 mx-2 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 text-gray-300 text-xs font-medium hover:text-white hover:bg-white/15 hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-500/20 hover:scale-105 transition-all duration-300 cursor-pointer group whitespace-nowrap"
+                  >
+                    <span className="relative">
+                      {company}
+                      <span className="absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-emerald-400/10 to-emerald-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Ligne 2 - Défilement de droite à gauche */}
+              <div className="flex animate-marquee-rtl">
+                {[...featuredCompanies.slice(6), ...featuredCompanies.slice(6), ...featuredCompanies.slice(6)].map((company, idx) => (
+                  <div
+                    key={`rtl-${idx}`}
+                    className="flex-shrink-0 mx-2 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 text-gray-300 text-xs font-medium hover:text-white hover:bg-white/15 hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-500/20 hover:scale-105 transition-all duration-300 cursor-pointer group whitespace-nowrap"
+                  >
+                    <span className="relative">
+                      {company}
+                      <span className="absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-emerald-400/10 to-emerald-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Animated Wave Effect (plus fin) */}

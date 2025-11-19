@@ -1,5 +1,5 @@
 "use server";
-import { actionClient, adminAction } from "@/lib/safe-action";
+import { actionClient, adminAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/validations/blog";
 import { z } from "zod";
@@ -170,7 +170,7 @@ export const updateBlogPost = adminAction
     }
   });
 
-export const deleteBlogPost = adminAction
+export const deleteBlogPost = deleteAction
   .metadata({ actionName: "delete-blog-post" })
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {

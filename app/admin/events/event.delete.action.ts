@@ -1,6 +1,6 @@
 "use server";
 
-import { adminAction } from "@/lib/safe-action";
+import { deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
@@ -9,7 +9,7 @@ const deleteEventSchema = z.object({
   id: z.number().int().positive(),
 });
 
-export const deleteEvent = adminAction
+export const deleteEvent = deleteAction
   .metadata({ actionName: "delete-event" })
   .schema(deleteEventSchema)
   .action(async ({ parsedInput }) => {
@@ -50,7 +50,7 @@ export const deleteEvent = adminAction
     }
   });
 
-export const deleteEventForce = adminAction
+export const deleteEventForce = deleteAction
   .metadata({ actionName: "delete-event-force" })
   .schema(deleteEventSchema)
   .action(async ({ parsedInput }) => {

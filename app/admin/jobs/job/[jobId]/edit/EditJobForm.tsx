@@ -154,6 +154,9 @@ export default function EditJobForm({ job }: EditJobFormProps) {
             <JobDetailsSection
               register={editForm.register}
               errors={editForm.formState.errors}
+              control={editForm.control}
+              watch={editForm.watch}
+              setValue={editForm.setValue}
             />
           )}
 

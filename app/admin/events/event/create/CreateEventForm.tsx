@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import MarkdownEditor from "@/components/MarkdownEditor";
-import { FileText, Settings, UserCheck, Save, AlertCircle, Pencil } from "lucide-react";
+import { FileText, Settings, UserCheck, Save, AlertCircle, Pencil, Loader2 } from "lucide-react";
 import {
   eventTypeOptions,
   slugify,
@@ -12,6 +12,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { createEventSchema } from "./event.create.schema";
 import { doCreateEvent } from "./event.create.action";
+import { useFormToast } from "@/hooks/use-form-toast";
 
 type FormTab = "basic" | "details" | "registration";
 
@@ -69,6 +70,12 @@ export default function CreateEventForm({}: CreateEventFormProps) {
 
   const titleValue = watch("title");
   const slugValue = watch("slug");
+
+  // Afficher les erreurs dans des toasts
+  useFormToast(errors, {
+    showIndividualErrors: false,
+    errorTitle: "Veuillez corriger les erreurs suivantes :",
+  });
 
   // Gère la génération automatique du slug sauf si l'utilisateur le personnalise
   useEffect(() => {
@@ -650,11 +657,20 @@ export default function CreateEventForm({}: CreateEventFormProps) {
       <div className="flex items-center justify-end pt-4 border-t">
         <button
           type="submit"
-          disabled={createEventMutation.isPending || hasErrors}
+          disabled={createEventMutation.isPending}
           className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-6 py-2.5 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Save className="w-4 h-4" />
-          {createEventMutation.isPending ? "Enregistrement..." : "Créer l'événement"}
+          {createEventMutation.isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Enregistrement...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4" />
+              Créer l'événement
+            </>
+          )}
         </button>
       </div>
     </form>

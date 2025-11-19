@@ -1,7 +1,6 @@
 "use server";
 import { actionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
-import { getCachedActiveJobs } from "@/lib/cache";
 import { z } from "zod";
 
 // Schema for filtering jobs
@@ -16,58 +15,28 @@ export const getPublicJobs = actionClient
   .metadata({ actionName: "get-public-jobs" })
   .inputSchema(getJobsSchema)
   .action(async ({ parsedInput }) => {
-    const { search, jobType, limit, offset } = parsedInput;
+    try {
+      const { search, jobType, limit, offset } = parsedInput;
 
-    // Use cached version when no filters are applied and requesting from start
-    if (!search && (!jobType || jobType === "all") && offset === 0) {
-      const cachedJobs = await getCachedActiveJobs(limit);
-      const transformedJobs = cachedJobs.map(job => ({
-        id: job.id,
-        title: job.title,
-        slug: job.slug,
-        company: job.companyName,
-        location: job.location || "Non spécifié",
-        type: job.jobType || "autre",
-        salary: formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryPeriod),
-        postedDate: job.publishedAt?.toISOString().split('T')[0] || job.createdAt.toISOString().split('T')[0],
-        description: job.description || "Aucune description disponible.",
-        requirements: parseCommaSeparated(job.requirements),
-        benefits: parseCommaSeparated(job.benefits),
-        skills: parseCommaSeparated(job.skillsRequired),
-        logo: job.companyLogo || "/partners/default-logo.png",
-        featured: job.isFeatured || false,
-        urgent: isUrgent(job.applicationDeadline),
-        remote: job.isRemote || false,
-        applicants: Math.floor(Math.random() * 50) + 10,
-        applicationEmail: job.applicationEmail,
-        applicationUrl: job.applicationUrl,
-        applicationPhone: job.applicationPhone,
-        applicationDeadline: job.applicationDeadline?.toISOString().split('T')[0],
-      }));
+      // NOTE: unstable_cache ne peut pas être utilisé dans les Server Actions
+      // car il nécessite le contexte Next.js. Nous faisons donc la requête directement.
 
-      return {
-        jobs: transformedJobs,
-        totalCount: transformedJobs.length,
-        hasMore: false,
+      // Direct query - works for both cached and filtered cases
+      const where = {
+        status: "published" as const,
+        applicationDeadline: {
+          gte: new Date()
+        },
+        ...(search && {
+          OR: [
+            { title: { contains: search, mode: "insensitive" as const } },
+            { companyName: { contains: search, mode: "insensitive" as const } },
+            { location: { contains: search, mode: "insensitive" as const } },
+            { description: { contains: search, mode: "insensitive" as const } },
+          ],
+        }),
+        ...(jobType && jobType !== "" && jobType !== "all" && { jobType }),
       };
-    }
-
-    // Fall back to direct query for filtered results
-    const where = {
-      status: "published" as const,
-      applicationDeadline: {
-        gte: new Date()
-      },
-      ...(search && {
-        OR: [
-          { title: { contains: search, mode: "insensitive" as const } },
-          { companyName: { contains: search, mode: "insensitive" as const } },
-          { location: { contains: search, mode: "insensitive" as const } },
-          { description: { contains: search, mode: "insensitive" as const } },
-        ],
-      }),
-      ...(jobType && jobType !== "all" && { jobType }),
-    };
 
     const [jobs, totalCount] = await Promise.all([
       prisma.jobOffer.findMany({
@@ -142,11 +111,15 @@ export const getPublicJobs = actionClient
       applicationDeadline: job.applicationDeadline?.toISOString().split('T')[0],
     }));
 
-    return {
-      jobs: transformedJobs,
-      totalCount,
-      hasMore: offset + limit < totalCount,
-    };
+      return {
+        jobs: transformedJobs,
+        totalCount,
+        hasMore: offset + limit < totalCount,
+      };
+    } catch (error) {
+      console.error("[getPublicJobs] Erreur lors du chargement des jobs:", error);
+      throw error;
+    }
   });
 
 // Helper function to format salary

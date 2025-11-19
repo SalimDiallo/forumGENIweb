@@ -1,5 +1,5 @@
 "use server";
-import { actionClient, adminAction } from "@/lib/safe-action";
+import { actionClient, adminAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jobs";
 import { z } from "zod";
@@ -33,7 +33,7 @@ export const updateJob = adminAction
     return { id: updated.id };
   });
 
-export const deleteJob = adminAction
+export const deleteJob = deleteAction
   .metadata({ actionName: "delete-job" })
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {

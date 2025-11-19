@@ -55,12 +55,14 @@ export default async function JobDetailsPage(props: { params: Promise<{ jobId: s
                 <Edit className="w-4 h-4" />
                 Modifier
               </Link>
-              <ShareJobButton
+              {
+                job.description ? <ShareJobButton
                 jobSlug={job.slug}
                 jobTitle={job.title}
                 companyName={job.companyName}
                 description={job.description}
-              />
+              /> : null
+              }
             </div>
           </div>
         </div>

@@ -89,7 +89,7 @@ export default function JobApplicationSection({
           >
             <input
               {...register("applicationDeadline", {
-                setValueAs: (val) => val ? new Date(val) : undefined
+                setValueAs: (val) => val ? String(val) : undefined
               })}
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               type="date"
