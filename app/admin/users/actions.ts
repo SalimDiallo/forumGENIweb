@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { superAdminAction } from "@/lib/safe-action";
+import { actionClient, superAdminAction } from "@/lib/safe-action";
 import {
   createUserSchema,
   updateUserSchema,
@@ -16,7 +16,7 @@ import bcrypt from "bcryptjs";
 /**
  * Liste tous les utilisateurs (super admin uniquement)
  */
-export const listUsers = superAdminAction
+export const listUsers = actionClient
   .metadata({ actionName: "list-users" })
   .action(async () => {
     const users = await prisma.user.findMany({

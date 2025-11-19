@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import ResetPasswordModal from "./ResetPasswordModal";
+import { ProtectedAction, EditorMessage } from "@/components/admin/ProtectedAction";
 
 export default function UsersManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,7 +100,7 @@ export default function UsersManagementPage() {
         return <ShieldAlert className="w-4 h-4 text-red-600" />;
       case "admin":
         return <ShieldCheck className="w-4 h-4 text-blue-600" />;
-      case "editor":
+      case "viewer":
         return <Shield className="w-4 h-4 text-gray-600" />;
       default:
         return <UserCog className="w-4 h-4 text-gray-400" />;
@@ -112,7 +113,7 @@ export default function UsersManagementPage() {
         return "bg-red-100 text-red-700 border-red-200";
       case "admin":
         return "bg-blue-100 text-blue-700 border-blue-200";
-      case "editor":
+      case "viewer":
         return "bg-gray-100 text-gray-700 border-gray-200";
       default:
         return "bg-gray-100 text-gray-500 border-gray-200";
@@ -129,7 +130,7 @@ export default function UsersManagementPage() {
     inactive: users.filter((u) => !u.isActive).length,
     superAdmins: users.filter((u) => u.role === "super_admin").length,
     admins: users.filter((u) => u.role === "admin").length,
-    editors: users.filter((u) => u.role === "editor").length,
+    viewers: users.filter((u) => u.role === "viewer").length,
   };
 
   return (
@@ -148,15 +149,20 @@ export default function UsersManagementPage() {
               Gérez les utilisateurs administrateurs de la plateforme
             </p>
           </div>
-          <Link
-            href="/admin/users/new"
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
-          >
-            <Plus className="w-5 h-5" />
-            Nouvel utilisateur
-          </Link>
+          <ProtectedAction action="write">
+            <Link
+              href="/admin/users/new"
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+            >
+              <Plus className="w-5 h-5" />
+              Nouvel utilisateur
+            </Link>
+          </ProtectedAction>
         </div>
       </div>
+
+      {/* Message pour les éditeurs */}
+      <EditorMessage message="Vous consultez la liste des utilisateurs en lecture seule. Seuls les Super Admins peuvent gérer les utilisateurs." />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
@@ -190,9 +196,9 @@ export default function UsersManagementPage() {
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
           <div className="text-2xl font-bold text-gray-600">
-            {stats.editors}
+            {stats.viewers}
           </div>
-          <div className="text-sm text-gray-600">Éditeurs</div>
+          <div className="text-sm text-gray-600">Viewers</div>
         </div>
       </div>
 
@@ -217,7 +223,7 @@ export default function UsersManagementPage() {
             <option value="all">Tous les rôles</option>
             <option value="super_admin">Super Admin</option>
             <option value="admin">Admin</option>
-            <option value="editor">Éditeur</option>
+            <option value="viewer">Viewer</option>
           </select>
         </div>
       </div>
@@ -320,39 +326,45 @@ export default function UsersManagementPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() =>
-                            setResetPasswordModal({
-                              isOpen: true,
-                              userId: user.id,
-                              userName: user.fullName,
-                            })
-                          }
-                          title="Réinitialiser le mot de passe"
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        >
-                          <Key className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleToggleStatus(user.id, user.isActive)
-                          }
-                          disabled={toggleStatusAction.status === "executing"}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                            user.isActive
-                              ? "bg-red-100 text-red-700 hover:bg-red-200"
-                              : "bg-green-100 text-green-700 hover:bg-green-200"
-                          } disabled:opacity-50`}
-                        >
-                          {user.isActive ? "Désactiver" : "Activer"}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id, user.fullName)}
-                          disabled={deleteUserAction.status === "executing"}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <ProtectedAction action="write">
+                          <button
+                            onClick={() =>
+                              setResetPasswordModal({
+                                isOpen: true,
+                                userId: user.id,
+                                userName: user.fullName,
+                              })
+                            }
+                            title="Réinitialiser le mot de passe"
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          >
+                            <Key className="w-4 h-4" />
+                          </button>
+                        </ProtectedAction>
+                        <ProtectedAction action="write">
+                          <button
+                            onClick={() =>
+                              handleToggleStatus(user.id, user.isActive)
+                            }
+                            disabled={toggleStatusAction.status === "executing"}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                              user.isActive
+                                ? "bg-red-100 text-red-700 hover:bg-red-200"
+                                : "bg-green-100 text-green-700 hover:bg-green-200"
+                            } disabled:opacity-50`}
+                          >
+                            {user.isActive ? "Désactiver" : "Activer"}
+                          </button>
+                        </ProtectedAction>
+                        <ProtectedAction action="delete">
+                          <button
+                            onClick={() => handleDeleteUser(user.id, user.fullName)}
+                            disabled={deleteUserAction.status === "executing"}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </ProtectedAction>
                       </div>
                     </td>
                   </tr>

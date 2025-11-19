@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
 
       if (result.error) {
         setError(result.error.message || "Email ou mot de passe incorrect");
-        toast.error(result.error.message || "Email ou mot de passe incorrect");
+        toast.error(result.error.message || "Identifiant non reconnu. Veuillez vérifier votre email et votre mot de passe.");
         setIsLoading(false);
       } else {
         toast.success("Connexion réussie !");

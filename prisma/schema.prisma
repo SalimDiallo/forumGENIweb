@@ -133,7 +133,7 @@ enum NewsletterFrequency {
 enum AdminRole {
   super_admin
   admin
-  editor
+  viewer
 }
 
 // =====================================
@@ -357,7 +357,7 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   // Champs additionnels pour admin
-  role          String    @default("editor")
+  role          String    @default("viewer")
   fullName      String
   isActive      Boolean   @default(true)
   lastLogin     DateTime?

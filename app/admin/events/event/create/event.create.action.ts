@@ -1,11 +1,11 @@
 "use server"
 
 import { prisma } from "@/lib/db";
-import { adminAction } from "@/lib/safe-action"
+import { writeAction } from "@/lib/safe-action"
 import { revalidatePath, revalidateTag } from "next/cache";
 import { createEventSchema } from "./event.create.schema";
 
-export const doCreateEvent = adminAction
+export const doCreateEvent = writeAction
     .metadata({ actionName: "create-event-admin" })
     .inputSchema(createEventSchema)
     .action(async ({ parsedInput }) => {

@@ -33,7 +33,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: false,
-        defaultValue: "editor",
+        defaultValue: "viewer",
       },
       fullName: {
         type: "string",
@@ -62,7 +62,7 @@ export const auth = betterAuth({
 });
 
 export type Session = typeof auth.$Infer.Session;
-export type UserRole = "editor" | "admin" | "super_admin";
+export type UserRole = "viewer" | "admin" | "super_admin";
 
 /**
  * Récupère la session de l'utilisateur connecté
@@ -104,13 +104,20 @@ export class AuthError extends Error {
 }
 
 /**
- * Lance une erreur si l'utilisateur n'est pas authentifié
+ * Lance une erreur si l'utilisateur n'est pas authentifié ou si son compte est désactivé
  */
 export async function requireAuth() {
   const session = await getSession();
   if (!session) {
     throw new AuthError("Authentification requise");
   }
+
+  // Vérifier si l'utilisateur est actif
+  const isActive = (session.user as any).isActive;
+  if (isActive === false) {
+    throw new AuthError("Votre compte a été désactivé. Veuillez contacter un administrateur.");
+  }
+
   return session;
 }
 
@@ -139,13 +146,29 @@ export async function requireSuperAdmin() {
 }
 
 /**
+ * Lance une erreur si l'utilisateur n'a pas la permission d'écrire (créer/modifier)
+ * Les viewers ne peuvent que lire, seuls les admins et super admins peuvent modifier
+ */
+export async function requireWritePermission() {
+  const session = await requireAuth();
+  const role = (session.user as any).role;
+  if (role === "viewer") {
+    throw new AuthError("Vous n'avez pas la permission de modifier. Seuls les administrateurs peuvent effectuer cette action.");
+  }
+  if (role !== "admin" && role !== "super_admin") {
+    throw new AuthError("Permission d'écriture refusée");
+  }
+  return session;
+}
+
+/**
  * Lance une erreur si l'utilisateur n'a pas la permission de supprimer
- * Les éditeurs ne peuvent pas supprimer, seuls les admins et super admins le peuvent
+ * Les viewers ne peuvent pas supprimer, seuls les admins et super admins le peuvent
  */
 export async function requireDeletePermission() {
   const session = await requireAuth();
   const role = (session.user as any).role;
-  if (role === "editor") {
+  if (role === "viewer") {
     throw new AuthError("Vous n'avez pas la permission de supprimer. Seuls les administrateurs peuvent effectuer cette action.");
   }
   if (role !== "admin" && role !== "super_admin") {
@@ -155,9 +178,42 @@ export async function requireDeletePermission() {
 }
 
 /**
+ * Vérifie si l'utilisateur est un viewer (lecture seule)
+ */
+export async function isViewer(): Promise<boolean> {
+  const session = await getSession();
+  if (!session) return false;
+  const role = (session.user as any).role;
+  return role === "viewer";
+}
+
+/**
+ * Récupère le rôle de l'utilisateur connecté
+ */
+export async function getUserRole(): Promise<UserRole | null> {
+  const session = await getSession();
+  if (!session) return null;
+  return (session.user as any).role as UserRole;
+}
+
+/**
  * Récupère l'utilisateur connecté
  */
 export async function getCurrentUser() {
   const session = await getSession();
   return session?.user || null;
+}
+
+/**
+ * Met à jour la date de dernière connexion de l'utilisateur
+ */
+export async function updateLastLogin(userId: string) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { lastLogin: new Date() },
+    });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de lastLogin:", error);
+  }
 }

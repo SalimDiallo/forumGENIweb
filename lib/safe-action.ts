@@ -3,7 +3,7 @@ import {
   DEFAULT_SERVER_ERROR_MESSAGE,
 } from "next-safe-action";
 import { z } from "zod";
-import { requireAdmin, requireSuperAdmin, requireDeletePermission, AuthError } from "./auth";
+import { requireAdmin, requireSuperAdmin, requireDeletePermission, requireWritePermission, AuthError } from "./auth";
 import { revalidateTag } from "next/cache";
 
 class ActionError extends Error {}
@@ -230,6 +230,16 @@ export const adminAction = authActionClient
   .use(async ({ next, ctx }) => {
     // Vérifier que l'utilisateur est au moins admin
     await requireAdmin();
+    return next({ ctx });
+  });
+
+// ✅ Client pour les actions d'écriture (création/modification - interdit aux éditeurs)
+export const writeAction = authActionClient
+  .use(rateLimitMiddleware)
+  .use(async ({ next, ctx }) => {
+    // Vérifier que l'utilisateur a la permission d'écrire
+    // Les éditeurs ne peuvent que lire, pas créer ni modifier
+    await requireWritePermission();
     return next({ ctx });
   });
 

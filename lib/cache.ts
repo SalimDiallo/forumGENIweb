@@ -135,59 +135,10 @@ export const getCachedRelatedEvents = unstable_cache(
   }
 );
 
-/**
- * Cache: Témoignages actifs
- * TTL: 1 heure (3600s)
- * Tag: 'testimonials'
- */
-export const getCachedActiveTestimonials = unstable_cache(
-  async (limit: number = 6) => {
-    const testimonials = await prisma.videoTestimonial.findMany({
-      where: {
-        isActive: true,
-      },
-      orderBy: [
-        { isFeatured: "desc" },
-        { sortOrder: "asc" },
-      ],
-      take: limit,
-    });
 
-    return { testimonials };
-  },
-  ['active-testimonials'],
-  {
-    revalidate: 3600, // 1 hour
-    tags: ['testimonials']
-  }
-);
 
-/**
- * Cache: Témoignages en vedette
- * TTL: 1 heure (3600s)
- * Tag: 'testimonials'
- */
-export const getCachedFeaturedTestimonials = unstable_cache(
-  async (limit: number = 3) => {
-    const testimonials = await prisma.videoTestimonial.findMany({
-      where: {
-        isActive: true,
-        isFeatured: true,
-      },
-      orderBy: {
-        sortOrder: "asc",
-      },
-      take: limit,
-    });
 
-    return { testimonials };
-  },
-  ['featured-testimonials'],
-  {
-    revalidate: 3600, // 1 hour
-    tags: ['testimonials']
-  }
-);
+
 
 /**
  * Cache: Articles de blog publiés
@@ -280,29 +231,7 @@ export const getCachedBlogCategories = unstable_cache(
   }
 );
 
-/**
- * Cache: Médias de la galerie
- * TTL: 1 heure (3600s)
- * Tag: 'media'
- */
-export const getCachedGalleryMedia = unstable_cache(
-  async () => {
-    const media = await prisma.mediaGallery.findMany({
-      where: {
-        isPublic: true
-      },
-      orderBy: {
-        uploadedAt: 'desc'
-      }
-    });
-    return media;
-  },
-  ['gallery-media'],
-  {
-    revalidate: 3600, // 1 hour
-    tags: ['media']
-  }
-);
+
 
 /**
  * Cache: Offres d'emploi actives
@@ -384,9 +313,6 @@ export const getCachedDashboardStats = unstable_cache(
       totalJobs,
       contacts,
       newContacts,
-      totalMedia,
-      testimonials,
-      activeTestimonials,
     ] = await Promise.all([
       prisma.event.count(),
       prisma.event.count({
@@ -414,13 +340,7 @@ export const getCachedDashboardStats = unstable_cache(
           status: 'new'
         }
       }),
-      prisma.mediaGallery.count(),
-      prisma.videoTestimonial.count(),
-      prisma.videoTestimonial.count({
-        where: {
-          isActive: true
-        }
-      }),
+    
     
     ]);
 
@@ -440,13 +360,8 @@ export const getCachedDashboardStats = unstable_cache(
         total: contacts,
         new: newContacts
       },
-      media: {
-        total: totalMedia
-      },
-      testimonials: {
-        total: testimonials,
-        active: activeTestimonials
-      },
+     
+    
     };
   },
   ['dashboard-stats'],

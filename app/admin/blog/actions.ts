@@ -1,5 +1,5 @@
 "use server";
-import { actionClient, adminAction, deleteAction } from "@/lib/safe-action";
+import { actionClient, writeAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createCategorySchema, updateCategorySchema } from "@/lib/validations/blog";
 
@@ -17,7 +17,7 @@ export const listCategories = actionClient
     return { categories };
   });
 
-export const createCategory = adminAction
+export const createCategory = writeAction
   .metadata({ actionName: "create-category" })
   .schema(createCategorySchema)
   .action(async ({ parsedInput }) => {
@@ -41,7 +41,7 @@ export const createCategory = adminAction
     }
   });
 
-export const updateCategory = adminAction
+export const updateCategory = writeAction
   .metadata({ actionName: "update-category" })
   .schema(updateCategorySchema)
   .action(async ({ parsedInput }) => {

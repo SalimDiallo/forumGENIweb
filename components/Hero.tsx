@@ -12,8 +12,15 @@ const Hero = () => {
   const { scrollY } = useScroll();
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 300], [1, 1.1]);
+  const [windowSize, setWindowSize] = React.useState({ width: 1920, height: 1080 });
 
   useEffect(() => {
+    // Initialiser les dimensions de la fenêtre côté client
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+
     if (videoRef.current) {
       videoRef.current.play().catch(error => {
         console.log("Video autoplay failed:", error);
@@ -58,11 +65,11 @@ const Hero = () => {
             key={i}
             className="absolute w-1 h-1 bg-emerald-500/30 "
             initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: Math.random() * windowSize.width,
+              y: Math.random() * windowSize.height,
             }}
             animate={{
-              y: [null, Math.random() * window.innerHeight],
+              y: [null, Math.random() * windowSize.height],
               opacity: [0, 1, 0],
             }}
             transition={{

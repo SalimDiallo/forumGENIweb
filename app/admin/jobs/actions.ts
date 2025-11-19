@@ -1,5 +1,5 @@
 "use server";
-import { actionClient, adminAction, deleteAction } from "@/lib/safe-action";
+import { actionClient, writeAction, deleteAction, adminAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jobs";
 import { z } from "zod";
@@ -14,7 +14,7 @@ export const listJobs = actionClient
     return { jobs };
   });
 
-export const createJob = adminAction
+export const createJob = writeAction
   .metadata({ actionName: "create-job" })
   .schema(createJobOfferSchema)
   .action(async ({ parsedInput }) => {
@@ -23,7 +23,7 @@ export const createJob = adminAction
     return { id: created.id };
   });
 
-export const updateJob = adminAction
+export const updateJob = writeAction
   .metadata({ actionName: "update-job" })
   .schema(updateJobOfferSchema)
   .action(async ({ parsedInput }) => {
@@ -42,7 +42,7 @@ export const deleteJob = deleteAction
     return { ok: true };
   });
 
-export const getJobsWithApplicationCount = adminAction
+export const getJobsWithApplicationCount = actionClient
   .metadata({ actionName: "get-jobs-with-application-count" })
   .schema(z.object({
     page: z.number().min(1).default(1),

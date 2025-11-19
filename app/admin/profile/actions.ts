@@ -5,6 +5,7 @@ import { authActionClient } from "@/lib/safe-action";
 import { changeOwnPasswordSchema } from "./schemas";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
+import { getUserRole } from "@/lib/auth";
 
 /**
  * Permet à un utilisateur de changer son propre mot de passe
@@ -61,5 +62,20 @@ export const changeOwnPassword = authActionClient
 
     return {
       message: "Mot de passe modifié avec succès",
+    };
+  });
+
+/**
+ * Récupère le rôle de l'utilisateur connecté
+ */
+export const getUserRoleAction = authActionClient
+  .metadata({ actionName: "get-user-role" })
+  .action(async ({ ctx }) => {
+    const role = await getUserRole();
+
+    return {
+      role: role || 'viewer',
+      userId: ctx.session.user.id,
+      fullName: (ctx.session.user as any).fullName || '',
     };
   });

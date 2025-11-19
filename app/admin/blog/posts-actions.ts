@@ -1,5 +1,5 @@
 "use server";
-import { actionClient, adminAction, deleteAction } from "@/lib/safe-action";
+import { actionClient, writeAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/validations/blog";
 import { z } from "zod";
@@ -54,7 +54,7 @@ export const getBlogPost = actionClient
     return { post };
   });
 
-export const createBlogPost = adminAction
+export const createBlogPost = writeAction
   .metadata({ actionName: "create-blog-post" })
   .schema(createBlogPostSchema)
   .action(async ({ parsedInput }) => {
@@ -97,7 +97,7 @@ export const createBlogPost = adminAction
     }
   });
 
-export const updateBlogPost = adminAction
+export const updateBlogPost = writeAction
   .metadata({ actionName: "update-blog-post" })
   .schema(updateBlogPostSchema)
   .action(async ({ parsedInput }) => {
@@ -178,7 +178,7 @@ export const deleteBlogPost = deleteAction
     return { ok: true };
   });
 
-export const toggleFeatured = adminAction
+export const toggleFeatured = writeAction
   .metadata({ actionName: "toggle-featured-blog-post" })
   .schema(z.object({ id: z.number().int().positive(), isFeatured: z.boolean() }))
   .action(async ({ parsedInput }) => {
