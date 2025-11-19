@@ -15,60 +15,120 @@ const BookHistory = () => {
       subtitle: "Le Commencement",
       content: "Tout a commencé avec une vision audacieuse : créer un pont entre l'excellence académique de l'INSEA et le monde professionnel. Des étudiants passionnés ont osé rêver grand, convaincus que l'union de la théorie et de la pratique pourrait transformer des carrières et créer un impact durable.",
       highlight: "50 participants",
-      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop",
+      image: "https://media.licdn.com/dms/image/v2/D4E0BAQGEHMHyq4BVTA/company-logo_200_200/B4EZlXBs1KIkAI-/0/1758101688171/forumgenientreprises_logo?e=2147483647&v=beta&t=MpKlm0bOboORrRodJxsxK5h-vGfI2yFy3wczxaGZlG4",
       decoration: "✨",
       bgColor: "from-amber-50/20 to-orange-50/20"
     },
     {
-      year: "2007",
-      title: "L'Expansion",
-      subtitle: "Croissance Régionale",
-      content: "Le Forum grandit et s'ouvre aux entreprises régionales. Les premières partnerships stratégiques se forment, créant un réseau solide d'opportunités. Cette période marque un tournant décisif dans notre développement, avec une reconnaissance croissante de notre impact.",
-      highlight: "200+ participants",
-      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop",
-      decoration: "🌱",
-      bgColor: "from-emerald-50/20 to-green-50/20"
-    },
-    {
-      year: "2012",
-      title: "International",
-      subtitle: "Rayonnement Mondial",
-      content: "Une nouvelle ère commence avec l'accueil de speakers internationaux de renom. Le Forum GENI INSEA devient une référence au niveau mondial, attirant l'attention de leaders d'opinion et d'entreprises internationales qui voient en nous un modèle d'excellence.",
-      highlight: "500+ participants",
-      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop",
-      decoration: "🌍",
+      year: "2022",
+      title: "La Conférence sur la Loi de Finances",
+      subtitle: "Visioconférence annuelle",
+      content:
+        "La Conférence sur la Loi de Finances, organisée par le Club Forum GENI Entreprises INSEA, est une visioconférence annuelle dédiée à l’analyse des orientations budgétaires et macroéconomiques du Maroc. Placée sous un thème stratégique différent chaque année, elle explore les défis économiques actuels, les aspirations du pays, ainsi que les réponses structurelles proposées par la Loi de Finances. Ouverte aux étudiants ingénieurs et professionnels, elle offre un espace d’échange sur les impacts économiques des mesures budgétaires, la culture économique et le suivi des politiques publiques. La conférence est diffusée en direct sur les canaux officiels du club pour une large accessibilité et interaction.",
+      highlight: "Événement en ligne - INSEA - 25/01/2022",
+      image: "https://maroc-ingenierie.ma/wp-content/uploads/2022/01/INSEA-LDF2022.jpg",
+      decoration: "💡",
       bgColor: "from-blue-50/20 to-indigo-50/20"
     },
     {
-      year: "2018",
-      title: "Excellence",
-      subtitle: "Reconnaissance Officielle",
-      content: "La reconnaissance officielle arrive : Prix d'Excellence en Innovation décerné par le Ministère de l'Enseignement Supérieur. Un tournant historique qui valide notre approche innovante et notre contribution significative au développement du capital humain marocain.",
-      highlight: "800+ participants",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-      decoration: "🏆",
-      bgColor: "from-yellow-50/20 to-amber-50/20"
+      year: "2022",
+      title: "Forum Geni Entreprise 18e Edition",
+      subtitle: "Forum annuel étudiant",
+      content:
+        "Forum GENI Entreprises est un événement annuel majeur organisé conjointement par trois des plus prestigieuses écoles d’ingénieurs au Maroc : l’INSEA, l’ENSIAS et l’INPT. Pensé par les étudiants et pour les étudiants, ce forum a pour objectif de créer un pont direct entre le monde académique et le monde professionnel. L’organisation du Forum alterne entre les écoles, enrichissant ainsi chaque édition. L’évènement réunit de nombreuses entreprises, des étudiants et lauréats pour des conférences, stands, networking et opportunités de recrutement. C’est un espace stratégique permettant aux étudiants de découvrir le marché de l’emploi, dialoguer avec des professionnels, obtenir des stages ou emplois et développer leurs soft skills et réseau.",
+      highlight: "ENSIAS • 23-24/03/2022",
+      image: "https://ensias.um5.ac.ma/sites/ensias.um5.ac.ma/files/images/news/Forum%20GENI-%20Entreprises2022.jpg",
+      decoration: "🌐",
+      bgColor: "from-emerald-50/20 to-green-50/20"
     },
     {
       year: "2023",
-      title: "Digital",
-      subtitle: "Transformation Numérique",
-      content: "Adoption du format hybride et lancement d'une plateforme digitale révolutionnaire. Le Forum embrasse pleinement l'ère numérique, permettant une portée sans précédent et une expérience enrichie pour tous les participants, qu'ils soient présents physiquement ou virtuellement.",
-      highlight: "1200+ participants",
-      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop",
-      decoration: "💻",
-      bgColor: "from-purple-50/20 to-pink-50/20"
+      title: "Forum Geni Entreprise 19e Edition",
+      subtitle: "Forum annuel étudiant",
+      content:
+        "Forum GENI Entreprises est un événement majeur réunissant INSEA, ENSIAS, et INPT. La 19e édition a rassemblé étudiants, lauréats et entreprises afin de créer un pont entre monde académique et professionnel. Au programme : conférences, networking, recrutement, et échanges avec professionnels du secteur. Le forum vise à informer sur les offres d’emplois et stages, à développer les soft skills et élargir le réseau professionnel des participants. Il est reconnu comme l’un des plus grands forums étudiants au Maroc.",
+      highlight: "INSEA • 18-19/10/2023",
+      image: "https://insea.ac.ma/images/affiche_forum_2023.png",
+      decoration: "🌟",
+      bgColor: "from-fuchsia-50/20 to-rose-50/20"
+    },
+    {
+      year: "2023",
+      title: "Conférence sur le PLF2023",
+      subtitle: "Analyse du Projet de Loi de Finances",
+      content:
+        "La Conférence PLF, organisée par le Club Forum GENI Entreprises à l’INSEA, est une rencontre majeure dédiée à l’analyse du Projet de Loi de Finances. Elle réunit experts, institutionnels et étudiants autour des défis actuels et futurs de l’économie nationale. À travers des conférences animées par des personnalités de haut niveau, la manifestation analyse les mesures fiscales, leurs impacts, et débat des enjeux de durabilité, de justice sociale et de développement humain. Cet événement est une opportunité unique pour les étudiants d’approfondir leur compréhension des enjeux macroéconomiques.",
+      highlight: "INSEA • 07/12/2023",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9QwKFR-edFAh6QHLZ-GnIZCS-Tg1fg1zpJll_jpZOe_yY-G0On6U-XCwCGwNJ3MA6QuM&usqp=CAU",
+      decoration: "📊",
+      bgColor: "from-yellow-50/20 to-orange-50/20"
+    },
+    {
+      year: "2023",
+      title: "Speed JOB dating",
+      subtitle: "Recrutement express étudiants-entreprises",
+      content:
+        "Le Speed Job Dating, organisé par le Club Forum GENI Entreprises, met en relation directe les étudiants et les entreprises lors d’entretiens courts et personnalisés sur deux jours. Les étudiants peuvent présenter leur profil, convaincre les recruteurs rapidement et décrocher des stages ou des emplois. Au-delà du recrutement, l’événement offre un cadre pour développer son réseau professionnel, améliorer son aisance à l’oral et comprendre les attentes du marché. C’est un vrai tremplin de carrière pour les étudiants des grandes écoles d’ingénieurs.",
+      highlight: "INSEA • 14-15/12/2023",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwr3k7cM46alRukcGl4RfHmv7cRQagQfE6bA&s",
+      decoration: "🚀",
+      bgColor: "from-lime-50/20 to-green-50/20"
+    },
+    {
+      year: "2024",
+      title: "Forum Geni Entreprise 20e Edition",
+      subtitle: "Forum annuel étudiant",
+      content:
+        "Forum GENI Entreprises, co-organisé par l’INSEA, l’ENSIAS et l’INPT, reste le plus grand rendez-vous étudiant-entreprise du Maroc. L’édition 2024 s’est déroulée à l’INPT, rassemblant entreprises nationales et internationales, étudiants et lauréats autour de conférences, stands, networking et recrutement. L’événement aide à comprendre le marché, échanger avec les professionnels, et vise à favoriser l’insertion des jeunes ingénieurs.",
+      highlight: "INPT • 16-17/10/2024",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXTAjROsS32n61SUwTYB_IU--L67DDzYeSfw&s",
+      decoration: "🎯",
+      bgColor: "from-sky-50/20 to-blue-50/20"
+    },
+    {
+      year: "2024",
+      title: "Visa D'embauche",
+      subtitle: "Préparer son insertion professionnelle",
+      content:
+        "Visa d’Embauche est un événement organisé par le Club Forum GENI Entreprises pour préparer les étudiants à leur entrée sur le marché du travail. Il propose des ateliers pour optimiser son profil professionnel, améliorer CV et expériences, et préparer les entretiens d’embauche. Visa d’Embauche est un accompagnement stratégique pour aider les étudiants à se démarquer, prendre confiance et accéder sereinement aux opportunités de stage ou d’emploi.",
+      highlight: "INSEA • 20/12/2024",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV-94k-YxTYaVm3yDXP38hAreNUVbTsVpJ9OIGAUO82v0qaSWa1hjxy8XpVKOUDTzjZkg&usqp=CAU",
+      decoration: "📋",
+      bgColor: "from-violet-50/20 to-indigo-50/20"
+    },
+    {
+      year: "2024",
+      title: "Speed JOB dating",
+      subtitle: "Recrutement express étudiants-entreprises",
+      content:
+        "Le Speed Job Dating, organisé par le Club Forum GENI Entreprises, permet de rapprocher étudiants et entreprises en entretiens courts et dynamiques sur plusieurs jours. L’événement valorise le potentiel des étudiants des grandes écoles d’ingénieurs et facilite leur insertion professionnelle.",
+      highlight: "INSEA • 19-20/12/2024",
+      image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400&h=300&fit=crop",
+      decoration: "⚡",
+      bgColor: "from-emerald-50/20 to-lime-50/20"
     },
     {
       year: "2025",
-      title: "Le Futur",
-      subtitle: "Intelligence & Innovation",
-      content: "23ème édition axée sur l'Intelligence Artificielle et les technologies émergentes du futur. Le Forum continue d'innover et de façonner les leaders de demain, en restant à l'avant-garde des tendances qui transformeront le monde du travail et de l'entreprise.",
-      highlight: "1500+ participants",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=300&fit=crop",
-      decoration: "🚀",
-      bgColor: "from-cyan-50/20 to-sky-50/20"
-    }
+      title: "Oracle CAMPUS TOUR",
+      subtitle: "Découverte carrière chez Oracle",
+      content:
+        "Oracle Campus Tour à l’INSEA permet aux étudiants de découvrir les opportunités de stages, PFE et d’emploi offertes par Oracle, leader mondial des technologies cloud et data. C’est un événement privilégié pour ceux qui envisagent une carrière dans la tech de haut niveau.",
+      highlight: "INSEA • 17/04/2025",
+      image: "https://www.atalayar.com/media/atalayar/images/2022/05/19/20220519103922068626.jpg",
+      decoration: "🧑‍💻",
+      bgColor: "from-red-50/20 to-orange-50/20"
+    },
+    {
+      year: "2025",
+      title: "Forum Geni Entreprise 21e Edition",
+      subtitle: "Forum annuel étudiant",
+      content:
+        "La 21e édition du Forum GENI Entreprises organisée à l’ENSIAS renouvelle ce grand rendez-vous étudiant-entreprise. Toujours porté par l’INSEA, l’ENSIAS, et l’INPT, il reste la plus grande plateforme de rencontre entre étudiants ingénieurs et professionnels au Maroc, favorisant l’employabilité, le networking et l’insertion réussie.",
+      highlight: "ENSIAS • 15-16/10/2025",
+      image: "https://drh-ma.s3.amazonaws.com/wp-content/uploads/2025/10/09120824/Forum-GENI-Entreprises-2025.jpg",
+      decoration: "🏆",
+      bgColor: "from-pink-50/20 to-purple-50/20"
+    },
   ];
 
   // Advanced parallax effect with smooth easing

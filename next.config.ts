@@ -30,9 +30,6 @@ const nextConfig: NextConfig = {
   // Compression et performance
   compress: true,
 
-  // Débogage désactivé
-  debug: false,
-
   // Prefetch automatique de toutes les pages
   async headers() {
     return [
