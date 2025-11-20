@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAction } from 'next-safe-action/hooks';
 import Link from 'next/link';
 import {
@@ -17,6 +17,18 @@ import {
 } from 'lucide-react';
 import { getPublicJobs } from '@/app/(sections)/careers/jobs.actions';
 import ShareButton from './ui/ShareButton';
+
+// Hook de debounce personnalisé
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 // Types
 type JobType = "cdi" | 'cdd' | 'stage' | 'freelance' | 'alternance' | 'autre';
@@ -61,23 +73,26 @@ const JobOffers: React.FC = () => {
   const [filterCounts, setFilterCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
+  // Debounce la recherche pour éviter trop de requêtes
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
   const getJobsAction = useAction(getPublicJobs);
 
-  // Toujours charger tous les jobs peu importe le filtre sélectionné
-  useEffect(() => {
-    loadJobs();
-  }, [searchTerm]);
-
-  const loadJobs = () => {
+  // Charger les jobs avec le terme de recherche debouncé
+  const loadJobs = useCallback(() => {
     setLoading(true);
-    // On ne filtre pas côté backend, on récupère tout et filtre côté client
     getJobsAction.execute({
-      search: searchTerm || undefined,
-      jobType: '', // On ne filtre pas ici
+      search: debouncedSearchTerm || undefined,
+      jobType: '',
       limit: 50,
       offset: 0,
     });
-  };
+  }, [debouncedSearchTerm]);
+
+  // Charger les jobs quand le terme de recherche debouncé change
+  useEffect(() => {
+    loadJobs();
+  }, [loadJobs]);
 
   // Handle action result
   useEffect(() => {

@@ -232,6 +232,202 @@ export const getCachedBlogCategories = unstable_cache(
   }
 );
 
+/**
+ * Cache: Articles de blog connexes
+ * TTL: 30 minutes (1800s)
+ * Tag: 'blog'
+ */
+export const getCachedRelatedBlogPosts = unstable_cache(
+  async (currentPostId: number, categoryId: number | null, limit: number = 3) => {
+    const posts = await prisma.blogPost.findMany({
+      where: {
+        status: 'published',
+        ...(categoryId !== null && { categoryId }),
+        id: { not: currentPostId }
+      },
+      take: limit,
+      orderBy: {
+        publishedAt: 'desc'
+      },
+      select: {
+        id: true,
+        title: true,
+        featuredImage: true,
+        readTimeMinutes: true,
+        category: {
+          select: {
+            name: true,
+            color: true
+          }
+        }
+      }
+    });
+    return posts;
+  },
+  ['related-blog-posts'],
+  {
+    revalidate: 1800, // 30 minutes
+    tags: ['blog']
+  }
+);
+
+/**
+ * Cache: Articles de blog avec pagination (pour admin)
+ * TTL: 5 minutes (300s)
+ * Tag: 'blog'
+ */
+export const getCachedBlogPostsPaginated = unstable_cache(
+  async (page: number = 1, limit: number = 20) => {
+    const skip = (page - 1) * limit;
+
+    const [posts, total] = await Promise.all([
+      prisma.blogPost.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          category: true,
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+      }),
+      prisma.blogPost.count()
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    return { posts, total, totalPages, currentPage: page };
+  },
+  ['blog-posts-paginated'],
+  {
+    revalidate: 300, // 5 minutes - plus court pour l'admin
+    tags: ['blog']
+  }
+);
+
+/**
+ * Cache: Catégories de blog pour admin (avec compte)
+ * TTL: 5 minutes (300s)
+ * Tag: 'blog'
+ */
+export const getCachedBlogCategoriesAdmin = unstable_cache(
+  async () => {
+    const categories = await prisma.blogCategory.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: { posts: true }
+        }
+      }
+    });
+    return categories;
+  },
+  ['blog-categories-admin'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['blog']
+  }
+);
+
+/**
+ * Cache: Liste des jobs pour admin
+ * TTL: 5 minutes (300s)
+ * Tag: 'jobs'
+ */
+export const getCachedJobsAdmin = unstable_cache(
+  async () => {
+    const jobs = await prisma.jobOffer.findMany({
+      orderBy: [
+        { isFeatured: 'desc' },
+        { createdAt: 'desc' }
+      ]
+    });
+    return jobs;
+  },
+  ['jobs-admin'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['jobs', 'stats']
+  }
+);
+
+/**
+ * Cache: Messages de contact pour admin
+ * TTL: 2 minutes (120s) - données sensibles au temps
+ * Tag: 'crm'
+ */
+export const getCachedContactMessages = unstable_cache(
+  async () => {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    return messages;
+  },
+  ['contact-messages'],
+  {
+    revalidate: 120, // 2 minutes
+    tags: ['crm']
+  }
+);
+
+/**
+ * Cache: Événements paginés pour admin
+ * TTL: 5 minutes (300s)
+ * Tag: 'events'
+ */
+export const getCachedEventsPaginated = unstable_cache(
+  async (page: number = 1, limit: number = 10) => {
+    const skip = (page - 1) * limit;
+
+    const [events, total] = await Promise.all([
+      prisma.event.findMany({
+        skip,
+        take: limit,
+        orderBy: { startDate: "desc" }
+      }),
+      prisma.event.count()
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    return { events, total, totalPages, currentPage: page };
+  },
+  ['events-paginated'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['events']
+  }
+);
+
+/**
+ * Cache: Jobs paginés pour admin
+ * TTL: 5 minutes (300s)
+ * Tag: 'jobs'
+ */
+export const getCachedJobsPaginated = unstable_cache(
+  async (page: number = 1, limit: number = 10) => {
+    const skip = (page - 1) * limit;
+
+    const [jobs, total] = await Promise.all([
+      prisma.jobOffer.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" }
+      }),
+      prisma.jobOffer.count()
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    return { jobs, total, totalPages, currentPage: page };
+  },
+  ['jobs-paginated'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['jobs']
+  }
+);
+
 
 
 /**

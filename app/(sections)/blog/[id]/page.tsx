@@ -1,13 +1,15 @@
-import { getCachedBlogPostById } from '@/lib/cache';
+import { getCachedBlogPostById, getCachedRelatedBlogPosts } from '@/lib/cache';
 import { notFound } from 'next/navigation';
 import BlogDetailClient from './BlogDetailClient';
-import { prisma } from '@/lib/db';
 
 interface BlogDetailPageProps {
   params: Promise<{
     id: string;
   }>;
 }
+
+// Revalidation toutes les 30 minutes pour ISR
+export const revalidate = 1800;
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { id } = await params;
@@ -17,50 +19,15 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     notFound();
   }
 
-  // Récupérer l'article avec tous ses détails
-  const post = await prisma.blogPost.findUnique({
-    where: {
-      id: postId,
-      status: 'published'
-    },
-    include: {
-      category: true,
-      tags: {
-        include: {
-          tag: true
-        }
-      }
-    }
-  });
+  // Utiliser la fonction cachée pour récupérer l'article
+  const post = await getCachedBlogPostById(postId);
 
   if (!post) {
     notFound();
   }
 
-  // Récupérer les articles connexes (même catégorie)
-  const relatedPosts = await prisma.blogPost.findMany({
-    where: {
-      status: 'published',
-      categoryId: post.categoryId,
-      id: { not: postId }
-    },
-    take: 3,
-    orderBy: {
-      publishedAt: 'desc'
-    },
-    select: {
-      id: true,
-      title: true,
-      featuredImage: true,
-      readTimeMinutes: true,
-      category: {
-        select: {
-          name: true,
-          color: true
-        }
-      }
-    }
-  });
+  // Récupérer les articles connexes avec cache
+  const relatedPosts = await getCachedRelatedBlogPosts(postId, post.categoryId);
 
   return <BlogDetailClient post={post} relatedPosts={relatedPosts} />;
 }

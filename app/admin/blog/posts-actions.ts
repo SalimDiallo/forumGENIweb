@@ -3,6 +3,7 @@ import { actionClient, writeAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/validations/blog";
 import { z } from "zod";
+import { getCachedBlogPostsPaginated } from "@/lib/cache";
 
 export const listBlogPosts = actionClient
   .metadata({ actionName: "list-blog-posts" })
@@ -12,28 +13,11 @@ export const listBlogPosts = actionClient
   }).optional().default({ page: 1, limit: 20 }))
   .action(async ({ parsedInput }) => {
     const { page, limit } = parsedInput || { page: 1, limit: 20 };
-    const skip = (page - 1) * limit;
 
-    const [posts, total] = await Promise.all([
-      prisma.blogPost.findMany({
-        skip,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-        include: {
-          category: true,
-          tags: {
-            include: {
-              tag: true,
-            },
-          },
-        },
-      }),
-      prisma.blogPost.count()
-    ]);
+    // Utiliser la fonction cachée
+    const result = await getCachedBlogPostsPaginated(page, limit);
 
-    const totalPages = Math.ceil(total / limit);
-
-    return { posts, total, totalPages, currentPage: page };
+    return result;
   });
 
 export const getBlogPost = actionClient
