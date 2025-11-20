@@ -27,9 +27,7 @@ export const createUserSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       "Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre"
     ),
-  role: z.enum(["editor", "admin", "super_admin"], {
-    required_error: "Le rôle est requis",
-  }),
+  role: z.enum(["editor", "admin", "super_admin"]),
   isActive: z.boolean().default(true),
 });
 

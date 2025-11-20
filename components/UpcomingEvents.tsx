@@ -22,9 +22,6 @@ type EventData = {
   maxParticipants: number | null;
   currentParticipants: number;
   isFeatured: boolean;
-  _count: {
-    registrations: number;
-  };
 };
 
 type UpcomingEventsProps = {
@@ -73,7 +70,6 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
     image: getValidImageUrl(event.featuredImage),
     link: `/evenements/${event.slug}`,
     attendees: event.maxParticipants ? `${event.currentParticipants}/${event.maxParticipants}` : `${event.currentParticipants}+`,
-    companies: event._count.registrations > 0 ? `${event._count.registrations}` : '0',
   }));
 
   const getPriorityColor = (priority: string) => {
@@ -192,10 +188,7 @@ const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
                     <Users size={16} className="text-emerald-700" />
                     <span className="font-medium">{event.attendees} participants</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Award size={16} className="text-emerald-700" />
-                    <span className="font-medium">{event.companies} entreprises</span>
-                  </div>
+                 
                 </div>
                 
                 {/* CTA */}

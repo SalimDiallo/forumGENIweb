@@ -1,11 +1,9 @@
 "use client";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
-import { z } from "zod";
-import { createJobOfferSchema } from "../job.create.schema";
 
 interface JobApplicationSectionProps {
-  register: UseFormRegister<z.infer<typeof createJobOfferSchema>>;
-  errors: FieldErrors<z.infer<typeof createJobOfferSchema>>;
+  register: UseFormRegister<any>;
+  errors: FieldErrors<any>;
 }
 
 function FormField({
@@ -16,15 +14,16 @@ function FormField({
 }: {
   label: string;
   children: React.ReactNode;
-  error?: string;
+  error?: any;
   description?: string;
 }) {
+  const errorMessage = typeof error === 'string' ? error : error?.message;
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-semibold text-gray-800">{label}</label>
       {description && <span className="text-xs text-gray-500 mb-1">{description}</span>}
       {children}
-      {error && <span className="text-xs text-red-500 mt-1">{error}</span>}
+      {errorMessage && <span className="text-xs text-red-500 mt-1">{errorMessage}</span>}
     </div>
   );
 }

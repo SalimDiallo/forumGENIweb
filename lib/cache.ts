@@ -50,6 +50,7 @@ export const getCachedUpcomingEvents = unstable_cache(
         maxParticipants: true,
         currentParticipants: true,
         isFeatured: true,
+      
       },
     });
 

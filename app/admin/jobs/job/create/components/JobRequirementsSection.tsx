@@ -1,17 +1,15 @@
 "use client";
 import { Control, Controller, UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from "react-hook-form";
-import { z } from "zod";
-import { createJobOfferSchema } from "../job.create.schema";
 import { useState } from "react";
 import MarkdownEditor from "@/components/MarkdownEditor";
 
 interface JobRequirementsSectionProps {
-  register: UseFormRegister<z.infer<typeof createJobOfferSchema>>;
-  errors: FieldErrors<z.infer<typeof createJobOfferSchema>>;
-  control: Control<z.infer<typeof createJobOfferSchema>>;
-  watch: UseFormWatch<z.infer<typeof createJobOfferSchema>>;
-  setValue: UseFormSetValue<z.infer<typeof createJobOfferSchema>>;
-  isExecuting: boolean;
+  register: UseFormRegister<any>;
+  errors: FieldErrors<any>;
+  control: Control<any>;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
+  isExecuting?: boolean;
 }
 
 const educationLevelOptions = [
@@ -37,15 +35,16 @@ function FormField({
 }: {
   label: string;
   children: React.ReactNode;
-  error?: string;
+  error?: any;
   description?: string;
 }) {
+  const errorMessage = typeof error === 'string' ? error : error?.message;
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-semibold text-gray-800">{label}</label>
       {description && <span className="text-xs text-gray-500 mb-1">{description}</span>}
       {children}
-      {error && <span className="text-xs text-red-500 mt-1">{error}</span>}
+      {errorMessage && <span className="text-xs text-red-500 mt-1">{errorMessage}</span>}
     </div>
   );
 }

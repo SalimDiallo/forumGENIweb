@@ -14,7 +14,26 @@
 
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { getClientIdentifier } from "./auth";
+import { headers } from "next/headers";
+
+/**
+ * Get client identifier (IP address) for rate limiting
+ */
+async function getClientIdentifier(): Promise<string> {
+  const headersList = await headers();
+  const forwardedFor = headersList.get("x-forwarded-for");
+  const realIp = headersList.get("x-real-ip");
+
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0].trim();
+  }
+
+  if (realIp) {
+    return realIp;
+  }
+
+  return "anonymous";
+}
 
 // Configuration de Redis - seulement si les variables d'environnement sont définies
 let redis: Redis | null = null;
