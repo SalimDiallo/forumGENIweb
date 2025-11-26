@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronDown, Calendar, Users, Award, Camera, FileText, Briefcase, Mail, ArrowRight } from 'lucide-react';
+import { Menu, X, ChevronDown, Calendar, Users, Award, Camera, FileText, Briefcase, Mail, ArrowRight, School } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 
@@ -87,6 +87,11 @@ const Header = () => {
       name: 'À Propos', 
       path: '/about',
       icon: Users
+    },
+    { 
+      name: 'Notre Ecole', 
+      path: '/insea',
+      icon: School
     },
     { 
       name: 'Événements', 
