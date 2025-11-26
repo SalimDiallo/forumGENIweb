@@ -14,7 +14,6 @@ const raleway = Raleway({
   weight: ['300', '400', '500', '600', '700'],
 });
 
-// Clash Display et Britney sont importés via globals.css depuis les fichiers locaux
 
 export const metadata: Metadata = {
   title: 'Forum GENI Entreprises | INSEA',

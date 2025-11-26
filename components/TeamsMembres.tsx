@@ -191,8 +191,8 @@ const bureauMembers2026: BureauMember[] = [
     id: 1001,
     name: "Yousra Alaoui Belghiti",
     role: "Présidente",
-    description: "Dirige, représente, coordonne, vision, partenariats.",
-    image: "/team/2026/alaoui_belghiti_yousra.jpg",
+    description: "Acturiat & Finance.",
+    image: "/team/2026/yousra.jpeg",
     level: 1,
     icon: Crown,
     email: "",
@@ -206,7 +206,7 @@ const bureauMembers2026: BureauMember[] = [
     name: "Walid Kilani",
     role: "Vice-Président",
     description: "Coordonne, assiste, supervise, motive, représente.",
-    image: "/team/2026/kilani_walid.jpg",
+    image: "/team/2026/walid.jpeg",
     level: 2,
     icon: Shield,
     email: "",
@@ -219,58 +219,9 @@ const bureauMembers2026: BureauMember[] = [
     name: "Amal Lahkim",
     role: "Secrétaire Générale",
     description: "Administration, coordination, archives, communication, réunions.",
-    image: "/team/2026/lahkim_amal.jpg",
+    image: "/team/2026/amal.jpeg",
     level: 2,
     icon: Briefcase,
-    email: "",
-    linkedin: "",
-    bureauYear: "2026"
-  },
-  // Responsables Prospection
-  {
-    id: 1004,
-    name: "Salma Chkoubi",
-    role: "Responsable Prospection",
-    description: "Prospection, sponsors, partenariats, visibilité, négociation.",
-    image: "/team/2026/chkoubi_salma.jpg",
-    level: 3,
-    icon: Award,
-    email: "",
-    linkedin: "",
-    bureauYear: "2026"
-  },
-  {
-    id: 1005,
-    name: "Amina Bajdouri",
-    role: "Responsable Prospection",
-    description: "Prospection, sponsors, relations, visibilité, négociation.",
-    image: "/team/2026/bajdouri_amina.jpg",
-    level: 3,
-    icon: Award,
-    email: "",
-    linkedin: "",
-    bureauYear: "2026"
-  },
-  {
-    id: 1006,
-    name: "Oukessou Soufiane",
-    role: "Responsable Prospection",
-    description: "Prospection, sponsors, partenariats, visibilité, négociation.",
-    image: "/team/2026/oukessou_soufiane.jpg",
-    level: 3,
-    icon: Award,
-    email: "",
-    linkedin: "",
-    bureauYear: "2026"
-  },
-  {
-    id: 1007,
-    name: "Saida Sessid",
-    role: "Responsable Prospection",
-    description: "Prospection, relations, partenariats, négociation, visibilité.",
-    image: "/team/2026/sessid_saida.jpg",
-    level: 3,
-    icon: Award,
     email: "",
     linkedin: "",
     bureauYear: "2026"
@@ -281,7 +232,7 @@ const bureauMembers2026: BureauMember[] = [
     name: "Hala Ben Chama",
     role: "Chef Cellule Conférence",
     description: "Conférences, logistique, planning, intervenants, expérience.",
-    image: "/team/2026/benchama_hala.jpg",
+    image: "/team/2026/hala.jpeg",
     level: 3,
     icon: Calendar,
     email: "",
@@ -293,20 +244,20 @@ const bureauMembers2026: BureauMember[] = [
     name: "Bahan Karafa Ashley Kevin",
     role: "Chef Cellule Conférence",
     description: "Conférences, planification, communication, organisation.",
-    image: "/team/2026/bahan_karafa_ashley_kevin.jpg",
+    image: "/team/2026/kevin.jpeg",
     level: 3,
     icon: Calendar,
     email: "",
     linkedin: "",
     bureauYear: "2026"
   },
-  // Chefs Communication
-  {
+   // Chefs Communication
+   {
     id: 1010,
     name: "Ihssane El Malki",
     role: "Chef Cellule Communication",
     description: "Communication, promotion, réseaux, contenu, visuels.",
-    image: "/team/2026/elmalki_ihssane.jpg",
+    image: "/team/2026/ihssane.jpeg",
     level: 3,
     icon: Users,
     email: "",
@@ -315,12 +266,61 @@ const bureauMembers2026: BureauMember[] = [
   },
   {
     id: 1011,
-    name: "Nouha El Idrissi",
+    name: "Diallo Sidy Mohamed Salim",
     role: "Chef Cellule Communication",
     description: "Communication, stratégie, réseaux, médias, identité.",
-    image: "/team/2026/elidrissi_nouha.jpg",
+    image: "/team/2026/salim.jpeg",
     level: 3,
     icon: Users,
+    email: "",
+    linkedin: "",
+    bureauYear: "2026"
+  },
+  // Responsables Prospection
+  {
+    id: 1004,
+    name: "Salma Chkoubi",
+    role: "Responsable Prospection",
+    description: "Prospection, sponsors, partenariats, visibilité, négociation.",
+    image: "/team/2026/salma.jpeg",
+    level: 3,
+    icon: Award,
+    email: "",
+    linkedin: "",
+    bureauYear: "2026"
+  },
+  {
+    id: 1005,
+    name: "Amina Bajdouri",
+    role: "Responsable Prospection",
+    description: "Prospection, sponsors, relations, visibilité, négociation.",
+    image: "/team/2026/amina.jpeg",
+    level: 3,
+    icon: Award,
+    email: "",
+    linkedin: "",
+    bureauYear: "2026"
+  },
+  {
+    id: 1006,
+    name: "Oukessou Soufiane",
+    role: "Responsable Prospection",
+    description: "Prospection, sponsors, partenariats, visibilité, négociation.",
+    image: "/team/2026/soufiane.jpeg",
+    level: 3,
+    icon: Award,
+    email: "",
+    linkedin: "",
+    bureauYear: "2026"
+  },
+  {
+    id: 1007,
+    name: "Saida Sessid",
+    role: "Responsable Prospection",
+    description: "Prospection, relations, partenariats, négociation, visibilité.",
+    image: "/team/2026/saida.jpeg",
+    level: 3,
+    icon: Award,
     email: "",
     linkedin: "",
     bureauYear: "2026"
@@ -331,7 +331,19 @@ const bureauMembers2026: BureauMember[] = [
     name: "DELL GBELI GHISLAIN BRICE KEVIN",
     role: "Chef Cellule Revue",
     description: "Revue, éditorial, contenu, qualité, publication.",
-    image: "/team/2026/dell_gbeli_ghislain_brice_kevin.jpg",
+    image: "/team/2026/dell.jpeg",
+    level: 3,
+    icon: Award,
+    email: "",
+    linkedin: "",
+    bureauYear: "2026"
+  },
+  {
+    id: 1012,
+    name: "Nouha El Idrissi",
+    role: "Chef Cellule Revue",
+    description: "Revue, éditorial, contenu, qualité, publication.",
+    image: "/team/2026/nouha.jpeg",
     level: 3,
     icon: Award,
     email: "",
@@ -343,7 +355,7 @@ const bureauMembers2026: BureauMember[] = [
     name: "Bah Elhadj Mamadou Lamarana",
     role: "Chef Cellule Revue",
     description: "Revue, éditorial, qualité, publication.",
-    image: "/team/2026/bah_elhadj_mamadou_lamarana.jpg",
+    image: "/team/2026/bah.jpeg",
     level: 3,
     icon: Award,
     email: "",
@@ -356,7 +368,7 @@ const bureauMembers2026: BureauMember[] = [
     name: "Imran Akki",
     role: "Chef Cellule Technique",
     description: "Technique, infrastructure, web, évènements, numérique.",
-    image: "/team/2026/akki_imran.jpg",
+    image: "/team/2026/imran.jpeg",
     level: 3,
     icon: Shield,
     email: "",
@@ -366,28 +378,16 @@ const bureauMembers2026: BureauMember[] = [
   // Chefs Logistique & Gala
   {
     id: 1015,
-    name: "Yassine Bentaleb",
+    name: "Yassine Bentaleb & Oukhouya Ahmed",
     role: "Chef Cellule Logistique et Gala",
     description: "Logistique, gala, événements, coordination, opérationnel.",
-    image: "/team/2026/bentaleb_yassine.jpg",
+    image: "/team/2026/logistique.jpeg",
     level: 3,
     icon: Calendar,
     email: "",
     linkedin: "",
     bureauYear: "2026"
   },
-  {
-    id: 1016,
-    name: "Oukhouya Ahmed",
-    role: "Chef Cellule Logistique et Gala",
-    description: "Logistique, gala, événements, coordination, opérationnel.",
-    image: "/team/2026/oukhouya_ahmed.jpg",
-    level: 3,
-    icon: Calendar,
-    email: "",
-    linkedin: "",
-    bureauYear: "2026"
-  }
 ];
 
 const bureauByYear = {
@@ -396,6 +396,12 @@ const bureauByYear = {
 };
 
 const sortedYears: (keyof typeof bureauByYear)[] = ["2026", "2025"];
+
+// Images de groupe pour chaque bureau
+const teamGroupImages = {
+  "2025": "/team/2025/team-group.jpg",
+  "2026": "/team/2026/team.jpeg"
+};
 
 const TeamsMembres = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -409,35 +415,44 @@ const TeamsMembres = () => {
 
     if (variant === 'hero') {
       return (
-        <div 
+        <div
           className="relative group"
           onMouseEnter={() => setHoveredCard(member.id)}
           onMouseLeave={() => setHoveredCard(null)}
         >
-          <div className="relative bg-gray-200 p-1 rounded-3xl">
-            <div className="bg-white rounded-3xl p-8 h-full">
-              <div className="text-center">
-                <div className="relative inline-block mb-6">
-                  <div className="w-32 h-32  overflow-hidden border-4 border-white shadow-2xl">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-10 h-10 bg-gray-400  flex items-center justify-center shadow-lg">
-                    <IconComponent className="w-5 h-5 text-white" />
-                  </div>
+          <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 p-1 rounded-3xl shadow-sm">
+            <div className="bg-white rounded-3xl overflow-hidden h-full">
+              {/* Image principale - beaucoup plus grande */}
+              <div className="relative h-80 w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none"></div>
+
+                {/* Badge icon sur l'image */}
+                <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center">
+                  <IconComponent className="w-6 h-6 text-gray-700" />
                 </div>
-                
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{member.name}</h3>
-                <p className="text-lg font-semibold text-gray-700 mb-3">{member.role}</p>
-                <p className="text-gray-600 mb-4 leading-relaxed whitespace-pre-line">{member.description}</p>
-                
+
+                {/* Nom et rôle en bas de l'image */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 className="text-3xl font-bold mb-1 drop-shadow-lg">{member.name}</h3>
+                  <p className="text-xl font-semibold text-white/90 drop-shadow-md">{member.role}</p>
+                </div>
+              </div>
+
+              {/* Contenu en dessous */}
+              <div className="p-8">
+                <p className="text-gray-600 mb-4 leading-relaxed whitespace-pre-line text-center">{member.description}</p>
+
                 {member.specialty && (
-                  <div className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800  text-sm font-medium mb-4">
-                    <Award className="w-4 h-4 mr-1 text-gray-500" />
-                    {member.specialty}
+                  <div className="flex justify-center mb-4">
+                    <div className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                      <Award className="w-4 h-4 mr-2 text-gray-500" />
+                      {member.specialty}
+                    </div>
                   </div>
                 )}
 
@@ -445,17 +460,19 @@ const TeamsMembres = () => {
                   {member.email && (
                   <a
                     href={`mailto:${member.email}`}
-                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200  flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    className="w-11 h-11 bg-gray-100 hover:bg-gray-700 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                   >
-                    <Mail className="w-4 h-4 text-gray-600 hover:text-gray-800" />
+                    <Mail className="w-5 h-5" />
                   </a>
                   )}
                   {member.linkedin && (
                   <a
                     href={member.linkedin}
-                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200  flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-11 h-11 bg-gray-100 hover:bg-gray-700 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                   >
-                    <Linkedin className="w-4 h-4 text-gray-600 hover:text-gray-800" />
+                    <Linkedin className="w-5 h-5" />
                   </a>
                   )}
                 </div>
@@ -468,56 +485,58 @@ const TeamsMembres = () => {
 
     if (variant === 'executive') {
       return (
-        <div 
+        <div
           className="group cursor-pointer"
           onMouseEnter={() => setHoveredCard(member.id)}
           onMouseLeave={() => setHoveredCard(null)}
         >
-          <div className={`relative bg-white  shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden ${
+          <div className={`relative bg-white rounded-2xl transition-all duration-300 overflow-hidden ${
             isHovered ? 'transform -translate-y-2' : ''
           }`}>
-            <div className="absolute inset-0 bg-gray-100 opacity-60"></div>
-            
-            <div className="relative p-6">
-              <div className="text-center">
-                <div className="relative inline-block mb-4">
-                  <div className="w-24 h-24  overflow-hidden border-3 border-white shadow-lg">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-                
-                <h3 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-sm font-semibold text-gray-700 mb-2">{member.role}</p>
-                <p className="text-xs text-gray-600 mb-3 line-clamp-2 whitespace-pre-line">{member.description}</p>
-                
-                {member.specialty && (
-                  <div className="text-xs text-gray-700 font-medium mb-3">
-                    {member.specialty}
-                  </div>
-                )}
+            {/* Image large en haut */}
+            <div className="relative h-64 w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+              <img
+                src={member.image}
+                alt={member.name}
+                className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none"></div>
 
-                <div className="flex justify-center gap-2">
-                  {member.email && (
-                  <a
-                    href={`mailto:${member.email}`}
-                    className="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
-                  >
-                    <Mail className="w-3 h-3 text-gray-600" />
-                  </a>
-                  )}
-                  {member.linkedin && (
-                  <a
-                    href={member.linkedin}
-                    className="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
-                  >
-                    <Linkedin className="w-3 h-3 text-gray-600" />
-                  </a>
-                  )}
+              {/* Badge role */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <h3 className="text-2xl font-bold text-white mb-1 drop-shadow-lg">{member.name}</h3>
+                <p className="text-lg font-semibold text-white/90 drop-shadow-md">{member.role}</p>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <p className="text-sm text-gray-600 mb-3 text-center whitespace-pre-line">{member.description}</p>
+
+              {member.specialty && (
+                <div className="text-xs text-gray-700 font-medium mb-3 text-center">
+                  {member.specialty}
                 </div>
+              )}
+
+              <div className="flex justify-center gap-2">
+                {member.email && (
+                <a
+                  href={`mailto:${member.email}`}
+                  className="w-9 h-9 bg-gray-100 hover:bg-gray-700 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                >
+                  <Mail className="w-4 h-4" />
+                </a>
+                )}
+                {member.linkedin && (
+                <a
+                  href={member.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 bg-gray-100 hover:bg-gray-700 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
+                )}
               </div>
             </div>
           </div>
@@ -527,51 +546,53 @@ const TeamsMembres = () => {
 
     // Department variant
     return (
-      <div 
+      <div
         className="group cursor-pointer"
         onMouseEnter={() => setHoveredCard(member.id)}
         onMouseLeave={() => setHoveredCard(null)}
       >
-        <div className={`bg-white  shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden ${
+        <div className={`bg-white rounded-xl transition-all duration-300 overflow-hidden ${
           isHovered ? 'transform -translate-y-1' : ''
         }`}>
-          <div className="p-5">
-            <div className="text-center">
-              <div className="relative inline-block mb-3">
-                <div className="w-20 h-20  overflow-hidden border-2 border-gray-100">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gray-400 rounded-lg flex items-center justify-center">
-                  <IconComponent className="w-3 h-3 text-white" />
-                </div>
-              </div>
-              
-              <h3 className="text-sm font-bold text-gray-900 mb-1">{member.name}</h3>
-              <p className="text-xs font-semibold text-gray-600 mb-2">{member.role}</p>
-              <p className="text-xs text-gray-500 mb-3 line-clamp-2 whitespace-pre-line">{member.description}</p>
+          {/* Image rectangulaire en haut */}
+          <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+            <img
+              src={member.image}
+              alt={member.name}
+              className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
 
-              <div className="flex justify-center gap-1">
-                {member.email && (
-                <a
-                  href={`mailto:${member.email}`}
-                  className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center justify-center transition-colors duration-200"
-                >
-                  <Mail className="w-3 h-3 text-gray-600" />
-                </a>
-                )}
-                {member.linkedin && (
-                <a
-                  href={member.linkedin}
-                  className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center justify-center transition-colors duration-200"
-                >
-                  <Linkedin className="w-3 h-3 text-gray-600" />
-                </a>
-                )}
-              </div>
+            {/* Icon badge */}
+            <div className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center">
+              <IconComponent className="w-4 h-4 text-gray-700" />
+            </div>
+          </div>
+
+          <div className="p-4">
+            <h3 className="text-base font-bold text-gray-900 mb-1 text-center">{member.name}</h3>
+            <p className="text-xs font-semibold text-gray-600 mb-2 text-center">{member.role}</p>
+            <p className="text-xs text-gray-500 mb-3 line-clamp-2 whitespace-pre-line text-center">{member.description}</p>
+
+            <div className="flex justify-center gap-2">
+              {member.email && (
+              <a
+                href={`mailto:${member.email}`}
+                className="w-7 h-7 bg-gray-100 hover:bg-gray-700 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+              >
+                <Mail className="w-3 h-3" />
+              </a>
+              )}
+              {member.linkedin && (
+              <a
+                href={member.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 bg-gray-100 hover:bg-gray-700 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+              >
+                <Linkedin className="w-3 h-3" />
+              </a>
+              )}
             </div>
           </div>
         </div>
@@ -579,14 +600,45 @@ const TeamsMembres = () => {
     );
   };
 
+  const YearNavigation = () => (
+    <section className="py-8 bg-gradient-to-br from-gray-50 to-white">
+      <div className="container mx-auto px-4 md:px-8">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            Sélectionnez le Bureau
+          </h2>
+          <p className="text-gray-600">Découvrez les équipes qui ont marqué le Forum GENI</p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-4">
+          {sortedYears.map((year) => (
+            <button
+              key={year}
+              onClick={() => setSelectedYear(year)}
+              className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 ${
+                selectedYear === year
+                  ? "bg-gray-800 text-white shadow-lg"
+                  : "bg-white text-gray-800 hover:bg-gray-100 border-2 border-gray-300"
+              }`}
+            >
+              Bureau {year}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
   return (
     <div className="w-full">
+      {/* Navigation par année - En haut */}
+      <YearNavigation />
+
       {/* Hero Section */}
       <section className="relative py-16 bg-gray-100 overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-10 left-10 w-20 h-20 bg-white/10  blur-xl"></div>
         <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/5  blur-2xl"></div>
-        
+
         <div className="relative container mx-auto px-4 md:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm  mb-6">
@@ -604,22 +656,25 @@ const TeamsMembres = () => {
         </div>
       </section>
 
-      {/* Navigation par année */}
-      <section className="py-6 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 md:px-8 flex flex-wrap justify-center gap-3">
-          {sortedYears.map((year) => (
-            <button
-              key={year}
-              onClick={() => setSelectedYear(year)}
-              className={`px-5 py-2  font-semibold transition-colors duration-200 ${
-                selectedYear === year
-                  ? "bg-gray-800 text-white shadow"
-                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-              }`}
-            >
-              {year}
-            </button>
-          ))}
+      {/* Photo de groupe de l'équipe */}
+      <section className="relative w-full overflow-hidden">
+        <img
+          src={teamGroupImages[selectedYear]}
+          alt={`Équipe ${selectedYear}`}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+
+        {/* Texte superposé */}
+        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16 text-white">
+          <div className="container mx-auto">
+            <h2 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+              Bureau {selectedYear}
+            </h2>
+            <p className="text-xl md:text-2xl text-white/90 max-w-3xl drop-shadow-md">
+              Une équipe passionnée et dévouée au service de l'excellence
+            </p>
+          </div>
         </div>
       </section>
 
@@ -656,18 +711,58 @@ const TeamsMembres = () => {
         </div>
       </section>
 
-      {/* Chefs de Cellules */}
+      {/* Chefs de Cellules - Groupés par cellule */}
       <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {teamMembers
+        <div className="container mx-auto px-4 md:px-8 max-w-7xl">
+          {/* Grouper les membres par cellule */}
+          {(() => {
+            // Créer un objet pour grouper par cellule
+            const celluleGroups: { [key: string]: BureauMember[] } = {};
+
+            teamMembers
               .filter(member => member.level === 3)
-              .map(member => (
-                <MemberCard key={member.id} member={member} variant="department" />
-              ))}
-          </div>
+              .forEach(member => {
+                const celluleName = member.role.includes('Prospection') ? 'Prospection'
+                  : member.role.includes('Communication') ? 'Communication'
+                  : member.role.includes('Conférence') ? 'Conférence'
+                  : member.role.includes('Revue') ? 'Revue'
+                  : member.role.includes('Technique') ? 'Technique'
+                  : member.role.includes('Logistique') ? 'Logistique et Gala'
+                  : 'Autre';
+
+                if (!celluleGroups[celluleName]) {
+                  celluleGroups[celluleName] = [];
+                }
+                celluleGroups[celluleName].push(member);
+              });
+
+            return Object.entries(celluleGroups).map(([celluleName, members]) => (
+              <div key={celluleName} className="mb-12">
+                {/* Titre de la cellule */}
+                <div className="mb-6 text-center">
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    Cellule {celluleName}
+                  </h3>
+                  <div className="w-24 h-1 bg-gray-800 mx-auto"></div>
+                </div>
+
+                {/* Cartes des membres de cette cellule */}
+                <div className="bg-white rounded-2xl p-6 border-2 border-gray-200">
+                  <div className="flex flex-wrap justify-center gap-6">
+                    {members.map(member => (
+                      <div key={member.id} className="w-full sm:w-auto sm:min-w-[250px] sm:max-w-[300px]">
+                        <MemberCard member={member} variant="department" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ));
+          })()}
         </div>
       </section>
+        {/* Navigation par année - En bas */}
+        <YearNavigation />
 
       {/* Stats Section */}
       <section className="py-12 bg-white">
@@ -693,12 +788,14 @@ const TeamsMembres = () => {
         </div>
       </section>
 
+    
+
       {/* CTA Section */}
       <section className="py-16 bg-gray-200">
         <div className="container mx-auto px-4 md:px-8 text-center">
           <h2 className="text-2xl font-bold mb-4 text-gray-900">Rejoignez Notre Aventure</h2>
           <p className="text-lg mb-8 max-w-2xl mx-auto text-gray-700">
-            Vous partagez notre passion et voulez contribuer à notre mission ? 
+            Vous partagez notre passion et voulez contribuer à notre mission ?
             Nous sommes toujours à la recherche de talents exceptionnels.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
