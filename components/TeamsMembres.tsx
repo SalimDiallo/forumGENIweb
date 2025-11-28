@@ -184,14 +184,14 @@ const bureauMembers2025: BureauMember[] = [
   }
 ];
 
-// Membres réels du bureau 2026
+// Membres réels du bureau 2026 - FILIÈRES/LINKEDIN/EMAIL à jour via instruction
 const bureauMembers2026: BureauMember[] = [
   // Président
   {
     id: 1001,
     name: "Yousra Alaoui Belghiti",
     role: "Présidente",
-    description: "Acturiat & Finance.",
+    description: "Actuariat & Finance",
     image: "/team/2026/yousra.jpeg",
     level: 1,
     icon: Crown,
@@ -231,12 +231,12 @@ const bureauMembers2026: BureauMember[] = [
     id: 1008,
     name: "Hala Ben Chama",
     role: "Chef Cellule Conférence",
-    description: "Conférences, logistique, planning, intervenants, expérience.",
+    description: "Biostatistique Démographie et Big Data",
     image: "/team/2026/hala.jpeg",
     level: 3,
     icon: Calendar,
-    email: "",
-    linkedin: "",
+    email: "benchamahala@gmail.com",
+    linkedin: "https://www.linkedin.com/in/hala-ben-chama-070960320/",
     bureauYear: "2026"
   },
   {
@@ -251,29 +251,29 @@ const bureauMembers2026: BureauMember[] = [
     linkedin: "",
     bureauYear: "2026"
   },
-   // Chefs Communication
-   {
+  // Chefs Communication
+  {
     id: 1010,
-    name: "Ihssane El Malki",
+    name: "Ihssan Malki Lhlaybi",
     role: "Chef Cellule Communication",
-    description: "Communication, promotion, réseaux, contenu, visuels.",
+    description: "Actuariat Finance",
     image: "/team/2026/ihssane.jpeg",
     level: 3,
     icon: Users,
-    email: "",
-    linkedin: "",
+    email: "ihssanemalki61@gmail.com",
+    linkedin: "https://www.linkedin.com/in/ihssan-malki-lhlaybi-b63606264?utm_source=share_via&utm_content=profile&utm_medium=member_android",
     bureauYear: "2026"
   },
   {
     id: 1011,
     name: "Diallo Sidy Mohamed Salim",
     role: "Chef Cellule Communication",
-    description: "Communication, stratégie, réseaux, médias, identité.",
+    description: "Data and Software Engineering",
     image: "/team/2026/salim.jpeg",
     level: 3,
     icon: Users,
-    email: "",
-    linkedin: "",
+    email: "sidymamadousalim@gmail.com",
+    linkedin: "https://www.linkedin.com/in/sidy-mohamed-salim-diallo-855696264/",
     bureauYear: "2026"
   },
   // Responsables Prospection
@@ -281,48 +281,48 @@ const bureauMembers2026: BureauMember[] = [
     id: 1004,
     name: "Salma Chkoubi",
     role: "Responsable Prospection",
-    description: "Prospection, sponsors, partenariats, visibilité, négociation.",
+    description: "Data & Software Engineering",
     image: "/team/2026/salma.jpeg",
     level: 3,
     icon: Award,
     email: "",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/salma-chkoubi-568193342?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
     bureauYear: "2026"
   },
   {
     id: 1005,
     name: "Amina Bajdouri",
     role: "Responsable Prospection",
-    description: "Prospection, sponsors, relations, visibilité, négociation.",
+    description: "Data & Software Engineering",
     image: "/team/2026/amina.jpeg",
     level: 3,
     icon: Award,
-    email: "",
-    linkedin: "",
+    email: "amina.bajdouri04@gmail.com",
+    linkedin: "https://www.linkedin.com/in/amina-bajdouri-a1395b258?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
     bureauYear: "2026"
   },
   {
     id: 1006,
-    name: "Oukessou Soufiane",
+    name: "Soufiane Oukessou",
     role: "Responsable Prospection",
-    description: "Prospection, sponsors, partenariats, visibilité, négociation.",
+    description: "Data Science",
     image: "/team/2026/soufiane.jpeg",
     level: 3,
     icon: Award,
     email: "",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/soufiane-oukessou-b69153253/",
     bureauYear: "2026"
   },
   {
     id: 1007,
     name: "Saida Sessid",
     role: "Responsable Prospection",
-    description: "Prospection, relations, partenariats, négociation, visibilité.",
+    description: "Actuariat Finance",
     image: "/team/2026/saida.jpeg",
     level: 3,
     icon: Award,
     email: "",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/saida-sessid-a6397b326?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
     bureauYear: "2026"
   },
   // Chefs Revue
@@ -330,16 +330,16 @@ const bureauMembers2026: BureauMember[] = [
     id: 1012,
     name: "DELL GBELI GHISLAIN BRICE KEVIN",
     role: "Chef Cellule Revue",
-    description: "Revue, éditorial, contenu, qualité, publication.",
+    description: "Sciences de la Décision et  Recherche Opérationnelle",
     image: "/team/2026/dell.jpeg",
     level: 3,
     icon: Award,
     email: "",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/kevin-dell-146ab8254?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
     bureauYear: "2026"
   },
   {
-    id: 1012,
+    id: 1016,
     name: "Nouha El Idrissi",
     role: "Chef Cellule Revue",
     description: "Revue, éditorial, contenu, qualité, publication.",
@@ -365,27 +365,27 @@ const bureauMembers2026: BureauMember[] = [
   // Chef Technique
   {
     id: 1014,
-    name: "Imran Akki",
+    name: "Imran AKKI",
     role: "Chef Cellule Technique",
-    description: "Technique, infrastructure, web, évènements, numérique.",
+    description: "Data & Software Engineering",
     image: "/team/2026/imran.jpeg",
     level: 3,
     icon: Shield,
     email: "",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/imran-akki?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
     bureauYear: "2026"
   },
   // Chefs Logistique & Gala
   {
     id: 1015,
-    name: "Yassine Bentaleb & Oukhouya Ahmed",
+    name: "Yassine Bentaleb & Oukhouya Ahmad",
     role: "Chef Cellule Logistique et Gala",
-    description: "Logistique, gala, événements, coordination, opérationnel.",
+    description: "Yassine Bentaleb : Economie Appliquée Statistique et Big Data\nOukhouya Ahmad : Economie Appliquée Statistique et Big Data",
     image: "/team/2026/logistique.jpeg",
     level: 3,
     icon: Calendar,
     email: "",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/yassine-bentaleb-823a51269/",
     bureauYear: "2026"
   },
 ];

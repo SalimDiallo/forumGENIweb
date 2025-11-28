@@ -64,7 +64,15 @@ export default function CreateEventForm({}: CreateEventFormProps) {
       registrationEnd: "",
       maxParticipants: undefined,
       location: "",
-      registrationLink: "", // Add registration link default
+      registrationLink: "",
+      virtualLink: "",
+      agenda: "",
+      speakers: "",
+      sponsors: "",
+      requirements: "",
+      whatToBring: "",
+      metaTitle: "",
+      metaDescription: "",
     },
   });
 

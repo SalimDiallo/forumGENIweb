@@ -17,12 +17,16 @@ import {
   UserCheck,
   AlertCircle,
   CheckCircle2,
-  Video
+  Video,
+  Award,
+  Star,
+  Sparkles
 } from 'lucide-react';
 // RegistrationForm import supprimé
 import { EventDetailType, RelatedEventsType } from './event-detail.query';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import ShareButton from '@/components/ui/ShareButton';
+import SponsorsGrid from '@/components/SponsorsGrid';
 
 interface Props {
   event: NonNullable<EventDetailType>;
@@ -33,6 +37,21 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
 
   // Calcul si l'événement est passé
   const isPast = new Date(event.endDate) < new Date();
+
+  // Parser les sponsors depuis le JSON
+  const sponsors = React.useMemo(() => {
+    if (!event.sponsors) return [];
+    try {
+      const parsed = JSON.parse(event.sponsors);
+      // Si c'est déjà un tableau, le retourner
+      if (Array.isArray(parsed)) return parsed;
+      // Sinon, retourner un tableau vide
+      return [];
+    } catch {
+      // Si ce n'est pas du JSON valide, retourner un tableau vide
+      return [];
+    }
+  }, [event.sponsors]);
   // const isRegistrationOpen = event.registrationStart && event.registrationEnd
   //   ? new Date() >= new Date(event.registrationStart) && new Date() <= new Date(event.registrationEnd)
   //   : !isPast;
@@ -204,6 +223,66 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
         </motion.div>
       )}
 
+      {/* Sponsors - Mise en avant */}
+      {sponsors.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="container mx-auto px-4 mb-12"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="relative bg-gradient-to-br from-emerald-50 via-white to-emerald-50/50 border-2 border-emerald-200 rounded-xl p-8 md:p-12 shadow-xl overflow-hidden">
+              {/* Éléments décoratifs de fond */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-100 rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-200 rounded-full filter blur-3xl opacity-20 translate-y-1/2 -translate-x-1/2"></div>
+
+              {/* Contenu */}
+              <div className="relative z-10">
+                {/* En-tête avec icône */}
+                <div className="text-center mb-10">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <div className="p-3 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full shadow-lg">
+                      <Award className="w-8 h-8 text-white" />
+                    </div>
+                    <Sparkles className="w-6 h-6 text-emerald-600 animate-pulse" />
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-emerald-900 mb-3 flex items-center justify-center gap-2">
+                    Nos Partenaires & Sponsors
+                  </h2>
+                  <div className="flex items-center justify-center gap-2 text-gray-600 max-w-2xl mx-auto">
+                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                    <p className="text-base md:text-lg">
+                      Un grand merci à nos partenaires qui rendent cet événement possible
+                    </p>
+                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  </div>
+                  {/* Ligne décorative */}
+                  <div className="mt-6 flex items-center justify-center gap-2">
+                    <div className="h-0.5 w-20 bg-gradient-to-r from-transparent to-emerald-300"></div>
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    <div className="h-0.5 w-20 bg-gradient-to-l from-transparent to-emerald-300"></div>
+                  </div>
+                </div>
+
+                {/* Grille des sponsors avec effet hover */}
+                <div>
+                  <SponsorsGrid sponsors={sponsors} />
+                </div>
+
+                {/* Badge "Merci" */}
+                <div className="mt-8 text-center">
+                  <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm border border-emerald-200 rounded-full shadow-md">
+                    <span className="text-emerald-800 font-semibold text-sm">Ensemble, nous créons l'excellence</span>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Contenu principal - 2 colonnes sur desktop */}
       <div className="container mx-auto px-4 pb-16">
         <div className="max-w-6xl mx-auto">
@@ -289,21 +368,6 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                         <p className="text-gray-700 whitespace-pre-line">{event.whatToBring}</p>
                       </div>
                     )}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Sponsors */}
-              {event.sponsors && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                  className="bg-white   p-6 md:p-8"
-                >
-                  <h2 className="text-2xl font-bold text-emerald-900 mb-6">Sponsors</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                   <MarkdownRenderer content={event.sponsors} />
                   </div>
                 </motion.div>
               )}

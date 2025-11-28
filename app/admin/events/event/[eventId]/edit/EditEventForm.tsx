@@ -197,6 +197,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
             <EventAdvancedFields
               register={register}
               errors={errors}
+              watch={watch}
             />
           )}
 

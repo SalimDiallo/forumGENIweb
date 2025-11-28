@@ -1,5 +1,5 @@
 "use client"
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -84,6 +84,7 @@ function AdminNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { data: session, isPending } = useSession();
 
   const isActive = (href: string) => {
@@ -97,7 +98,7 @@ function AdminNav() {
     setOpenDropdown(openDropdown === href ? null : href);
   };
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       await signOut();
       toast.success("Déconnexion réussie");
@@ -106,7 +107,20 @@ function AdminNav() {
     } catch (error) {
       toast.error("Erreur lors de la déconnexion");
     }
-  };
+  }, [router]);
+
+  // Éviter les erreurs d'hydratation en s'assurant que le composant est monté
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Déconnecter automatiquement si l'utilisateur est désactivé
+  useEffect(() => {
+    if (session?.user && !(session.user as any).isActive) {
+      toast.error("Votre compte a été désactivé. Vous allez être déconnecté.");
+      handleSignOut();
+    }
+  }, [session, handleSignOut]);
 
   // Filtrer les éléments de navigation en fonction du rôle
   const isSuperAdmin = (session?.user as any)?.role === "super_admin";
@@ -116,6 +130,40 @@ function AdminNav() {
     }
     return true;
   });
+
+  // Pendant l'hydratation, ne pas afficher les états interactifs
+  if (!mounted) {
+    return (
+      <nav className="bg-white border-b border-gray-200">
+        <div className="mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link href="/admin" className="flex items-center gap-2">
+              <LayoutDashboard className="w-6 h-6 text-gray-900" />
+              <span className="text-lg font-bold text-gray-900">Admin Panel</span>
+            </Link>
+            <div className="hidden lg:flex items-center gap-1">
+              {visibleNavItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="hidden lg:flex items-center gap-4">
+              <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <>

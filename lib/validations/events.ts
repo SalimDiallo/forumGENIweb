@@ -9,6 +9,15 @@ export const EventStatusEnum = z.enum(["draft", "published", "ongoing", "complet
 
 // Fonction utilitaire pour convertir les dates
 export const dateSchema = z.string().transform((str, ctx) => {
+  // Si la chaîne est vide ou undefined, ne pas essayer de transformer
+  if (!str || str.trim() === '') {
+    ctx.addIssue({
+      code: "custom",
+      message: "Date requise",
+    });
+    return z.NEVER;
+  }
+
   // Si c'est déjà une date ISO, on la garde
   if (str.includes('T') && str.includes(':')) {
     const date = new Date(str);
@@ -16,18 +25,19 @@ export const dateSchema = z.string().transform((str, ctx) => {
       return date.toISOString();
     }
   }
-  
+
   // Si c'est un format datetime-local (sans timezone), on ajoute le timezone
-  if (str && !str.endsWith('Z')) {
-    const date = new Date(str + 'Z');
+  if (!str.endsWith('Z')) {
+    const date = new Date(str);
     if (!isNaN(date.getTime())) {
       return date.toISOString();
     }
   }
-  
-  // Si vide ou invalide
+
+  // Si invalide
   ctx.addIssue({
-    code: z.ZodIssueCode.custom,
+    code: "custom",
+    message: "Date invalide",
   });
   return z.NEVER;
 });
@@ -51,7 +61,7 @@ export const createEventRegistrationSchema = z.object({
   eventId: z.number().int().positive(),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  email: z.string().email(),
+  email: z.string().email({ message: "Email invalide" }),
   phone: z.string().optional(),
   organization: z.string().optional(),
   position: z.string().optional(),

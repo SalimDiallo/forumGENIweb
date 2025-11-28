@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Sponsor Platine",
+    "logo": "/uploads/sponsors/platine.png",
+    "website": "https://example.com",
+    "tier": "platinum"
+  },
+  {
+    "name": "Sponsor Or 1",
+    "logo": "/uploads/sponsors/gold-1.png",
+    "website": "https://example-gold1.com",
+    "tier": "gold"
+  },
+  {
+    "name": "Sponsor Or 2",
+    "logo": "/uploads/sponsors/gold-2.png",
+    "website": "https://example-gold2.com",
+    "tier": "gold"
+  },
+  {
+    "name": "Sponsor Argent 1",
+    "logo": "/uploads/sponsors/silver-1.png",
+    "website": "https://example-silver1.com",
+    "tier": "silver"
+  },
+  {
+    "name": "Sponsor Argent 2",
+    "logo": "/uploads/sponsors/silver-2.png",
+    "tier": "silver"
+  },
+  {
+    "name": "Partenaire 1",
+    "logo": "/uploads/sponsors/partner-1.png"
+  },
+  {
+    "name": "Partenaire 2",
+    "logo": "/uploads/sponsors/partner-2.png",
+    "website": "https://example-partner2.com"
+  }
+]

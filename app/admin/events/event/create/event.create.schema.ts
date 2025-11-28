@@ -13,8 +13,14 @@ export const createEventSchema = z.object({
     virtualLink: z.string().optional(),
     startDate: z.union([dateSchema, z.date()]),
     endDate: z.union([dateSchema, z.date()]),
-    registrationStart: z.union([dateSchema, z.date()]).optional(),
-    registrationEnd: z.union([dateSchema, z.date()]).optional(),
+    registrationStart: z.string().optional().transform((val) => {
+      if (!val || val.trim() === '') return undefined;
+      return new Date(val).toISOString();
+    }),
+    registrationEnd: z.string().optional().transform((val) => {
+      if (!val || val.trim() === '') return undefined;
+      return new Date(val).toISOString();
+    }),
     maxParticipants: z.union([z.number().int().positive(), z.string()]).optional(),
     isFree: z.boolean().default(true),
     price: z.number().default(0),
