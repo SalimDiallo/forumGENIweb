@@ -125,15 +125,15 @@ async function listFolders(parentId: string): Promise<any[]> {
 }
 
 /**
- * List all displayable media files in a folder (ignore SVG)
- * NB: SVG files ne seront PAS inclus ici.
+ * List only image files in a folder (no videos, no SVG)
+ * Videos come from YouTube instead
  */
 async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
   const drive = getDriveClient();
 
   try {
-    // Build MIME type filter (pour la galerie: images affichables seulement, PAS SVG)
-    const displayableMimeTypes = [...DISPLAYABLE_IMAGE_MIME_TYPES, ...VIDEO_MIME_TYPES]
+    // Build MIME type filter (ONLY images, NO videos, NO SVG)
+    const displayableMimeTypes = DISPLAYABLE_IMAGE_MIME_TYPES
       .map(type => `mimeType='${type}'`)
       .join(' or ');
 
@@ -149,7 +149,7 @@ async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
     return files
       .map(file => {
         const mediaType = getMediaType(file.mimeType || '');
-        if (!mediaType) return null;
+        if (!mediaType || mediaType !== 'image') return null; // Only images
 
         // Lien thumbnail (pour aperçu rapide, petit format)
         const thumbnailUrl = getThumbnailUrl(file.id || '');
@@ -160,7 +160,7 @@ async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
         const mediaItem: GalleryMedia = {
           id: file.id || '',
           name: file.name || '',
-          type: mediaType,
+          type: 'image',
           url: url,
           thumbnailUrl: thumbnailUrl,
           mimeType: file.mimeType || '',
@@ -179,42 +179,98 @@ async function listMediaFiles(folderId: string): Promise<GalleryMedia[]> {
 }
 
 /**
- * Get full gallery structure from Google Drive (internal, non-cached version)
- * Structure: Root Folder > Year Folders > Category Folders > Event Folders > Media Files
- * Seuls les médias "displayable" (images previewables, no SVG) sont inclus.
+ * Extract metadata from folder name
+ * Expected format: "EventName - Category - Year" or "EventName"
+ * Exemple: "Forum Spring 2025 - Conférence - 2025" ou "Forum Spring 2025"
+ */
+function extractFolderMetadata(folderName: string): {
+  event: string;
+  category: string;
+  year: string;
+} {
+  // Try to split by " - " separator
+  const parts = folderName.split(' - ').map(p => p.trim());
+
+  if (parts.length >= 3) {
+    return {
+      event: parts[0],
+      category: parts[1],
+      year: parts[2],
+    };
+  } else if (parts.length === 2) {
+    // Extract year from event name if possible
+    const yearMatch = parts[0].match(/\b(20\d{2})\b/);
+    return {
+      event: parts[0],
+      category: parts[1],
+      year: yearMatch ? yearMatch[1] : new Date().getFullYear().toString(),
+    };
+  } else {
+    // Just event name, try to extract year
+    const yearMatch = folderName.match(/\b(20\d{2})\b/);
+    return {
+      event: folderName,
+      category: 'Événements', // Default category
+      year: yearMatch ? yearMatch[1] : new Date().getFullYear().toString(),
+    };
+  }
+}
+
+/**
+ * Get gallery images from Google Drive (internal, non-cached version)
+ * Simplified structure: Root Folder > Event Folders > Image Files
+ * Seuls les images sont récupérées (pas de vidéos, elles viennent de YouTube)
  */
 async function getGalleryStructureInternal(rootFolderId: string): Promise<GalleryStructure> {
   try {
-    // 1. Get year folders (e.g., 2024, 2025)
-    const yearFolders = await listFolders(rootFolderId);
+    // Get all event folders directly from root
+    const eventFolders = await listFolders(rootFolderId);
 
-    // 2. OPTIMISATION: Utiliser batchProcess pour limiter les requêtes parallèles
-    const years = await batchProcess(yearFolders, async (yearFolder) => {
-      const categoryFolders = await listFolders(yearFolder.id);
+    // Process each event folder with metadata extraction
+    const eventsWithMetadata = await batchProcess(eventFolders, async (eventFolder) => {
+      const imageFiles = await listMediaFiles(eventFolder.id);
+      const metadata = extractFolderMetadata(eventFolder.name);
 
-      // 3. OPTIMISATION: Paralléliser les catégories avec limite
-      const categories = await batchProcess(categoryFolders, async (categoryFolder) => {
-        const eventFolders = await listFolders(categoryFolder.id);
+      return {
+        ...metadata,
+        id: eventFolder.id,
+        folderName: eventFolder.name,
+        media: imageFiles,
+        mediaCount: imageFiles.length,
+      };
+    });
 
-        // 4. OPTIMISATION: Paralléliser les événements avec limite
-        const events = await batchProcess(eventFolders, async (eventFolder) => {
-          const mediaFiles = await listMediaFiles(eventFolder.id);
+    // Group by year
+    const yearMap = new Map<string, typeof eventsWithMetadata>();
+    eventsWithMetadata.forEach(event => {
+      const existing = yearMap.get(event.year) || [];
+      existing.push(event);
+      yearMap.set(event.year, existing);
+    });
 
-          return {
-            id: eventFolder.id,
-            name: eventFolder.name,
-            media: mediaFiles,
-            mediaCount: mediaFiles.length,
-          };
-        });
+    // Build year structure
+    const years = Array.from(yearMap.entries()).map(([year, events]) => {
+      // Group by category within year
+      const categoryMap = new Map<string, typeof events>();
+      events.forEach(event => {
+        const existing = categoryMap.get(event.category) || [];
+        existing.push(event);
+        categoryMap.set(event.category, existing);
+      });
 
-        const categoryMediaCount = events.reduce((sum, event) => sum + event.mediaCount, 0);
+      const categories = Array.from(categoryMap.entries()).map(([categoryName, categoryEvents]) => {
+        const categoryMediaCount = categoryEvents.reduce((sum, e) => sum + e.mediaCount, 0);
 
         return {
-          id: categoryFolder.id,
-          name: categoryFolder.name,
-          events,
-          eventCount: events.length,
+          id: categoryName.toLowerCase().replace(/\s+/g, '-'),
+          name: categoryName,
+          events: categoryEvents.map(e => ({
+            id: e.id,
+            name: e.event,
+            media: e.media,
+            mediaCount: e.mediaCount,
+          })),
+          eventCount: categoryEvents.length,
           totalMediaCount: categoryMediaCount,
         };
       });
@@ -222,15 +278,18 @@ async function getGalleryStructureInternal(rootFolderId: string): Promise<Galler
       const yearMediaCount = categories.reduce((sum, cat) => sum + cat.totalMediaCount, 0);
 
       return {
-        id: yearFolder.id,
-        year: yearFolder.name,
+        id: year,
+        year,
         categories,
         categoryCount: categories.length,
         totalMediaCount: yearMediaCount,
       };
     });
 
-    // Calculer les totaux
+    // Sort years in descending order
+    years.sort((a, b) => b.year.localeCompare(a.year));
+
+    // Calculate totals
     const totalCategories = years.reduce((sum, year) => sum + year.categoryCount, 0);
     const totalEvents = years.reduce((sum, year) =>
       sum + year.categories.reduce((catSum, cat) => catSum + cat.eventCount, 0), 0

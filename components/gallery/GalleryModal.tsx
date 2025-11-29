@@ -193,8 +193,37 @@ export default function GalleryModal({
                 </>
               ) : (
                 <>
-                  {/* Pour Google Drive, on utilise un iframe pour la prévisualisation vidéo */}
-                  {currentItem.src.includes('drive.google.com') ? (
+                  {/* Pour YouTube, utiliser le lecteur embed */}
+                  {currentItem.src.includes('youtube.com') || currentItem.src.includes('youtu.be') ? (
+                    <>
+                      {(() => {
+                        // Extract video ID from YouTube URL
+                        const videoId = currentItem.src.includes('youtube.com')
+                          ? new URL(currentItem.src).searchParams.get('v')
+                          : currentItem.src.split('/').pop();
+
+                        const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+
+                        return (
+                          <iframe
+                            key={currentItem.id}
+                            src={embedUrl}
+                            className="w-full h-full border-0"
+                            style={{ maxHeight: '70vh', minHeight: '400px' }}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            onLoad={() => {
+                              setImageLoading(false);
+                              setImageError(false);
+                              console.log('Vidéo YouTube chargée:', embedUrl);
+                            }}
+                            onError={handleImageError}
+                          />
+                        );
+                      })()}
+                    </>
+                  ) : currentItem.src.includes('drive.google.com') ? (
+                    /* Pour Google Drive, on utilise un iframe pour la prévisualisation vidéo */
                     <iframe
                       key={currentItem.id}
                       src={currentItem.src}
@@ -205,7 +234,7 @@ export default function GalleryModal({
                       onLoad={() => {
                         setImageLoading(false);
                         setImageError(false);
-                        console.log('Vidéo iframe chargée:', currentItem.src);
+                        console.log('Vidéo Drive chargée:', currentItem.src);
                       }}
                       onError={handleImageError}
                     />
@@ -238,7 +267,6 @@ export default function GalleryModal({
                         style={{ maxHeight: '70vh' }}
                       >
                         Votre navigateur ne supporte pas la lecture de vidéos.
-                        {/* Le bouton de téléchargement de vidéo est supprimé */}
                       </video>
                       {imageError && (
                         <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
@@ -281,6 +309,16 @@ export default function GalleryModal({
                 {currentItem.event && (
                   <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg text-sm font-medium">
                     {currentItem.event}
+                  </span>
+                )}
+                {/* Source badge */}
+                {(currentItem as any).source && (
+                  <span className={`px-3 py-1 rounded-lg text-sm font-medium ${
+                    (currentItem as any).source === 'youtube'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-green-100 text-green-800'
+                  }`}>
+                    {(currentItem as any).source === 'youtube' ? 'YouTube' : 'Photos'}
                   </span>
                 )}
               </div>

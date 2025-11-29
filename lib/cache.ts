@@ -98,6 +98,24 @@ export const getCachedEventBySlug = unstable_cache(
       where: {
         slug,
         status: 'published'
+      },
+      include: {
+        videos: {
+          where: { isActive: true },
+          orderBy: [
+            { isFeatured: 'desc' },
+            { sortOrder: 'asc' },
+            { createdAt: 'desc' }
+          ]
+        },
+        photos: {
+          where: { isActive: true },
+          orderBy: [
+            { isFeatured: 'desc' },
+            { sortOrder: 'asc' },
+            { createdAt: 'desc' }
+          ]
+        }
       }
     });
     return event;
@@ -105,7 +123,7 @@ export const getCachedEventBySlug = unstable_cache(
   ['event-by-slug'],
   {
     revalidate: 3600, // 1 hour
-    tags: ['events']
+    tags: ['events', 'media']
   }
 );
 

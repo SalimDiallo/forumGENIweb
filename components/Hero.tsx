@@ -13,6 +13,7 @@ const Hero = () => {
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 300], [1, 1.1]);
   const [windowSize, setWindowSize] = React.useState({ width: 1920, height: 1080 });
+  const [isMounted, setIsMounted] = React.useState(false);
 
   useEffect(() => {
     // Initialiser les dimensions de la fenêtre côté client
@@ -20,6 +21,7 @@ const Hero = () => {
       width: window.innerWidth,
       height: window.innerHeight
     });
+    setIsMounted(true);
 
     if (videoRef.current) {
       videoRef.current.play().catch(error => {
@@ -59,27 +61,29 @@ const Hero = () => {
       </motion.div>
 
       {/* Particles d'arrière-plan animées */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-emerald-500/30 "
-            initial={{
-              x: Math.random() * windowSize.width,
-              y: Math.random() * windowSize.height,
-            }}
-            animate={{
-              y: [null, Math.random() * windowSize.height],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-        ))}
-      </div>
+      {isMounted && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-emerald-500/30 "
+              initial={{
+                x: Math.random() * windowSize.width,
+                y: Math.random() * windowSize.height,
+              }}
+              animate={{
+                y: [null, Math.random() * windowSize.height],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: Math.random() * 10 + 10,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+          ))}
+        </div>
+      )}
       
       <motion.div
         className="container mx-auto px-2 sm:px-4 md:px-6 z-10 relative"

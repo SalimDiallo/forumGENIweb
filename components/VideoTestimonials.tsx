@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, Quote, Users, Award, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Quote, Users, Award, Zap, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from '@/lib/services/youtube';
 
 type TestimonialData = {
   id: number;
@@ -24,19 +25,26 @@ type VideoTestimonialsProps = {
 
 const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [playingVideo, setPlayingVideo] = useState<number | null>(null);
 
   // Transform database testimonials to display format
-  const displayTestimonials = testimonials.map(testimonial => ({
-    id: testimonial.id,
-    name: testimonial.name,
-    role: testimonial.position || 'Membre',
-    company: testimonial.company || 'INSEA',
-    video: testimonial.videoUrl,
-    thumbnail: testimonial.thumbnailUrl || '/testimonials/default-thumb.jpg',
-    quote: testimonial.quote || 'Une expérience formidable avec l\'association GENI.',
-    year: testimonial.graduationYear ? `Promo ${testimonial.graduationYear}` : 'INSEA',
-    achievement: testimonial.isFeatured ? 'Témoignage vedette' : 'Membre actif',
-  }));
+  const displayTestimonials = testimonials.map(testimonial => {
+    const embedUrl = getYouTubeEmbedUrl(testimonial.videoUrl);
+    const thumbnail = testimonial.thumbnailUrl || getYouTubeThumbnailUrl(testimonial.videoUrl, 'hqdefault');
+
+    return {
+      id: testimonial.id,
+      name: testimonial.name,
+      role: testimonial.position || 'Membre',
+      company: testimonial.company || '',
+      video: testimonial.videoUrl,
+      embedUrl: embedUrl,
+      thumbnail: thumbnail || '/testimonials/default-thumb.jpg',
+      quote: testimonial.quote || 'Une expérience formidable avec l\'association GENI.',
+      year: testimonial.graduationYear ? `Promo ${testimonial.graduationYear}` : '',
+      achievement: testimonial.isFeatured ? 'Témoignage vedette' : 'Membre actif',
+    };
+  });
 
   const stats = [
     { icon: Users, value: "500+", label: "Membres actifs" },
@@ -97,16 +105,25 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
               className="group bg-white/5 backdrop-blur-sm  overflow-hidden border border-white/10 hover:border-emerald-600/40 transition-all duration-300 hover:scale-105"
             >
               {/* Video Thumbnail */}
-              <div className="relative cursor-pointer overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="bg-white/10 backdrop-blur-sm  p-4 mb-3 group-hover:bg-white/20 transition-colors">
-                      <Play className="text-white mx-auto" size={32} />
+              <div
+                className="relative cursor-pointer overflow-hidden"
+                onClick={() => setPlayingVideo(testimonial.id)}
+              >
+                <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center relative">
+                  {/* YouTube Thumbnail */}
+                  <img
+                    src={testimonial.thumbnail}
+                    alt={testimonial.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  {/* Play overlay */}
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                    <div className="bg-white/10 backdrop-blur-sm  p-4 group-hover:bg-white/20 transition-colors">
+                      <Play className="text-white" size={32} />
                     </div>
-                    <p className="text-white font-medium">Voir le témoignage</p>
                   </div>
                 </div>
-                
+
                 {/* Achievement Badge */}
                 <div className="absolute top-3 right-3 bg-emerald-700 text-white text-xs font-bold px-2 py-1 ">
                   {testimonial.achievement}
@@ -121,16 +138,22 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                     "{testimonial.quote}"
                   </p>
                 </div>
-                
+
                 <div className="border-t border-white/10 pt-4">
                   <h3 className="text-white font-bold text-lg">{testimonial.name}</h3>
-                  <p className="text-gray-400 text-sm">{testimonial.role}</p>
-                  <p className="text-gray-400 text-sm font-medium">{testimonial.company}</p>
-                  <div className="flex items-center justify-between mt-3">
-                    <span className="text-emerald-600 text-xs font-semibold bg-emerald-600/10 px-2 py-1 ">
-                      {testimonial.year}
-                    </span>
-                  </div>
+                  {testimonial.role && (
+                    <p className="text-gray-400 text-sm">{testimonial.role}</p>
+                  )}
+                  {testimonial.company && (
+                    <p className="text-gray-400 text-sm font-medium">{testimonial.company}</p>
+                  )}
+                  {testimonial.year && (
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-emerald-600 text-xs font-semibold bg-emerald-600/10 px-2 py-1 ">
+                        {testimonial.year}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -160,12 +183,21 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                   <h4 className="text-white font-bold text-lg">
                     {displayTestimonials[currentTestimonial]?.name || ''}
                   </h4>
-                  <p className="text-gray-400 text-sm">
-                    {displayTestimonials[currentTestimonial]?.role || ''}
-                  </p>
-                  <p className="text-emerald-600 text-sm font-medium">
-                    {displayTestimonials[currentTestimonial]?.year || ''}
-                  </p>
+                  {displayTestimonials[currentTestimonial]?.role && (
+                    <p className="text-gray-400 text-sm">
+                      {displayTestimonials[currentTestimonial]?.role}
+                    </p>
+                  )}
+                  {displayTestimonials[currentTestimonial]?.company && (
+                    <p className="text-gray-400 text-sm">
+                      {displayTestimonials[currentTestimonial]?.company}
+                    </p>
+                  )}
+                  {displayTestimonials[currentTestimonial]?.year && (
+                    <p className="text-emerald-600 text-sm font-medium">
+                      {displayTestimonials[currentTestimonial]?.year}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -202,6 +234,55 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
             </div>
           </div>
         </div>
+
+        {/* Video Modal */}
+        {playingVideo !== null && (
+          <div
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            onClick={() => setPlayingVideo(null)}
+          >
+            <div className="relative w-full max-w-5xl">
+              {/* Close button */}
+              <button
+                onClick={() => setPlayingVideo(null)}
+                className="absolute -top-12 right-0 text-white hover:text-emerald-600 transition-colors"
+              >
+                <X size={32} />
+              </button>
+
+              {/* Video iframe */}
+              <div
+                className="relative aspect-video bg-black"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {displayTestimonials.find(t => t.id === playingVideo)?.embedUrl && (
+                  <iframe
+                    src={displayTestimonials.find(t => t.id === playingVideo)?.embedUrl || ''}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                )}
+              </div>
+
+              {/* Video info */}
+              <div className="mt-4 text-white">
+                <h3 className="text-xl font-bold">
+                  {displayTestimonials.find(t => t.id === playingVideo)?.name}
+                </h3>
+                {(displayTestimonials.find(t => t.id === playingVideo)?.role ||
+                  displayTestimonials.find(t => t.id === playingVideo)?.company) && (
+                  <p className="text-gray-400">
+                    {[
+                      displayTestimonials.find(t => t.id === playingVideo)?.role,
+                      displayTestimonials.find(t => t.id === playingVideo)?.company
+                    ].filter(Boolean).join(' • ')}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

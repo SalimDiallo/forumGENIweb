@@ -1,8 +1,9 @@
 /**
- * Types for Gallery with Google Drive integration
+ * Types for Gallery with Google Drive (images) and YouTube (videos) integration
  */
 
 export type MediaType = 'image' | 'video';
+export type MediaSource = 'drive' | 'youtube';
 
 export interface GalleryMedia {
   id: string;
@@ -14,6 +15,7 @@ export interface GalleryMedia {
   size: number;
   createdTime: string;
   modifiedTime: string;
+  source?: MediaSource; // Optional for backward compatibility
 }
 
 export interface GalleryEvent {

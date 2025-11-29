@@ -252,7 +252,10 @@ model Event {
   metaDescription     String?
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
-  
+
+  // Relations
+  videos              VideoGallery[]
+  photos              PhotoGallery[]
 
   @@index([slug])
   @@index([eventType])
@@ -341,7 +344,93 @@ model ContactMessage {
   @@map("contact_messages")
 }
 
+// =====================================
+// VIDEO TESTIMONIALS
+// =====================================
 
+model VideoTestimonial {
+  id               Int      @id @default(autoincrement())
+  name             String
+  position         String?
+  company          String?
+  graduationYear   Int?
+  videoUrl         String   // YouTube URL (any format) - will be converted to embed
+  thumbnailUrl     String?  // Optional custom thumbnail, falls back to YouTube default
+  quote            String?  // Short quote for cards
+  fullTranscript   String?  // Full testimonial text
+  isFeatured       Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([isFeatured])
+  @@index([isActive])
+  @@index([sortOrder])
+  @@map("video_testimonials")
+}
+
+// =====================================
+// GALLERY (VIDEOS & PHOTOS)
+// =====================================
+
+// Gallery for YouTube unlisted videos (no API needed)
+model VideoGallery {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String?
+  videoUrl      String   // YouTube URL (unlisted videos)
+  thumbnailUrl  String?  // Optional custom thumbnail
+  eventId       Int?     // Link to Event
+  eventName     String?  // Event name (fallback if no eventId)
+  eventYear     Int?     // Year (e.g., 2025)
+  category      String?  // Category (e.g., "Forum", "Conférence", "Atelier")
+  isActive      Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  sortOrder     Int      @default(0)
+  viewCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  event         Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([eventId])
+  @@index([eventYear])
+  @@index([category])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([sortOrder])
+  @@map("video_gallery")
+}
+
+// Gallery for Google Drive photos (direct links, no API)
+model PhotoGallery {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String?
+  imageUrl      String   // Direct Google Drive image URL (uc?export=view&id=...)
+  thumbnailUrl  String?  // Optional smaller thumbnail URL
+  eventId       Int?     // Link to Event
+  eventName     String?  // Event name (fallback if no eventId)
+  eventYear     Int?     // Year
+  category      String?  // Category
+  isActive      Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  sortOrder     Int      @default(0)
+  viewCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  event         Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([eventId])
+  @@index([eventYear])
+  @@index([category])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([sortOrder])
+  @@map("photo_gallery")
+}
 
 // =====================================
 // AUTHENTICATION (Better Auth)

@@ -70,6 +70,16 @@ const navItems: NavItem[] = [
     icon: Briefcase
   },
   {
+    href: "/admin/gallery",
+    label: "Galerie",
+    icon: Image
+  },
+  {
+    href: "/admin/testimonials",
+    label: "Témoignages",
+    icon: Video
+  },
+  {
     href: "/admin/users",
     label: "Utilisateurs",
     icon: UserCog,

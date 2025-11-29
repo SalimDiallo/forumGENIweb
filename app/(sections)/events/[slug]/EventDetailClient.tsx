@@ -27,6 +27,7 @@ import { EventDetailType, RelatedEventsType } from './event-detail.query';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import ShareButton from '@/components/ui/ShareButton';
 import SponsorsGrid from '@/components/SponsorsGrid';
+import EventGallerySection from './EventGallerySection';
 
 interface Props {
   event: NonNullable<EventDetailType>;
@@ -371,6 +372,15 @@ const EventDetailClient = ({ event, relatedEvents }: Props) => {
                   </div>
                 </motion.div>
               )}
+
+              {/* Gallery Section */}
+              {(event.videos && event.videos.length > 0) || (event.photos && event.photos.length > 0) ? (
+                <EventGallerySection
+                  videos={event.videos || []}
+                  photos={event.photos || []}
+                  eventTitle={event.title}
+                />
+              ) : null}
             </div>
 
             {/* Colonne latérale - Lien d'inscription */}
