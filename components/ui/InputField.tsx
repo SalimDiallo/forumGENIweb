@@ -1,11 +1,11 @@
 import React, { FC } from "react";
 import { Label } from "./label";
-
-
+import { AlertCircle } from "lucide-react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   success?: boolean;
-  error?: boolean;
+  error?: boolean | string; // Peut être boolean ou message d'erreur
+  errorMessage?: string; // Message d'erreur alternatif
   isAmount?:boolean;
   currentAmount?:number;
   currency?:string;
@@ -31,18 +31,25 @@ const Input: FC<InputProps> = ({
   disabled = false,
   success = false,
   error = false,
+  errorMessage,
   hint,
   required = false,
   isAmount= false,
   ...props
 }) => {
+  // Déterminer si on a une erreur (boolean ou string)
+  const hasError = !!error;
+
+  // Extraire le message d'erreur
+  const errorMsg = typeof error === 'string' ? error : errorMessage;
+
   // Determine input styles based on state (disabled, success, error)
   let inputClasses = `h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 ${className}`;
 
   // Add styles for the different states
   if (disabled) {
     inputClasses += ` text-gray-500 border-gray-300 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700`;
-  } else if (error) {
+  } else if (hasError) {
     inputClasses += ` text-error-800 border-error-500 focus:ring-3 focus:ring-error-500/10  dark:text-error-400 dark:border-error-500`;
   } else if (success) {
     inputClasses += ` text-success-500 border-success-400 focus:ring-success-500/10 focus:border-success-300  dark:text-success-400 dark:border-success-500`;
@@ -73,11 +80,19 @@ const Input: FC<InputProps> = ({
         className={inputClasses}
       />
 
-      {/* Optional Hint Text */}
-      {hint && (
+      {/* Error Message */}
+      {errorMsg && (
+        <p className="mt-1.5 text-sm text-error-600 dark:text-error-400 flex items-center gap-1">
+          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          {errorMsg}
+        </p>
+      )}
+
+      {/* Optional Hint Text (si pas d'erreur) */}
+      {hint && !errorMsg && (
         <p
           className={`mt-1.5 text-xs ${
-            error
+            hasError
               ? "text-error-500"
               : success
               ? "text-success-500"

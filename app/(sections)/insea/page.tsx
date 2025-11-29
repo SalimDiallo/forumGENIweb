@@ -24,7 +24,17 @@ import {
   Lightbulb
 } from 'lucide-react';
 import Link from 'next/link';
-import InteractiveMap from '@/components/InteractiveMap';
+import dynamic from 'next/dynamic';
+
+// Import dynamique pour éviter les erreurs SSR avec Leaflet
+const InteractiveMap = dynamic(() => import('@/components/InteractiveMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-emerald-100 flex items-center justify-center min-h-[400px]">
+      <div className="text-emerald-800 font-medium">Chargement de la carte...</div>
+    </div>
+  )
+});
 
 export default function InseaPage() {
   const filieres = [

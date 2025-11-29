@@ -105,11 +105,11 @@ const Header = () => {
         { name: 'Networking', path: '/events/networking', description: 'Opportunités de réseautage' }
       ]
     },
-    { 
-      name: 'Galerie', 
-      path: '/gallery',
-      icon: Camera
-    },
+    // { 
+    //   name: 'Galerie', 
+    //   path: '/gallery',
+    //   icon: Camera
+    // },
     { 
       name: 'Blog', 
       path: '/blog',

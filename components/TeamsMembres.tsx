@@ -30,7 +30,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "TIRARY Achraf",
     role: "Président",
     description: "Dirige, représente, coordonne, vision, partenariats.",
-    image: "/team/2025/AchrafTiraryP/achraf.JPG",
+    image: "/team/2025/AchrafTiraryP/achraf.png",
     level: 1,
     icon: Crown,
     email: "achraftiraryperso00@gmail.com",
@@ -43,7 +43,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "LBARRAH Yassine",
     role: "Vice-Président",
     description: "Coordonne, assiste, supervise, motive, représente.",
-    image: "/team/2025/LbarrahyassineVP/yassine.JPG",
+    image: "/team/2025/LbarrahyassineVP/yassine.png",
     level: 2,
     icon: Shield,
     email: "hello@lbarrahyassine.live",
@@ -55,7 +55,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "TAKATRI Marwa",
     role: "Secrétaire Général",
     description: "Administration, coordination, archives, communication, réunions.",
-    image: "/team/2025/Marwa Takatri , SG/marwa.JPG",
+    image: "/team/2025/Marwa Takatri , SG/marwa.png",
     level: 2,
     icon: Briefcase,
     email: "",
@@ -67,7 +67,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "EL-BIYAALI Jabir",
     role: "Chef Cellule Revue",
     description: "Revue, éditorial, contenu, qualité, publication.",
-    image: "/team/2025/JabirEl-Biyaali,R.Revue/jabir.JPG",
+    image: "/team/2025/JabirEl-Biyaali,R.Revue/jabir.png",
     level: 3,
     icon: Award,
     email: "",
@@ -91,7 +91,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "EL MOUBACHOUR Oumaima",
     role: "Chef Cellule Communication",
     description: "Communication, promotion, réseaux, contenu, visuels.",
-    image: "/team/2025/Oumaima El Moubachour , R.Com/IMG-20250623-WA0011.jpg",
+    image: "/team/2025/Oumaima El Moubachour , R.Com/oumaima.png",
     level: 3,
     icon: Users,
     email: "elmoubachouroumaima@gmail.com",
@@ -115,7 +115,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "BELAHCEN Rizki",
     role: "Chef Cellule Prospection",
     description: "Prospection, sponsors, partenariats, visibilité, négociation.",
-    image: "/team/2025/Rizki Belahcen , R.Pros/IMG-20250625-WA0005.jpg",
+    image: "/team/2025/Rizki Belahcen , R.Pros/rizki.png",
     level: 3,
     icon: Award,
     email: "",
@@ -127,7 +127,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "EL ALAMI Salma",
     role: "Chef Cellule Prospection",
     description: "Prospection, relations, partenariats, négociation, visibilité.",
-    image: "/team/2025/Salma El Alami , R.Pros/salma.JPG",
+    image: "/team/2025/Salma El Alami , R.Pros/salma.png",
     level: 3,
     icon: Award,
     email: "",
@@ -139,7 +139,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "AOUIDIDDEN Younes",
     role: "Chef Cellule Prospection",
     description: "Prospection, sponsors, relations, visibilité, négociation.",
-    image: "/team/2025/Younes Aouididden , R.Pros/youness.JPG",
+    image: "/team/2025/Younes Aouididden , R.Pros/youness.png",
     level: 3,
     icon: Award,
     email: "",
@@ -151,7 +151,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "CAIDI Yassine",
     role: "Chef Cellule Logistique et Gala",
     description: "Logistique, gala, événements, coordination, opérationnel.",
-    image: "/team/2025/Yassine Caidi , R.Logistique/caydi.JPG",
+    image: "/team/2025/Yassine Caidi , R.Logistique/caydi.png",
     level: 3,
     icon: Calendar,
     email: "",
@@ -399,7 +399,7 @@ const sortedYears: (keyof typeof bureauByYear)[] = ["2026", "2025"];
 
 // Images de groupe pour chaque bureau
 const teamGroupImages = {
-  "2025": "/team/2025/team-group.jpg",
+  "2025": "/team/2025/team.png",
   "2026": "/team/2026/team.jpeg"
 };
 
@@ -427,7 +427,7 @@ const TeamsMembres = () => {
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover object-top transform group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none"></div>
 

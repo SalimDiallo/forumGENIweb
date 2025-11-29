@@ -12,8 +12,8 @@ import { createBlogPostSchema } from "@/lib/validations/blog";
 import type { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { renderErrors } from "@/lib/utils";
 import Input from "@/components/ui/InputField";
+import { AlertCircle } from "lucide-react";
 
 type FormTab = "basic" | "content" | "meta";
 type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>;
@@ -207,7 +207,7 @@ export default function CreateBlogPostForm() {
                     id="title"
                     label="Titre de l'article *"
                     placeholder="Ex: Les 10 meilleures pratiques entrepreneuriales"
-                    error={!!errors.title?.message}
+                    error={errors.title?.message as string}
                     {...register("title")}
                   />
                 </div>
@@ -217,7 +217,7 @@ export default function CreateBlogPostForm() {
                     id="slug"
                     label="Slug (URL) *"
                     placeholder="les-10-meilleures-pratiques-entrepreneuriales"
-                    error={!!errors.slug?.message}
+                    error={errors.slug?.message as string}
                     className="bg-gray-50"
                     {...register("slug")}
                     hint="Le slug est généré automatiquement à partir du titre"
@@ -241,7 +241,12 @@ export default function CreateBlogPostForm() {
                       </option>
                     ))}
                   </select>
-                  {renderErrors("categoryId", errors.categoryId)}
+                  {errors.categoryId?.message && (
+                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      {errors.categoryId.message as string}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -292,7 +297,12 @@ export default function CreateBlogPostForm() {
                     <option value="published">Publié</option>
                     <option value="archived">Archivé</option>
                   </select>
-                  {renderErrors("status", errors.status)}
+                  {errors.status?.message && (
+                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      {errors.status.message as string}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -300,7 +310,7 @@ export default function CreateBlogPostForm() {
                     id="authorName"
                     label="Auteur *"
                     placeholder="Nom de l'auteur"
-                    error={!!errors.authorName?.message}
+                    error={errors.authorName?.message as string}
                     {...register("authorName")}
                   />
                 </div>
@@ -310,10 +320,9 @@ export default function CreateBlogPostForm() {
                     id="authorPosition"
                     label="Poste de l'auteur"
                     placeholder="Ex: CEO, Consultant, etc."
-                    error={!!errors.authorPosition?.message}
+                    error={errors.authorPosition?.message as string}
                     {...register("authorPosition")}
                   />
-                  {renderErrors("authorPosition", errors.authorPosition)}
                 </div>
 
                 <div>
@@ -322,10 +331,9 @@ export default function CreateBlogPostForm() {
                     label="Temps de lecture (minutes)"
                     type="number"
                     min={1}
-                    error={!!errors.readTimeMinutes?.message}
+                    error={errors.readTimeMinutes?.message as string}
                     {...register("readTimeMinutes", { valueAsNumber: true })}
                   />
-                  {renderErrors("readTimeMinutes", errors.readTimeMinutes)}
                 </div>
 
                 <div>
@@ -342,11 +350,16 @@ export default function CreateBlogPostForm() {
                       },
                     })}
                     className={`w-full rounded-lg px-4 py-2.5 border ${errors.isFeatured ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
-                  >
+  >
                     <option value="false">Non</option>
                     <option value="true">Oui</option>
                   </select>
-                  {renderErrors("isFeatured", errors.isFeatured)}
+                  {errors.isFeatured?.message && (
+                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      {errors.isFeatured.message as string}
+                    </p>
+                  )}
                 </div>
 
                 <div className="col-span-2">
@@ -354,10 +367,9 @@ export default function CreateBlogPostForm() {
                     id="featuredImage"
                     label="Image à la une (URL)"
                     placeholder="https://exemple.com/image.jpg"
-                    error={!!errors.featuredImage?.message}
+                    error={errors.featuredImage?.message as string}
                     {...register("featuredImage")}
                   />
-                  {renderErrors("featuredImage", errors.featuredImage)}
                 </div>
 
                 <div className="col-span-2">
@@ -371,7 +383,12 @@ export default function CreateBlogPostForm() {
                     rows={3}
                     className={`w-full rounded-lg px-4 py-2.5 border ${errors.excerpt ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
                   ></textarea>
-                  {renderErrors("excerpt", errors.excerpt)}
+                  {errors.excerpt?.message && (
+                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      {errors.excerpt.message as string}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -388,7 +405,12 @@ export default function CreateBlogPostForm() {
                 rows={12}
                 required
               />
-              {renderErrors("content", errors.content)}
+              {errors.content?.message && (
+                <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {errors.content.message as string}
+                </p>
+              )}
             </div>
           )}
 
@@ -400,11 +422,10 @@ export default function CreateBlogPostForm() {
                     id="metaTitle"
                     label="Titre SEO"
                     placeholder="Titre optimisé pour les moteurs de recherche"
-                    error={!!errors.metaTitle?.message}
+                    error={errors.metaTitle?.message as string}
                     {...register("metaTitle")}
                     hint="Laissez vide pour utiliser le titre de l'article par défaut"
                   />
-                  {renderErrors("metaTitle", errors.metaTitle)}
                 </div>
 
                 <div>
@@ -418,7 +439,12 @@ export default function CreateBlogPostForm() {
                     rows={3}
                     className={`w-full rounded-lg px-4 py-2.5 border ${errors.metaDescription ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
                   ></textarea>
-                  {renderErrors("metaDescription", errors.metaDescription)}
+                  {errors.metaDescription?.message && (
+                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      {errors.metaDescription.message as string}
+                    </p>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">Laissez vide pour utiliser l'extrait par défaut</p>
                 </div>
               </div>

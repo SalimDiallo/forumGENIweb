@@ -22,7 +22,7 @@ const partners: Partner[] = [
   {
     id: 1,
     name: "Attijariwafa bank",
-    logo: "https://www.attijariwafabank.com/themes/custom/attijariwafa_bank/logo.png",
+    logo: "/partners/Attijariwafa.png",
     category: "gold",
     website: "https://www.attijariwafabank.com",
     description: "Attijariwafa bank est le premier groupe bancaire et financier du Maghreb. Présent dans 26 pays, il accompagne ses clients entreprises et particuliers avec une offre complète et innovante.",
@@ -30,7 +30,7 @@ const partners: Partner[] = [
   {
     id: 2,
     name: "INWI",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/47/Inwi_logo.svg",
+    logo: "/partners/inwi.png",
     category: "gold",
     website: "https://www.inwi.ma/",
     description: "Opérateur global et innovant des télécommunications au Maroc proposant des services mobiles, Internet et solutions professionnelles pour entreprises.",
@@ -38,7 +38,7 @@ const partners: Partner[] = [
   {
     id: 3,
     name: "Orange",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Orange_logo.svg/1200px-Orange_logo.svg.png",
+    logo: "/partners/orange.png",
     category: "gold",
     website: "https://www.orange.ma/",
     description: "Filiale du Groupe Orange, leader mondial des télécoms, Orange Maroc connecte des millions de Marocains via des offres mobiles, Internet et entreprises.",
@@ -46,7 +46,7 @@ const partners: Partner[] = [
   {
     id: 4,
     name: "Office Chérifien des Phosphates (Groupe OCP)",
-    logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/e/e7/OCP_Group_logo.svg/2560px-OCP_Group_logo.svg.png",
+    logo: "/partners/ocp.png",
     category: "gold",
     website: "https://www.ocpgroup.ma/",
     description: "Leader mondial sur le marché du phosphate et ses dérivés, OCP contribue au développement durable de l'agriculture à l'échelle mondiale depuis près d’un siècle.",
@@ -54,7 +54,7 @@ const partners: Partner[] = [
   {
     id: 5,
     name: "Airports Of Morocco",
-    logo: "https://www.onda.ma/Style%20Library/images/logo-on.png",
+    logo: "/partners/airports.png",
     category: "gold",
     website: "https://www.onda.ma",
     description: "L'Office National Des Aéroports (ONDA) gère, exploite et modernise les aéroports du Maroc pour faciliter la connectivité et favoriser le développement économique national.",
@@ -62,15 +62,15 @@ const partners: Partner[] = [
   {
     id: 6,
     name: "Maroc Telecom",
-    logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/7/75/Logo_Maroc_Telecom.svg/2560px-Logo_Maroc_Telecom.svg.png",
-    category: "platinum",
+    logo: "/partners/maroctelecom.png",
+     category: "platinum",
     website: "https://www.iam.ma/",
     description: "Premier opérateur télécom du Maroc, Maroc Telecom propose des solutions en téléphonie, Internet et data à destination des particuliers et professionnels.",
   },
   {
     id: 7,
     name: "DXC Technology",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/DXC_Technology_logo.svg/2560px-DXC_Technology_logo.svg.png",
+    logo: "/partners/dxc.png",
     category: "platinum",
     website: "https://dxc.com/",
     description: "DXC Technology accompagne les plus grandes entreprises mondiales dans leur transformation digitale avec une expertise en IT services et solutions innovantes.",
@@ -78,7 +78,7 @@ const partners: Partner[] = [
   {
     id: 8,
     name: "Caisse de Dépôt et de Gestion (CDG)",
-    logo: "https://www.cdg.ma/sites/default/files/logo_cdginvest.png",
+    logo: "/partners/cdg.png",
     category: "platinum",
     website: "https://www.cdg.ma/",
     description: "Institution financière publique marocaine d’investissement, la CDG est un acteur clé du développement économique, social et territorial du Maroc.",
@@ -86,7 +86,7 @@ const partners: Partner[] = [
   {
     id: 9,
     name: "Banque Populaire",
-    logo: "https://www.gbp.ma/sites/default/files/2021-04/logo-bp.png",
+    logo: "/partners/banquepopulaire.png",
     category: "platinum",
     website: "https://www.gbp.ma/",
     description: "Groupe Banque Populaire est l’un des groupes bancaires majeurs au Maroc, reconnu pour son engagement dans le développement territorial et l’accompagnement de ses clients.",
@@ -94,7 +94,7 @@ const partners: Partner[] = [
   {
     id: 10,
     name: "Royal Air Maroc",
-    logo: "https://www.royalairmaroc.com/themes/custom/ram/images/Logo.svg",
+    logo: "/partners/ram.png",
     category: "platinum",
     website: "https://www.royalairmaroc.com/",
     description: "Compagnie aérienne nationale du Maroc, Royal Air Maroc assure une desserte internationale dense et illustre l’engagement du Maroc pour la connectivité mondiale.",
@@ -102,7 +102,7 @@ const partners: Partner[] = [
   {
     id: 11,
     name: "Crédit du Maroc",
-    logo: "https://www.creditdumaroc.ma/Style%20Library/assets/logo-cdm.png",
+    logo: "/partners/creditdumaroc.png",
     category: "platinum",
     website: "https://www.creditdumaroc.ma/",
     description: "Crédit du Maroc est une banque universelle marocaine offrant une gamme complète de services à destination des particuliers, professionnels et entreprises.",
@@ -110,7 +110,7 @@ const partners: Partner[] = [
   {
     id: 12,
     name: "Orange Business",
-    logo: "https://business.orange.ma/img/orange-business-logo.svg",
+    logo: "/partners/orangebusiness.png",
     category: "platinum",
     website: "https://business.orange.ma/",
     description: "Orange Business propose des solutions digitales et télécoms sur-mesure aux entreprises marocaines pour leur transformation numérique.",
@@ -214,62 +214,6 @@ const Partners = () => {
             </motion.div>
           ))}
         </motion.div>
-        {/* Témoignages des partenaires */}
-        <div className="mt-20">
-          <div className="text-center mb-12">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-              Ce que disent nos <span className="text-emerald-800">partenaires</span>
-            </h3>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              Découvrez comment notre collaboration crée de la valeur pour nos partenaires et construit des ponts entre 
-              l'excellence académique et le monde professionnel.
-            </p>
-          </div>
-          {/* Carrousel de témoignages */}
-          <div className="relative">
-            <div className="mx-auto max-w-4xl bg-white  p-8 border border-gray-100">
-              <div className="flex flex-col md:flex-row gap-8 items-center">
-                <div className="w-24 h-24 md:w-32 md:h-32  overflow-hidden flex-shrink-0">
-                  <Image 
-                    src={partners[0].logo}
-                    width={128}
-                    height={128}
-                    alt={partners[0].name}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div>
-                  <svg className="h-10 w-10 text-emerald-100 mb-3" fill="currentColor" viewBox="0 0 32 32">
-                    <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
-                  </svg>
-                  <p className="text-gray-700 mb-4 italic">
-                    "Notre partenariat avec Forum GENI Entreprises a considérablement renforcé notre marque employeur et nous a permis
-                    d'identifier et de recruter des talents exceptionnels. Les événements sont toujours organisés avec 
-                    professionnalisme et nous offrent une valeur inestimable."
-                  </p>
-                  <div>
-                    <h4 className="font-bold text-gray-900">Mohammed Amine El Hajjami</h4>
-                    <p className="text-emerald-800">DRH, OCP</p>
-                  </div>
-                </div>
-              </div>
-              {/* Navigation carrousel (non fonctionnelle) */}
-              <div className="flex justify-center mt-8 gap-2">
-                <button className="w-8 h-8  bg-emerald-100 text-emerald-800 flex items-center justify-center hover:bg-emerald-200 transition-colors">
-                  <ChevronLeft size={16} />
-                </button>
-                <div className="flex gap-1">
-                  <div className="w-2 h-2  bg-emerald-800"></div>
-                  <div className="w-2 h-2  bg-emerald-200"></div>
-                  <div className="w-2 h-2  bg-emerald-200"></div>
-                </div>
-                <button className="w-8 h-8  bg-emerald-100 text-emerald-800 flex items-center justify-center hover:bg-emerald-200 transition-colors">
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
