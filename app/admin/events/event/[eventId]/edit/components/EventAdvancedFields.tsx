@@ -205,14 +205,14 @@ export default function EventAdvancedFields({
           <div className="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
             <p className="text-blue-800 font-medium mb-2">Format JSON attendu :</p>
             <pre className="text-xs text-blue-700 overflow-x-auto">
-{`[
-  {
-    "name": "Nom Sponsor",
-    "logo": "/uploads/sponsors/logo.png",
-    "website": "https://site.com",
-    "tier": "platinum"
-  }
-]`}
+                {`[
+                  {
+                    "name": "Nom Sponsor",
+                    "logo": "/uploads/sponsors/logo.png",
+                    "website": "https://site.com",
+                    "tier": "platinum"
+                  }
+                ]`}
             </pre>
             <p className="text-blue-700 text-xs mt-2">
               Tiers disponibles: <span className="font-semibold">platinum, gold, silver, bronze</span> (optionnel)

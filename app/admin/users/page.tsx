@@ -223,6 +223,7 @@ export default function UsersManagementPage() {
             <option value="all">Tous les rôles</option>
             <option value="super_admin">Super Admin</option>
             <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
             <option value="viewer">Viewer</option>
           </select>
         </div>

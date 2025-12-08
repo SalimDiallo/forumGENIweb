@@ -14,6 +14,7 @@ import EventBasicFields from "./components/EventBasicFields";
 import EventAdvancedFields from "./components/EventAdvancedFields";
 import EventRegistrationFields from "./components/EventRegistrationFields";
 import { useSession } from "@/lib/auth-client";
+import { Form } from "@/components/ui/form";
 
 type FormTab = "basic" | "details" | "registration";
 
@@ -78,13 +79,8 @@ export default function EditEventForm({ event }: EditEventFormProps) {
   const { data: session } = useSession();
   const userRole = (session?.user as any)?.role;
   const isEditor = userRole === "editor";
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    setValue,
-  } = useForm<updateEventSchema>({
+
+  const form = useForm<updateEventSchema>({
     resolver: zodResolver(updateEventSchema),
     defaultValues: {
       id: cleanedDefaultValues.id,
@@ -116,6 +112,9 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     },
   });
 
+  // Extract methods for backward compatibility with components still using register
+  const { register, formState: { errors }, watch, setValue } = form;
+
   const editEventMutation = useMutation({
     mutationFn: async (data: updateEventSchema) => {
       const result = await doEditEvent(data);
@@ -132,8 +131,8 @@ export default function EditEventForm({ event }: EditEventFormProps) {
     }
   });
 
-  const titleValue = watch("title");
-  const slugValue = watch("slug");
+  const titleValue = form.watch("title");
+  const slugValue = form.watch("slug");
 
   const initialTitleRef = useRef<string | undefined>(cleanedDefaultValues?.title);
 
@@ -146,9 +145,9 @@ export default function EditEventForm({ event }: EditEventFormProps) {
         slugValue === slugify(initialTitleRef.current || "")) &&
       autoSlug !== slugValue
     ) {
-      setValue("slug", autoSlug, { shouldValidate: true, shouldDirty: true });
+      form.setValue("slug", autoSlug, { shouldValidate: true, shouldDirty: true });
     }
-  }, [titleValue]);
+  }, [titleValue, slugValue, form]);
 
   const tabs = [
     { id: "basic" as FormTab, label: "Informations de base", icon: FileText },
@@ -165,38 +164,37 @@ export default function EditEventForm({ event }: EditEventFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
-      <div className="space-y-4">
-        {/* Tabs */}
-        <div className="flex border-b border-gray-200">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
-                activeTab === tab.id
-                  ? "border-b-2 border-emerald-600 text-emerald-600"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} autoComplete="off">
+        <div className="space-y-4">
+          {/* Tabs */}
+          <div className="flex border-b border-gray-200">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? "border-b-2 border-emerald-600 text-emerald-600"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-        {/* Tab content */}
-        <div className="max-h-[60vh] overflow-y-auto px-1">
-          {activeTab === "basic" && (
-            <EventBasicFields
-              register={register}
-              errors={errors}
-              setValue={setValue}
-              watch={watch}
-              isEditor={isEditor}
-            />
-          )}
+          {/* Tab content */}
+          <div className="max-h-[60vh] overflow-y-auto px-1">
+            {activeTab === "basic" && (
+              <EventBasicFields
+                control={form.control}
+                errors={form.formState.errors}
+                isEditor={isEditor}
+              />
+            )}
 
           {activeTab === "details" && (
             <EventAdvancedFields
@@ -247,5 +245,6 @@ export default function EditEventForm({ event }: EditEventFormProps) {
         </div>
       </div>
     </form>
+    </Form>
   );
 }
