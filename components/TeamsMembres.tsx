@@ -218,12 +218,12 @@ const bureauMembers2026: BureauMember[] = [
     id: 1003,
     name: "Amal Lahkim",
     role: "Secrétaire Générale",
-    description: "Administration, coordination, archives, communication, réunions.",
+    description: "Biostatistique Démographie et Big Data",
     image: "/team/2026/amal.jpeg",
     level: 2,
     icon: Briefcase,
-    email: "",
-    linkedin: "",
+    email: "lahkimamal3@gmail.com",
+    linkedin: "https://www.linkedin.com/in/amal-l-142799279/",
     bureauYear: "2026"
   },
   // Chefs Conférence
@@ -243,12 +243,12 @@ const bureauMembers2026: BureauMember[] = [
     id: 1009,
     name: "Bahan Karafa Ashley Kevin",
     role: "Chef Cellule Conférence",
-    description: "Conférences, planification, communication, organisation.",
+    description: "Actuariat Finance",
     image: "/team/2026/kevin.jpeg",
     level: 3,
     icon: Calendar,
-    email: "",
-    linkedin: "",
+    email: "Kvnbahan01@gmail.com",
+    linkedin: "https://www.linkedin.com/in/karafa-ashley-kevin-bahan-5302ab337?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
     bureauYear: "2026"
   },
   // Chefs Communication
@@ -342,12 +342,12 @@ const bureauMembers2026: BureauMember[] = [
     id: 1016,
     name: "Nouha El Idrissi",
     role: "Chef Cellule Revue",
-    description: "Revue, éditorial, contenu, qualité, publication.",
+    description: "Economie Appliquee Statistique et Big Data",
     image: "/team/2026/nouha.jpeg",
     level: 3,
     icon: Award,
-    email: "",
-    linkedin: "",
+    email: "nouhaelidrissi165@gmail.com",
+    linkedin: "https://www.linkedin.com/in/nouha-elidrissi-646720247?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
     bureauYear: "2026"
   },
   {
