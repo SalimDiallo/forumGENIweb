@@ -12,6 +12,7 @@ import { updateBlogPostSchema } from "@/lib/validations/blog";
 import type { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 type FormTab = "basic" | "content" | "meta";
 type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>;
@@ -23,6 +24,9 @@ interface EditBlogPostFormProps {
 export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isEditor = userRole === "editor";
 
   const getPostAction = useAction(getBlogPost);
   const updateAction = useAction(updateBlogPost);
@@ -293,11 +297,19 @@ export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
                 <div>
                   <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
                     Statut *
+                    {isEditor && (
+                      <span className="ml-2 text-xs text-amber-600 font-normal">
+                        (Brouillon uniquement)
+                      </span>
+                    )}
                   </label>
                   <select
                     id="status"
                     {...register("status")}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    disabled={isEditor}
+                    className={`w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 focus:border-transparent ${
+                      isEditor ? "bg-gray-100 cursor-not-allowed opacity-60" : ""
+                    }`}
                   >
                     <option value="draft">Brouillon</option>
                     <option value="published">Publié</option>
@@ -305,6 +317,12 @@ export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
                   </select>
                   {errors.status && (
                     <p className="text-red-600 text-sm mt-1">{errors.status.message}</p>
+                  )}
+                  {isEditor && (
+                    <p className="text-amber-600 text-xs mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      En tant qu'éditeur, vous ne pouvez créer que des brouillons
+                    </p>
                   )}
                 </div>
 

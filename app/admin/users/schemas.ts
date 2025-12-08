@@ -5,8 +5,6 @@ import { z } from "zod";
  */
 export const createUserSchema = z.object({
   email: z
-    .string()
-    .min(1, "L'email est requis")
     .email("Email invalide")
     .toLowerCase()
     .trim(),
@@ -27,7 +25,7 @@ export const createUserSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       "Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre"
     ),
-  role: z.enum(["editor", "admin", "super_admin"]),
+  role: z.enum(["editor","editor", "admin", "super_admin"]),
   isActive: z.boolean().default(true),
 });
 
@@ -37,8 +35,6 @@ export const createUserSchema = z.object({
 export const updateUserSchema = z.object({
   id: z.string().min(1, "L'ID est requis"),
   email: z
-    .string()
-    .min(1, "L'email est requis")
     .email("Email invalide")
     .toLowerCase()
     .trim()
@@ -53,7 +49,7 @@ export const updateUserSchema = z.object({
     .min(2, "Le nom complet doit contenir au moins 2 caractères")
     .trim()
     .optional(),
-  role: z.enum(["editor", "admin", "super_admin"]).optional(),
+  role: z.enum(["editor","editor", "admin", "super_admin"]).optional(),
   isActive: z.boolean().optional(),
 });
 

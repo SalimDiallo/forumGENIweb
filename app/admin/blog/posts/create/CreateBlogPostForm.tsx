@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Input from "@/components/ui/InputField";
 import { AlertCircle } from "lucide-react";
+import { useSession } from "@/lib/auth-client";
 
 type FormTab = "basic" | "content" | "meta";
 type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>;
@@ -21,6 +22,9 @@ type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>;
 export default function CreateBlogPostForm() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isEditor = userRole === "editor";
 
   // To prevent hydration issues, track if we're mounted/rendered on client
   const [isMounted, setIsMounted] = useState(false);
@@ -291,8 +295,18 @@ export default function CreateBlogPostForm() {
                 <div>
                   <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
                     Statut *
+                    {isEditor && (
+                      <span className="ml-2 text-xs text-amber-600 font-normal">
+                        (Brouillon uniquement pour les éditeurs)
+                      </span>
+                    )}
                   </label>
-                  <select id="status" {...register("status")} className={`w-full rounded-lg px-4 py-2.5 border ${errors.status ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}>
+                  <select
+                    id="status"
+                    {...register("status")}
+                    disabled={isEditor}
+                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.status ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors ${isEditor ? "bg-gray-100 cursor-not-allowed opacity-60" : ""}`}
+                  >
                     <option value="draft">Brouillon</option>
                     <option value="published">Publié</option>
                     <option value="archived">Archivé</option>
@@ -301,6 +315,12 @@ export default function CreateBlogPostForm() {
                     <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4 flex-shrink-0" />
                       {errors.status.message as string}
+                    </p>
+                  )}
+                  {isEditor && (
+                    <p className="text-amber-600 text-xs mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      En tant qu'éditeur, vous ne pouvez créer que des brouillons
                     </p>
                   )}
                 </div>

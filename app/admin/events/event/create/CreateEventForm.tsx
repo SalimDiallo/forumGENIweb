@@ -13,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createEventSchema } from "./event.create.schema";
 import { doCreateEvent } from "./event.create.action";
 import { useFormToast } from "@/hooks/use-form-toast";
+import { useSession } from "@/lib/auth-client";
 
 type FormTab = "basic" | "details" | "registration";
 
@@ -29,6 +30,9 @@ type CreateEventFormInput = z.infer<typeof createEventSchema>;
 export default function CreateEventForm({}: CreateEventFormProps) {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
   const router = useRouter();
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isEditor = userRole === "editor";
 
   // Gestion du mode édition/auto du slug
   const [slugMode, setSlugMode] = useState<"auto" | "custom">("auto");
@@ -168,27 +172,6 @@ export default function CreateEventForm({}: CreateEventFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="space-y-4">
-        {/* Error Summary */}
-        {hasErrors && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-red-900 mb-1">
-                  Veuillez corriger les erreurs suivantes :
-                </h3>
-                <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
-                  {Object.entries(errors).map(([key, error]) => (
-                    <li key={key}>
-                      <span className="font-medium capitalize">{key}</span>: {error?.message as string}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
           {tabs.map((tab) => (
@@ -321,11 +304,17 @@ export default function CreateEventForm({}: CreateEventFormProps) {
                 <div>
                   <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
                     Statut *
+                    {isEditor && (
+                      <span className="ml-2 text-xs text-amber-600 font-normal">
+                        (Brouillon uniquement pour les éditeurs)
+                      </span>
+                    )}
                   </label>
                   <select
                     id="status"
                     {...register("status")}
-                    className={getInputClasses("status")}
+                    disabled={isEditor}
+                    className={`${getInputClasses("status")} ${isEditor ? "bg-gray-100 cursor-not-allowed opacity-60" : ""}`}
                   >
                     {statusOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -336,6 +325,12 @@ export default function CreateEventForm({}: CreateEventFormProps) {
                   {errors.status && (
                     <p className="text-red-600 text-sm mt-1">
                       {errors.status.message as string}
+                    </p>
+                  )}
+                  {isEditor && (
+                    <p className="text-amber-600 text-xs mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      En tant qu'éditeur, vous ne pouvez créer que des brouillons
                     </p>
                   )}
                 </div>

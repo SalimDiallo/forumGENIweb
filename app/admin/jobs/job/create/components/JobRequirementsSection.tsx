@@ -2,6 +2,7 @@
 import { Control, Controller, UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from "react-hook-form";
 import { useState } from "react";
 import MarkdownEditor from "@/components/MarkdownEditor";
+import { AlertCircle } from "lucide-react";
 
 interface JobRequirementsSectionProps {
   register: UseFormRegister<any>;
@@ -10,6 +11,7 @@ interface JobRequirementsSectionProps {
   watch: UseFormWatch<any>;
   setValue: UseFormSetValue<any>;
   isExecuting?: boolean;
+  isEditor?: boolean;
 }
 
 const educationLevelOptions = [
@@ -149,6 +151,7 @@ export default function JobRequirementsSection({
   control,
   watch,
   setValue,
+  isEditor = false,
   isExecuting,
 }: JobRequirementsSectionProps) {
   return (
@@ -339,10 +342,13 @@ export default function JobRequirementsSection({
         </div>
 
         <div>
-          <FormField label="Statut (optionnel)" error={errors.status?.message}>
+          <FormField label={`Statut (optionnel)${isEditor ? " - Brouillon uniquement" : ""}`} error={errors.status?.message}>
             <select
               {...register("status")}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              disabled={isEditor}
+              className={`w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+                isEditor ? "bg-gray-100 cursor-not-allowed opacity-60" : ""
+              }`}
             >
               <option value="">Sélectionner (optionnel)</option>
               {statusOptions.map((opt) => (
@@ -351,6 +357,12 @@ export default function JobRequirementsSection({
                 </option>
               ))}
             </select>
+            {isEditor && (
+              <p className="text-amber-600 text-xs mt-1 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                En tant qu'éditeur, vous ne pouvez créer que des brouillons
+              </p>
+            )}
           </FormField>
         </div>
 

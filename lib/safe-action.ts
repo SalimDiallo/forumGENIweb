@@ -252,3 +252,18 @@ export const deleteAction = authActionClient
     await requireDeletePermission();
     return next({ ctx });
   });
+
+// ✅ Client pour les editors - peuvent créer mais uniquement en brouillon
+export const editorAction = authActionClient
+  .use(rateLimitMiddleware)
+  .use(async ({ next, ctx }) => {
+    // Vérifier que l'utilisateur est au moins editor
+    const session = await import("./auth").then(mod => mod.requireAuth());
+    const role = (session.user as any).role;
+
+    if (role !== "editor" && role !== "admin" && role !== "super_admin") {
+      throw new ActionError("Accès refusé. Vous devez être au moins éditeur.");
+    }
+
+    return next({ ctx: { ...ctx, userRole: role } });
+  });

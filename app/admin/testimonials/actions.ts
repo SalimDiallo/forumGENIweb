@@ -15,7 +15,7 @@ import { z } from "zod";
  */
 export const listTestimonials = adminAction
   .metadata({ actionName: "list-testimonials" })
-  .schema(
+  .inputSchema(
     z
       .object({
         page: z.number().min(1).default(1),
@@ -47,7 +47,7 @@ export const listTestimonials = adminAction
  */
 export const getTestimonial = adminAction
   .metadata({ actionName: "get-testimonial" })
-  .schema(z.object({ id: z.number().int().positive() }))
+  .inputSchema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
     const testimonial = await prisma.videoTestimonial.findUnique({
       where: { id: parsedInput.id },
@@ -65,7 +65,7 @@ export const getTestimonial = adminAction
  */
 export const createTestimonial = adminAction
   .metadata({ actionName: "create-testimonial" })
-  .schema(videoTestimonialSchema)
+  .inputSchema(videoTestimonialSchema)
   .action(async ({ parsedInput }) => {
     const created = await prisma.videoTestimonial.create({
       data: parsedInput,
@@ -82,7 +82,7 @@ export const createTestimonial = adminAction
  */
 export const updateTestimonial = adminAction
   .metadata({ actionName: "update-testimonial" })
-  .schema(updateVideoTestimonialSchema)
+  .inputSchema(updateVideoTestimonialSchema)
   .action(async ({ parsedInput }) => {
     const { id, ...data } = parsedInput;
 
@@ -102,7 +102,7 @@ export const updateTestimonial = adminAction
  */
 export const deleteTestimonial = adminAction
   .metadata({ actionName: "delete-testimonial" })
-  .schema(deleteVideoTestimonialSchema)
+  .inputSchema(deleteVideoTestimonialSchema)
   .action(async ({ parsedInput }) => {
     await prisma.videoTestimonial.delete({
       where: { id: parsedInput.id },
@@ -119,7 +119,7 @@ export const deleteTestimonial = adminAction
  */
 export const toggleTestimonialActive = adminAction
   .metadata({ actionName: "toggle-testimonial-active" })
-  .schema(z.object({ id: z.number().int().positive() }))
+  .inputSchema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
     const testimonial = await prisma.videoTestimonial.findUnique({
       where: { id: parsedInput.id },
@@ -145,7 +145,7 @@ export const toggleTestimonialActive = adminAction
  */
 export const toggleTestimonialFeatured = adminAction
   .metadata({ actionName: "toggle-testimonial-featured" })
-  .schema(z.object({ id: z.number().int().positive() }))
+  .inputSchema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
     const testimonial = await prisma.videoTestimonial.findUnique({
       where: { id: parsedInput.id },

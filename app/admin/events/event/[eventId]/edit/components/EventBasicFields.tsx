@@ -3,12 +3,14 @@ import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch } from "rea
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { eventTypeOptions, statusOptions } from "@/lib/utils";
 import { updateEventSchema } from "../event.edit.schema";
+import { AlertCircle } from "lucide-react";
 
 interface EventBasicFieldsProps {
   register: UseFormRegister<updateEventSchema>;
   errors: FieldErrors<updateEventSchema>;
   setValue: UseFormSetValue<updateEventSchema>;
   watch: UseFormWatch<updateEventSchema>;
+  isEditor?: boolean;
 }
 
 export default function EventBasicFields({
@@ -16,6 +18,7 @@ export default function EventBasicFields({
   errors,
   setValue,
   watch,
+  isEditor = false,
 }: EventBasicFieldsProps) {
   const descriptionValue = watch("description");
 
@@ -91,11 +94,19 @@ export default function EventBasicFields({
             className="block text-sm font-medium text-gray-700 mb-1"
           >
             Statut *
+            {isEditor && (
+              <span className="ml-2 text-xs text-amber-600 font-normal">
+                (Brouillon uniquement)
+              </span>
+            )}
           </label>
           <select
             id="status"
             {...register("status")}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            disabled={isEditor}
+            className={`w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
+              isEditor ? "bg-gray-100 cursor-not-allowed opacity-60" : ""
+            }`}
           >
             {statusOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -106,6 +117,12 @@ export default function EventBasicFields({
           {errors.status && (
             <p className="text-red-600 text-sm mt-1">
               {errors.status.message}
+            </p>
+          )}
+          {isEditor && (
+            <p className="text-amber-600 text-xs mt-1 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
+              En tant qu'éditeur, vous ne pouvez créer que des brouillons
             </p>
           )}
         </div>

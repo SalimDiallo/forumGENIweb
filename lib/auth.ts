@@ -63,7 +63,7 @@ export const auth = betterAuth({
 });
 
 export type Session = typeof auth.$Infer.Session;
-export type UserRole = "viewer" | "admin" | "super_admin";
+export type UserRole = "viewer" | "editor" | "admin" | "super_admin";
 
 /**
  * Récupère la session de l'utilisateur connecté
@@ -82,6 +82,16 @@ export async function isAdmin(): Promise<boolean> {
   if (!session) return false;
   const role = (session.user as any).role;
   return role === "admin" || role === "super_admin";
+}
+
+/**
+ * Vérifie si l'utilisateur est un editor
+ */
+export async function isEditor(): Promise<boolean> {
+  const session = await getSession();
+  if (!session) return false;
+  const role = (session.user as any).role;
+  return role === "editor";
 }
 
 /**
@@ -124,11 +134,12 @@ export async function requireAuth() {
 
 /**
  * Lance une erreur si l'utilisateur n'est pas admin
+ * Les editors ont aussi accès (avec restrictions sur les statuts)
  */
 export async function requireAdmin() {
   const session = await requireAuth();
   const role = (session.user as any).role;
-  if (role !== "admin" && role !== "super_admin") {
+  if (role !== "admin" && role !== "super_admin" && role !== "editor") {
     throw new AuthError("Accès admin requis");
   }
   return session;
@@ -148,7 +159,7 @@ export async function requireSuperAdmin() {
 
 /**
  * Lance une erreur si l'utilisateur n'a pas la permission d'écrire (créer/modifier)
- * Les viewers ne peuvent que lire, seuls les admins et super admins peuvent modifier
+ * Les viewers ne peuvent que lire, les editors/admins/super admins peuvent modifier
  */
 export async function requireWritePermission() {
   const session = await requireAuth();
@@ -156,7 +167,7 @@ export async function requireWritePermission() {
   if (role === "viewer") {
     throw new AuthError("Vous n'avez pas la permission de modifier. Seuls les administrateurs peuvent effectuer cette action.");
   }
-  if (role !== "admin" && role !== "super_admin") {
+  if (role !== "editor" && role !== "admin" && role !== "super_admin") {
     throw new AuthError("Permission d'écriture refusée");
   }
   return session;
@@ -164,12 +175,12 @@ export async function requireWritePermission() {
 
 /**
  * Lance une erreur si l'utilisateur n'a pas la permission de supprimer
- * Les viewers ne peuvent pas supprimer, seuls les admins et super admins le peuvent
+ * Les viewers et editors ne peuvent pas supprimer, seuls les admins et super admins le peuvent
  */
 export async function requireDeletePermission() {
   const session = await requireAuth();
   const role = (session.user as any).role;
-  if (role === "viewer") {
+  if (role === "viewer" || role === "editor") {
     throw new AuthError("Vous n'avez pas la permission de supprimer. Seuls les administrateurs peuvent effectuer cette action.");
   }
   if (role !== "admin" && role !== "super_admin") {
@@ -217,4 +228,32 @@ export async function updateLastLogin(userId: string) {
   } catch (error) {
     console.error("Erreur lors de la mise à jour de lastLogin:", error);
   }
+}
+
+/**
+ * Vérifie si l'utilisateur peut publier du contenu (non-draft)
+ * Les editors ne peuvent créer que des brouillons
+ */
+export async function canPublish(): Promise<boolean> {
+  const session = await getSession();
+  if (!session) return false;
+  const role = (session.user as any).role;
+  return role === "admin" || role === "super_admin";
+}
+
+/**
+ * Force le statut à "draft" si l'utilisateur est un editor
+ * Retourne le statut original pour les admins et super admins
+ */
+export async function enforceDraftStatusForEditor<T extends string>(status: T): Promise<T> {
+  const session = await getSession();
+  if (!session) return status;
+
+  const role = (session.user as any).role;
+  if (role === "editor") {
+    // Pour les editors, toujours forcer le statut à draft
+    return "draft" as T;
+  }
+
+  return status;
 }

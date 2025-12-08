@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/validations/blog";
 import { z } from "zod";
 import { getCachedBlogPostsPaginated } from "@/lib/cache";
+import { enforceDraftStatusForEditor } from "@/lib/auth";
 
 export const listBlogPosts = actionClient
   .metadata({ actionName: "list-blog-posts" })
@@ -54,10 +55,14 @@ export const createBlogPost = writeAction
 
       const { tagIds, ...postData } = parsedInput;
 
+      // Force le statut à "draft" si l'utilisateur est un editor
+      const finalStatus = await enforceDraftStatusForEditor(parsedInput.status);
+
       const created = await prisma.blogPost.create({
         data: {
           ...postData,
-          publishedAt: parsedInput.status === "published" ? new Date() : null,
+          status: finalStatus,
+          publishedAt: finalStatus === "published" ? new Date() : null,
           // Créer les relations avec les tags
           tags: tagIds && tagIds.length > 0 ? {
             create: tagIds.map((tagId) => ({
@@ -111,7 +116,12 @@ export const updateBlogPost = writeAction
 
       const updateData: any = { ...data };
 
-      if (data.status === "published" && existing?.status !== "published" && !existing?.publishedAt) {
+      // Force le statut à "draft" si l'utilisateur est un editor
+      if (data.status) {
+        updateData.status = await enforceDraftStatusForEditor(data.status);
+      }
+
+      if (updateData.status === "published" && existing?.status !== "published" && !existing?.publishedAt) {
         updateData.publishedAt = new Date();
       }
 

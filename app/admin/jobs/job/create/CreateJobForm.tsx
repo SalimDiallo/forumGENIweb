@@ -17,6 +17,7 @@ import JobApplicationSection from "./components/JobApplicationSection";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 type FormTab = "basic" | "details" | "application";
 
@@ -34,6 +35,9 @@ function slugify(str: string) {
 export default function CreateJobForm() {
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
   const router = useRouter();
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isEditor = userRole === "editor";
 
   const createForm = useForm<z.infer<typeof createJobOfferSchema>>({
     resolver: zodResolver(createJobOfferSchema),
@@ -151,6 +155,7 @@ export default function CreateJobForm() {
               watch={createForm.watch}
               setValue={createForm.setValue}
               isExecuting={createMutation.isPending}
+              isEditor={isEditor}
             />
           )}
 

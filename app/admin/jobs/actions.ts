@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jobs";
 import { z } from "zod";
 import { revalidateTag } from "next/cache";
+import { enforceDraftStatusForEditor } from "@/lib/auth";
 
 export const listJobs = actionClient
   .metadata({ actionName: "list-jobs" })
@@ -18,7 +19,15 @@ export const createJob = writeAction
   .metadata({ actionName: "create-job" })
   .schema(createJobOfferSchema)
   .action(async ({ parsedInput }) => {
-    const created = await prisma.jobOffer.create({ data: parsedInput });
+    // Force le statut à "draft" si l'utilisateur est un editor
+    const finalStatus = parsedInput.status ? await enforceDraftStatusForEditor(parsedInput.status) : undefined;
+
+    const created = await prisma.jobOffer.create({
+      data: {
+        ...parsedInput,
+        status: finalStatus
+      }
+    });
     revalidateTag('jobs');
     return { id: created.id };
   });
@@ -28,7 +37,14 @@ export const updateJob = writeAction
   .schema(updateJobOfferSchema)
   .action(async ({ parsedInput }) => {
     const { id, ...data } = parsedInput;
-    const updated = await prisma.jobOffer.update({ where: { id }, data });
+
+    // Force le statut à "draft" si l'utilisateur est un editor
+    const finalData = { ...data };
+    if (data.status) {
+      finalData.status = await enforceDraftStatusForEditor(data.status);
+    }
+
+    const updated = await prisma.jobOffer.update({ where: { id }, data: finalData });
     revalidateTag('jobs');
     return { id: updated.id };
   });

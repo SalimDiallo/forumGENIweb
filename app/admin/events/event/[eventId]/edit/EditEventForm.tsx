@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import EventBasicFields from "./components/EventBasicFields";
 import EventAdvancedFields from "./components/EventAdvancedFields";
 import EventRegistrationFields from "./components/EventRegistrationFields";
+import { useSession } from "@/lib/auth-client";
 
 type FormTab = "basic" | "details" | "registration";
 
@@ -74,6 +75,9 @@ export default function EditEventForm({ event }: EditEventFormProps) {
   const cleanedDefaultValues = cleanDefaultValues(event);
   console.log(cleanedDefaultValues);
   const router = useRouter();
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isEditor = userRole === "editor";
   const {
     register,
     handleSubmit,
@@ -190,6 +194,7 @@ export default function EditEventForm({ event }: EditEventFormProps) {
               errors={errors}
               setValue={setValue}
               watch={watch}
+              isEditor={isEditor}
             />
           )}
 

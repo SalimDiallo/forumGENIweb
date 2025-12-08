@@ -50,7 +50,7 @@ export const listUsers = actionClient
  */
 export const createUser = superAdminAction
   .metadata({ actionName: "create-user" })
-  .schema(createUserSchema)
+  .inputSchema(createUserSchema)
   .action(async ({ parsedInput }) => {
     const { email, name, fullName, password, role, isActive } = parsedInput;
 
@@ -118,7 +118,7 @@ export const createUser = superAdminAction
  */
 export const updateUser = superAdminAction
   .metadata({ actionName: "update-user" })
-  .schema(updateUserSchema)
+  .inputSchema(updateUserSchema)
   .action(async ({ parsedInput }) => {
     const { id, ...updateData } = parsedInput;
 
@@ -170,7 +170,7 @@ export const updateUser = superAdminAction
  */
 export const toggleUserStatus = superAdminAction
   .metadata({ actionName: "toggle-user-status" })
-  .schema(toggleUserStatusSchema)
+  .inputSchema(toggleUserStatusSchema)
   .action(async ({ parsedInput, ctx }) => {
     const { id, isActive } = parsedInput;
 
@@ -223,7 +223,7 @@ export const toggleUserStatus = superAdminAction
  */
 export const deleteUser = superAdminAction
   .metadata({ actionName: "delete-user" })
-  .schema(deleteUserSchema)
+  .inputSchema(deleteUserSchema)
   .action(async ({ parsedInput, ctx }) => {
     const { id } = parsedInput;
 
@@ -258,7 +258,7 @@ export const deleteUser = superAdminAction
  */
 export const resetUserPassword = superAdminAction
   .metadata({ actionName: "reset-user-password" })
-  .schema(resetPasswordSchema)
+  .inputSchema(resetPasswordSchema)
   .action(async ({ parsedInput }) => {
     const { id, newPassword } = parsedInput;
 

@@ -190,6 +190,7 @@ export default function NewUserPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               >
                 <option value="viewer">Viewer</option>
+                <option value="editor">Editor</option>
                 <option value="admin">Admin</option>
                 <option value="super_admin">Super Admin</option>
               </select>
@@ -225,6 +226,10 @@ export default function NewUserPage() {
             <ul className="text-xs text-gray-600 space-y-1">
               <li>
                 <strong>Viewer:</strong> Peut uniquement consulter le contenu, sans possibilité de modification
+              </li>
+              <li>
+                <strong>Editor:</strong> Accès complet sauf gestion des
+                utilisateurs et publication directe
               </li>
               <li>
                 <strong>Admin:</strong> Accès complet sauf gestion des
