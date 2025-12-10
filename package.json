@@ -15,7 +15,7 @@
     "prisma:reset": "prisma migrate reset",
     "db:seed": "tsx scripts/create-admin.ts",
     "create-admin": "tsx scripts/create-admin.ts",
-    "vercel-build": "prisma generate && prisma migrate deploy && tsx scripts/create-admin.ts && next build"
+    "vercel-build": "prisma generate && tsx scripts/create-admin.ts && next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
