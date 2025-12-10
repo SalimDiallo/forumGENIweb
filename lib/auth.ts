@@ -15,7 +15,7 @@ import { prisma } from "./db";
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
-    provider: "sqlite",
+    provider: "postgresql",
   }),
   emailAndPassword: {
     enabled: true,
@@ -57,9 +57,14 @@ export const auth = betterAuth({
     crossSubDomainCookies: {
       enabled: false,
     },
+    defaultCookieAttributes: {
+      sameSite: "lax",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    },
   },
   basePath: "/api/auth",
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3001",
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
 });
 
 export type Session = typeof auth.$Infer.Session;

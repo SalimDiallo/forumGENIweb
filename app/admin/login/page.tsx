@@ -41,10 +41,11 @@ export default function AdminLoginPage() {
         setIsLoading(false);
       } else {
         toast.success("Connexion réussie !");
-        // Attendre un peu plus longtemps pour que le cookie soit bien set
+        // Attendre que le cookie de session soit bien propagé avant de rediriger
+        // En production, le délai peut être plus long à cause de la latence réseau
         setTimeout(() => {
           window.location.href = "/admin";
-        }, 1000);
+        }, 2000);
       }
     } catch (err: any) {
       const errorMessage = err?.message || "Une erreur est survenue";
