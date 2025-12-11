@@ -109,7 +109,7 @@ export function useForm<T extends Record<string, any>>({
   validateOnBlur = false,
 }: UseFormOptions<T>): UseFormReturn<T> {
   // State
-  const [values, setValues] = useState<T>(initialValues);
+  const [values, setValuesState] = useState<T>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<FormTouched>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -174,7 +174,7 @@ export function useForm<T extends Record<string, any>>({
   // Set field value
   const setFieldValue = useCallback(
     (field: keyof T, value: any) => {
-      setValues((prev) => {
+      setValuesState((prev) => {
         const newValues = { ...prev, [field]: value };
         return newValues;
       });
@@ -253,9 +253,14 @@ export function useForm<T extends Record<string, any>>({
     [values, validateForm]
   );
 
+  // Set multiple field values
+  const setValues = useCallback((newValues: Partial<T>) => {
+    setValuesState((prev) => ({ ...prev, ...newValues }));
+  }, []);
+
   // Reset form
   const resetForm = useCallback(() => {
-    resetFormState(initialValues, setValues, setErrors, setTouched);
+    resetFormState(initialValues, setValuesState, setErrors, setTouched);
   }, [initialValues]);
 
   return {
