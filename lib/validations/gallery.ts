@@ -20,7 +20,10 @@ export const videoGallerySchema = z.object({
       'Le lien doit être une URL YouTube valide'
     ),
   thumbnailUrl: z.string().url('URL invalide').optional().nullable().or(z.literal('')),
-  eventId: z.coerce.number().int().positive().optional().nullable(),
+  eventId: z.preprocess(
+    (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
+    z.number().int().positive().optional()
+  ),
   eventName: z.string().optional().nullable(),
   eventYear: z.coerce
     .number()
@@ -70,7 +73,10 @@ export const photoGallerySchema = z.object({
       'Le lien doit être une URL Google Drive valide'
     ),
   thumbnailUrl: z.string().url('URL invalide').optional().nullable().or(z.literal('')),
-  eventId: z.coerce.number().int().positive().optional().nullable(),
+  eventId: z.preprocess(
+    (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
+    z.number().int().positive().optional()
+  ),
   eventName: z.string().optional().nullable(),
   eventYear: z.coerce
     .number()
@@ -95,6 +101,18 @@ export type UpdatePhotoGalleryInput = z.infer<typeof updatePhotoGallerySchema>;
 
 export const deletePhotoGallerySchema = z.object({
   id: z.number().int().positive(),
+});
+
+// =====================================
+// BULK DELETE SCHEMAS
+// =====================================
+
+export const bulkDeleteVideosSchema = z.object({
+  ids: z.array(z.number().int().positive()).min(1, 'Sélectionnez au moins une vidéo'),
+});
+
+export const bulkDeletePhotosSchema = z.object({
+  ids: z.array(z.number().int().positive()).min(1, 'Sélectionnez au moins une photo'),
 });
 
 // =====================================

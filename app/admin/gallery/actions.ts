@@ -9,6 +9,8 @@ import {
   photoGallerySchema,
   updatePhotoGallerySchema,
   deletePhotoGallerySchema,
+  bulkDeleteVideosSchema,
+  bulkDeletePhotosSchema,
 } from "@/lib/validations/gallery";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
@@ -177,4 +179,44 @@ export const deletePhoto = adminAction
     revalidateTag("events");
 
     return { ok: true };
+  });
+
+// =====================================
+// BULK DELETE ACTIONS
+// =====================================
+
+export const bulkDeleteVideos = adminAction
+  .metadata({ actionName: "bulk-delete-gallery-videos" })
+  .schema(bulkDeleteVideosSchema)
+  .action(async ({ parsedInput }) => {
+    const { ids } = parsedInput;
+
+    const deleted = await prisma.videoGallery.deleteMany({
+      where: { id: { in: ids } },
+    });
+
+    revalidatePath("/gallery");
+    revalidatePath("/admin/gallery");
+    revalidateTag("media");
+    revalidateTag("events");
+
+    return { ok: true, count: deleted.count };
+  });
+
+export const bulkDeletePhotos = adminAction
+  .metadata({ actionName: "bulk-delete-gallery-photos" })
+  .schema(bulkDeletePhotosSchema)
+  .action(async ({ parsedInput }) => {
+    const { ids } = parsedInput;
+
+    const deleted = await prisma.photoGallery.deleteMany({
+      where: { id: { in: ids } },
+    });
+
+    revalidatePath("/gallery");
+    revalidatePath("/admin/gallery");
+    revalidateTag("media");
+    revalidateTag("events");
+
+    return { ok: true, count: deleted.count };
   });

@@ -1,266 +1,273 @@
 "use client";
-import { useAction } from "next-safe-action/hooks";
-import { listContacts, updateContact } from "../actions";
-import { useEffect, useCallback, useState, useMemo } from "react";
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { listContacts, updateContactStatus } from "../actions";
+import { useState, useMemo } from "react";
 import type { ContactMessage } from "@/lib/generated/prisma";
 import { toast } from "sonner";
-import { Pagination } from "@/components/admin/Pagination";
-import { Mail, User2, Phone } from "lucide-react";
+import { Mail, User2, Phone, Clock, Tag, ChevronLeft, Inbox, Star, Archive, Trash2, Reply } from "lucide-react";
 import { DeleteContactButton } from "./DeleteContactButton";
 
-// NOTE: No reference to createC in this file. Error resolved.
-
 export default function AdminContactsPage() {
-  const contacts = useAction(listContacts);
-  const updateC = useAction(updateContact);
+  const queryClient = useQueryClient();
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [filter, setFilter] = useState<string>("all");
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  // Charger les données au montage
-  useEffect(() => {
-    contacts.execute();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Recharger après modification
-  useEffect(() => {
-    if (updateC.status === "hasSucceeded") {
-      contacts.execute();
-      toast.success("Statut mis à jour avec succès");
-    } else if (updateC.status === "hasErrored") {
-      toast.error(updateC.result?.serverError ?? "Erreur lors de la mise à jour");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateC.status]);
-
-  const handleRefresh = useCallback(() => {
-    contacts.execute();
-  }, [contacts]);
-
-  const handleStatusChange = useCallback(
-    (id: number, newStatus: "new" | "in_progress" | "resolved" | "closed") => {
-      updateC.execute({ id, status: newStatus });
+  const { data: messagesData, isLoading, refetch } = useQuery({
+    queryKey: ["crm-contacts"],
+    queryFn: async () => {
+      const result = await listContacts();
+      return result?.data?.messages || [];
     },
-    [updateC]
-  );
+  });
 
-  const isLoading = contacts.status === "executing";
-  const allMessages: ContactMessage[] = contacts.result?.data?.messages ?? [];
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      return await updateContactStatus({ id, status } as any);
+    },
+    onSuccess: () => {
+      toast.success("Statut mis à jour");
+      refetch();
+    },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour");
+    },
+  });
 
-  // Calcul stats statuts
+  const messages: ContactMessage[] = messagesData || [];
+
+  const filteredMessages = useMemo(() => {
+    if (filter === "all") return messages;
+    return messages.filter((m) => m.status === filter);
+  }, [messages, filter]);
+
+  const selectedMessage = useMemo(() => {
+    return messages.find((m) => m.id === selectedId) || null;
+  }, [messages, selectedId]);
+
   const statusStats = useMemo(() => {
-    let stats = {
-      new: 0,
-      in_progress: 0,
-      resolved: 0,
-      closed: 0,
-      total: allMessages.length
+    return {
+      all: messages.length,
+      new: messages.filter((m) => m.status === "new").length,
+      in_progress: messages.filter((m) => m.status === "in_progress").length,
+      resolved: messages.filter((m) => m.status === "resolved").length,
     };
-    for (const msg of allMessages) {
-      if (msg.status in stats) {
-        stats[msg.status as "new" | "in_progress" | "resolved" | "closed"]++;
-      }
-    }
-    return stats;
-  }, [allMessages]);
+  }, [messages]);
 
-  // Pagination
-  const totalPages = Math.ceil(allMessages.length / itemsPerPage) || 1;
-  const paginatedMessages = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return allMessages.slice(startIndex, startIndex + itemsPerPage);
-  }, [allMessages, currentPage, itemsPerPage]);
-
-  return (
-    <div className="space-y-6">
-      {/* Statistiques compactes */}
-      <section className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <StatBox color="white" label="Total" value={statusStats.total} />
-        <StatBox color="blue" label="Nouveaux" value={statusStats.new} />
-        <StatBox color="yellow" label="En cours" value={statusStats.in_progress} />
-        <StatBox color="green" label="Résolus" value={statusStats.resolved} />
-        <StatBox color="gray" label="Fermés" value={statusStats.closed} />
-      </section>
-
-      {/* Liste des messages */}
-      <section className="bg-white rounded-lg border shadow-sm overflow-hidden">
-        <div className="p-4 border-b flex items-center justify-between flex-wrap gap-2">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-blue-500" />
-            Messages ({allMessages.length})
-          </h2>
-        </div>
-
-        <div className="p-2 sm:p-4">
-          {isLoading && (
-            <div className="flex items-center justify-center py-24">
-              <div className="animate-spin  h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          )}
-          {!isLoading && allMessages.length === 0 && (
-            <div className="flex flex-col items-center py-24 text-gray-400">
-              <Mail className="h-10 w-10 mb-2" />
-              <p className="text-base">Aucun message reçu</p>
-              <p className="text-xs mt-1">
-                Les messages de contact s&apos;afficheront ici
-              </p>
-            </div>
-          )}
-
-          {!isLoading && paginatedMessages.length > 0 && (
-            <div className="flex flex-col gap-2">
-              {paginatedMessages.map((m) => {
-                const statusColors: Record<typeof m.status, string> = {
-                  new: "bg-blue-100 text-blue-800",
-                  in_progress: "bg-yellow-100 text-yellow-800",
-                  resolved: "bg-green-100 text-green-800",
-                  closed: "bg-gray-100 text-gray-800"
-                };
-
-                const priorityColors: Record<typeof m.priority, string> = {
-                  low: "bg-gray-100 text-gray-600",
-                  normal: "bg-blue-100 text-blue-600",
-                  high: "bg-orange-100 text-orange-600",
-                  urgent: "bg-red-100 text-red-600"
-                };
-
-                const categoryLabels: Record<typeof m.category, string> = {
-                  general: "Général",
-                  technical: "Technique",
-                  press: "Presse",
-                  event: "Événement",
-                  career: "Carrière"
-                };
-
-                const statusLabels: Record<typeof m.status, string> = {
-                  new: "Nouveau",
-                  in_progress: "En cours",
-                  resolved: "Résolu",
-                  closed: "Fermé"
-                };
-
-                return (
-                  <article
-                    key={m.id}
-                    className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-gray-50 hover:bg-blue-50/10 rounded-md px-3 py-3 transition-all shadow-sm border border-gray-100"
-                  >
-                    <div className="flex-1 min-w-0 flex flex-col gap-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${statusColors[m.status]}`}
-                        >
-                          {statusLabels[m.status]}
-                        </span>
-                        <span
-                          className={`px-2 py-0.5 rounded-lg text-xs font-medium capitalize ${priorityColors[m.priority]}`}
-                        >
-                          {m.priority}
-                        </span>
-                        <span className="px-2 py-0.5 rounded-lg text-xs font-medium bg-purple-100 text-purple-800">
-                          {categoryLabels[m.category]}
-                        </span>
-                        <span className="text-xs text-gray-400 ml-auto sm:ml-0">
-                          {new Date(m.createdAt).toLocaleDateString("fr-FR")} à{" "}
-                          {new Date(m.createdAt).toLocaleTimeString("fr-FR", {
-                            hour: "2-digit",
-                            minute: "2-digit"
-                          })}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-700 mb-1">
-                        <User2 className="w-4 h-4 text-gray-400" />
-                        <span className="font-semibold">{m.name}</span>
-                        <span className="text-sm text-blue-800 ml-2 flex items-center gap-1">
-                          <Mail className="w-3 h-3" /> {m.email}
-                        </span>
-                        {m.phone && (
-                          <span className="text-sm text-gray-700 ml-2 flex items-center gap-1">
-                            <Phone className="w-3 h-3" /> {m.phone}
-                          </span>
-                        )}
-                      </div>
-                      <div className="font-bold text-gray-900 text-sm mb-0.5">
-                        {m.subject}
-                      </div>
-                      <div className="text-sm text-gray-700 mb-1 line-clamp-2">
-                        {m.message}
-                      </div>
-                    </div>
-                    <div className="flex flex-row items-center gap-2 self-end sm:self-center sm:justify-end">
-                      <select
-                        value={m.status}
-                        onChange={(e) =>
-                          handleStatusChange(
-                            m.id,
-                            e.target.value as
-                              | "new"
-                              | "in_progress"
-                              | "resolved"
-                              | "closed"
-                          )
-                        }
-                        disabled={updateC.status === "executing"}
-                        className={`px-2 py-1 rounded-lg text-xs border border-gray-200 font-medium transition-colors disabled:opacity-50 cursor-pointer ${statusColors[m.status]}`}
-                        style={{ minWidth: 90 }}
-                        title="Changer le statut"
-                      >
-                        <option value="new">Nouveau</option>
-                        <option value="in_progress">En cours</option>
-                        <option value="resolved">Résolu</option>
-                        <option value="closed">Fermé</option>
-                      </select>
-                      <DeleteContactButton
-                        contactId={m.id}
-                        contactName={m.name}
-                        onSuccess={handleRefresh}
-                      />
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {!isLoading && allMessages.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            itemsPerPage={itemsPerPage}
-            totalItems={allMessages.length}
-          />
-        )}
-      </section>
-    </div>
-  );
-}
-
-// Petit composant pour les stats UX
-function StatBox({
-  color,
-  label,
-  value,
-}: {
-  color: "white" | "blue" | "yellow" | "green" | "gray";
-  label: string;
-  value: number;
-}) {
-  const colors: Record<
-    "white" | "blue" | "yellow" | "green" | "gray",
-    string
-  > = {
-    white: "bg-white text-gray-800 border",
-    blue: "bg-blue-50 text-blue-800 border-blue-200 border",
-    yellow: "bg-yellow-50 text-yellow-800 border-yellow-200 border",
-    green: "bg-green-50 text-green-800 border-green-200 border",
-    gray: "bg-gray-50 text-gray-800 border-gray-200 border"
+  const handleStatusChange = (id: number, status: string) => {
+    updateMutation.mutate({ id, status });
   };
+
+  const formatDate = (date: Date) => {
+    const d = new Date(date);
+    const today = new Date();
+    if (d.toDateString() === today.toDateString()) {
+      return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    }
+    return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  };
+
   return (
-    <div className={`${colors[color]} p-3 rounded-md flex flex-col items-center`}>
-      <div className="text-xs mb-0.5 font-medium">{label}</div>
-      <div className="text-xl font-extrabold">{value}</div>
+    <div className="h-[calc(100vh-120px)] flex flex-col">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-4">
+        <h1 className="text-xl font-bold text-gray-900">Messages</h1>
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          {[
+            { key: "all", label: "Tous", count: statusStats.all },
+            { key: "new", label: "Nouveaux", count: statusStats.new },
+            { key: "in_progress", label: "En cours", count: statusStats.in_progress },
+            { key: "resolved", label: "Résolus", count: statusStats.resolved },
+          ].map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filter === f.key
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+                }`}
+            >
+              {f.label}
+              {f.count > 0 && (
+                <span className={`ml-1.5 text-xs ${filter === f.key ? "text-blue-600" : "text-gray-400"}`}>
+                  {f.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Gmail-style layout */}
+      <div className="flex-1 flex bg-white border border-gray-200 rounded-xl overflow-hidden">
+        {/* Message List - Left Panel */}
+        <div className={`${selectedMessage ? "hidden md:flex" : "flex"} flex-col w-full md:w-96 border-r border-gray-200`}>
+          {isLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+            </div>
+          ) : filteredMessages.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
+              <Inbox className="w-16 h-16 mb-3" />
+              <p className="text-lg font-medium">Aucun message</p>
+            </div>
+          ) : (
+            <div className="flex-1 overflow-y-auto">
+              {filteredMessages.map((m) => (
+                <div
+                  key={m.id}
+                  onClick={() => setSelectedId(m.id)}
+                  className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${selectedId === m.id
+                    ? "bg-blue-50 border-l-2 border-l-blue-500"
+                    : m.status === "new"
+                      ? "bg-white hover:bg-gray-50 font-semibold"
+                      : "bg-gray-50/50 hover:bg-gray-100"
+                    }`}
+                >
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${m.status === "new" ? "bg-blue-500" :
+                      m.status === "in_progress" ? "bg-amber-500" :
+                        m.status === "resolved" ? "bg-emerald-500" : "bg-gray-400"
+                      }`}>
+                      {m.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className={`truncate ${m.status === "new" ? "font-bold text-gray-900" : "text-gray-700"}`}>
+                          {m.name}
+                        </span>
+                        <span className="text-xs text-gray-400 ml-2 whitespace-nowrap">
+                          {formatDate(m.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className={`text-sm truncate ${m.status === "new" ? "text-gray-900" : "text-gray-600"}`}>
+                    {m.subject}
+                  </p>
+                  <p className="text-xs text-gray-400 truncate mt-0.5">
+                    {m.message.substring(0, 80)}...
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Message Detail - Right Panel */}
+        <div className={`${selectedMessage ? "flex" : "hidden md:flex"} flex-1 flex-col`}>
+          {selectedMessage ? (
+            <>
+              {/* Detail Header */}
+              <div className="p-4 border-b border-gray-200 flex items-center gap-3">
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div className="flex-1">
+                  <h2 className="text-lg font-bold text-gray-900">{selectedMessage.subject}</h2>
+                </div>
+                <select
+                  value={selectedMessage.status}
+                  onChange={(e) => handleStatusChange(selectedMessage.id, e.target.value)}
+                  disabled={updateMutation.isPending}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${selectedMessage.status === "new" ? "bg-blue-50 text-blue-700 border-blue-200" :
+                    selectedMessage.status === "in_progress" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                      selectedMessage.status === "resolved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                        "bg-gray-50 text-gray-700 border-gray-200"
+                    }`}
+                >
+                  <option value="new">Nouveau</option>
+                  <option value="in_progress">En cours</option>
+                  <option value="resolved">Résolu</option>
+                  <option value="closed">Fermé</option>
+                </select>
+                <DeleteContactButton
+                  contactId={selectedMessage.id}
+                  contactName={selectedMessage.name}
+                  onSuccess={() => {
+                    setSelectedId(null);
+                    refetch();
+                  }}
+                />
+              </div>
+
+              {/* Sender Info */}
+              <div className="p-4 border-b border-gray-100 flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
+                  {selectedMessage.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-bold text-gray-900">{selectedMessage.name}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${selectedMessage.category === "general" ? "bg-gray-100 text-gray-600" :
+                      selectedMessage.category === "technical" ? "bg-purple-100 text-purple-600" :
+                        selectedMessage.category === "press" ? "bg-pink-100 text-pink-600" :
+                          selectedMessage.category === "event" ? "bg-blue-100 text-blue-600" :
+                            "bg-amber-100 text-amber-600"
+                      }`}>
+                      {selectedMessage.category === "general" ? "Général" :
+                        selectedMessage.category === "technical" ? "Technique" :
+                          selectedMessage.category === "press" ? "Presse" :
+                            selectedMessage.category === "event" ? "Événement" : "Carrière"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
+                      {selectedMessage.email}
+                    </span>
+                    {selectedMessage.phone && (
+                      <span className="flex items-center gap-1">
+                        <Phone className="w-4 h-4" />
+                        {selectedMessage.phone}
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      {new Date(selectedMessage.createdAt).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Message Body */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="prose prose-gray max-w-none">
+                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                    {selectedMessage.message}
+                  </p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="p-4 border-t border-gray-200 flex items-center gap-3">
+                <a
+                  href={`mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject}`}
+                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Reply className="w-4 h-4" />
+                  Répondre
+                </a>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
+              <Mail className="w-20 h-20 mb-4" />
+              <p className="text-lg font-medium">Sélectionnez un message</p>
+              <p className="text-sm">Cliquez sur un message pour voir les détails</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

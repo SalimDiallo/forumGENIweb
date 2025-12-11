@@ -52,7 +52,7 @@ export default async function AdminGalleryPage({ searchParams }: PageProps) {
     <div className="space-y-6">
       {/* Header */}
       <section className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Gestion de la Galerie
@@ -61,13 +61,22 @@ export default async function AdminGalleryPage({ searchParams }: PageProps) {
               {totalVideos} vidéo(s) • {totalPhotos} photo(s)
             </p>
           </div>
-          <Link
-            href={`/admin/gallery/create?type=${activeTab}`}
-            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Ajouter {activeTab === "videos" ? "une vidéo" : "une photo"}
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/admin/gallery/bulk?type=${activeTab === "videos" ? "video" : "photo"}`}
+              className="flex items-center gap-2 border border-gray-300 text-gray-700 rounded-lg px-4 py-2.5 font-medium hover:bg-gray-50 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Multiple
+            </Link>
+            <Link
+              href={`/admin/gallery/create?type=${activeTab}`}
+              className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-2.5 font-medium hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Ajouter {activeTab === "videos" ? "une vidéo" : "une photo"}
+            </Link>
+          </div>
         </div>
       </section>
 

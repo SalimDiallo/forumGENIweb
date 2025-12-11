@@ -34,37 +34,3 @@ export function slugify(str: string) {
     .replace(/(^-|-$)+/g, "")
     .replace(/-+/g, "-");
 }
-
-
-
-// Helper to render error messages for each input (array or non-array)
-export function renderErrors(field: string, errorObj: any): React.ReactNode | null {
-  if (!errorObj) return null;
-  // If errorObj is an array (for array fields), map over its items
-  if (Array.isArray(errorObj)) {
-    return errorObj
-      .filter(Boolean)
-      .map((item, idx) => (
-        <p key={idx} className="text-red-600 text-sm mt-1 flex items-center gap-1">
-          <AlertCircle className="w-4 h-4" />
-          {item?.message}
-        </p>
-      ));
-  }
-  // If errorObj has a message field (normal case)
-  if (errorObj.message) {
-    return (
-    <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
-          <AlertCircle className="w-4 h-4" />
-          {errorObj.message}
-        </p>
-      );
-  }
-  // Deep nested errors (for objects)
-  if (typeof errorObj === "object") {
-    return Object.values(errorObj)
-      .map((val: any, idx) => renderErrors(`${field}-sub${idx}`, val) as React.ReactNode)
-      .filter(Boolean);
-  }
-  return null;
-}

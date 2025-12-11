@@ -1,23 +1,36 @@
 import { z } from "zod";
 
+// Helper to transform string "true"/"false" to boolean
+const stringToBoolean = z.union([
+  z.boolean(),
+  z.string().transform((val) => val === "true" ? true : val === "false" ? false : undefined),
+]).optional();
+
+// Helper to transform string to number
+const stringToNumber = z.union([
+  z.number(),
+  z.string().transform((val) => val === "" ? undefined : Number(val)),
+  z.nan().transform(() => undefined),
+]).optional();
+
 const baseJobOfferSchema = z.object({
-  title: z.string().min(2),
-  slug: z.string().min(2),
-  companyName: z.string().min(1),
+  title: z.string().min(2, "Le titre doit contenir au moins 2 caractères"),
+  slug: z.string().min(2, "Le slug doit contenir au moins 2 caractères"),
+  companyName: z.string().min(1, "Le nom de l'entreprise est requis"),
   companyLogo: z.string().optional(),
   companyWebsite: z.string().optional(),
   industry: z.string().optional(),
   jobType: z.string().optional(),
   location: z.string().optional(),
-  isRemote: z.boolean().optional(),
-  salaryMin: z.number().optional().or(z.nan().transform(() => undefined)),
-  salaryMax: z.number().optional().or(z.nan().transform(() => undefined)),
+  isRemote: stringToBoolean,
+  salaryMin: stringToNumber,
+  salaryMax: stringToNumber,
   salaryCurrency: z.string().optional(),
   salaryPeriod: z.string().optional(),
   description: z.string().optional(),
   requirements: z.string().optional(),
   benefits: z.string().optional(),
-  applicationEmail: z.email().optional().or(z.literal("")),
+  applicationEmail: z.string().email("Email invalide").optional().or(z.literal("")),
   applicationUrl: z.string().optional(),
   applicationPhone: z.string().optional(),
   applicationDeadline: z.string().optional(),
@@ -28,7 +41,7 @@ const baseJobOfferSchema = z.object({
   skillsRequired: z.string().optional(),
   languagesRequired: z.string().optional(),
   status: z.string().optional(),
-  isFeatured: z.boolean().optional(),
+  isFeatured: stringToBoolean,
 });
 
 export const createJobOfferSchema = baseJobOfferSchema.transform((data) => ({

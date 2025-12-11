@@ -1,7 +1,7 @@
 "use server";
 import { actionClient, writeAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
-import { createTagSchema, updateTagSchema } from "@/lib/validations/blog";
+import { createTagSchema, updateTagSchema, tagIdSchema } from "@/lib/validations/blog";
 
 export const listTags = actionClient
   .metadata({ actionName: "list-tags" })
@@ -77,7 +77,7 @@ export const updateTag = writeAction
 
 export const deleteTag = deleteAction
   .metadata({ actionName: "delete-tag" })
-  .schema(updateTagSchema.pick({ id: true }))
+  .schema(tagIdSchema)
   .action(async ({ parsedInput }) => {
     try {
       // Vérifier si le tag existe

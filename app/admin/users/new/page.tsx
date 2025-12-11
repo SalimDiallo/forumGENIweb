@@ -1,52 +1,107 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAction } from "next-safe-action/hooks";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { createUser } from "../actions";
-import { createUserSchema, type CreateUserInput } from "../schemas";
-import { ArrowLeft, Loader2, Eye, EyeOff, UserPlus } from "lucide-react";
+import { createUserSchema } from "../schemas";
+import {
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  UserPlus,
+  Mail,
+  User,
+  Shield,
+  Check,
+  AlertCircle,
+  Save,
+} from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "@/hooks/useForm";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { formatErrorsForToast } from "@/lib/form-utils";
+
+type FormValues = {
+  email: string;
+  name: string;
+  fullName: string;
+  password: string;
+  role: string;
+  isActive: boolean;
+};
+
+const roleOptions = [
+  { value: "viewer", label: "👁️ Viewer", description: "Consultation uniquement" },
+  { value: "editor", label: "✏️ Editor", description: "Création et édition" },
+  { value: "admin", label: "🛡️ Admin", description: "Accès complet (hors utilisateurs)" },
+  { value: "super_admin", label: "👑 Super Admin", description: "Accès total" },
+];
 
 export default function NewUserPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const createUserAction = useAction(createUser, {
-    onSuccess: ({ data }) => {
-      if (data?.message) {
-        toast.success(data.message);
+
+  const initialValues: FormValues = {
+    email: "",
+    name: "",
+    fullName: "",
+    password: "",
+    role: "admin",
+    isActive: true,
+  };
+
+  const form = useForm<FormValues>({
+    initialValues,
+    validationSchema: createUserSchema as any,
+    validateOnChange: true,
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (data: FormValues) => {
+      return await createUser(data as any);
+    },
+    onSuccess: (result) => {
+      if (result?.data?.message) {
+        toast.success(result.data.message);
         router.push("/admin/users");
         router.refresh();
+      } else if (result?.serverError) {
+        toast.error(result.serverError);
       }
     },
-    onError: ({ error }) => {
-      toast.error(error.serverError || "Erreur lors de la création");
+    onError: (error: any) => {
+      toast.error(error?.message || "Erreur lors de la création");
     },
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CreateUserInput>({
-    resolver: zodResolver(createUserSchema),
-    defaultValues: {
-      isActive: true,
-      role: "admin",
-    },
+  const handleSubmit = form.handleSubmit(async (values) => {
+    if (!form.isValid) {
+      const errorMessages = formatErrorsForToast(form.errors, 4);
+      toast.error(
+        <div>
+          <strong>Veuillez corriger les erreurs :</strong>
+          <ul className="list-disc list-inside pl-2 text-xs mt-1 space-y-0.5">
+            {errorMessages.map((msg, idx) => (
+              <li key={idx}>{msg}</li>
+            ))}
+          </ul>
+        </div>
+      );
+      return;
+    }
+    mutation.mutate(values);
   });
 
-  const onSubmit = async (data: CreateUserInput) => {
-    createUserAction.execute(data);
-  };
+  const errorCount = Object.keys(form.errors).length;
+  const selectedRole = roleOptions.find((r) => r.value === form.values.role);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div className="flex items-center gap-4">
           <Link
             href="/admin/users"
@@ -54,110 +109,94 @@ export default function NewUserPage() {
           >
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <UserPlus className="w-8 h-8 text-gray-900" />
-              <h1 className="text-3xl font-bold text-gray-900">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl">
+              <UserPlus className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
                 Créer un utilisateur
               </h1>
+              <p className="text-gray-600">
+                Ajoutez un nouvel administrateur à la plateforme
+              </p>
             </div>
-            <p className="text-gray-600">
-              Ajoutez un nouvel utilisateur administrateur à la plateforme
-            </p>
           </div>
         </div>
       </div>
 
       {/* Form */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Email */}
             <div className="md:col-span-2">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label className="block font-medium mb-2 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-gray-400" />
                 Email <span className="text-red-500">*</span>
               </label>
-              <input
-                {...register("email")}
+              <Input
+                value={form.values.email}
+                onChange={(e) => form.setFieldValue("email", e.target.value)}
+                onBlur={() => form.setFieldTouched("email")}
                 type="email"
-                id="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 placeholder="admin@example.com"
+                error={form.hasError("email")}
+                errorMessage={form.getError("email")}
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.email.message}
-                </p>
-              )}
             </div>
 
             {/* Name */}
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Nom d&apos;affichage <span className="text-red-500">*</span>
+              <label className="block font-medium mb-2 flex items-center gap-2">
+                <User className="w-4 h-4 text-gray-400" />
+                Nom d'affichage <span className="text-red-500">*</span>
               </label>
-              <input
-                {...register("name")}
-                type="text"
-                id="name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              <Input
+                value={form.values.name}
+                onChange={(e) => form.setFieldValue("name", e.target.value)}
+                onBlur={() => form.setFieldTouched("name")}
                 placeholder="Jean Dupont"
+                error={form.hasError("name")}
+                errorMessage={form.getError("name")}
               />
-              {errors.name && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.name.message}
-                </p>
-              )}
             </div>
 
             {/* Full Name */}
             <div>
-              <label
-                htmlFor="fullName"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label className="block font-medium mb-2">
                 Nom complet <span className="text-red-500">*</span>
               </label>
-              <input
-                {...register("fullName")}
-                type="text"
-                id="fullName"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder="Jean Dupont"
+              <Input
+                value={form.values.fullName}
+                onChange={(e) => form.setFieldValue("fullName", e.target.value)}
+                onBlur={() => form.setFieldTouched("fullName")}
+                placeholder="Jean-Pierre Dupont"
+                error={form.hasError("fullName")}
+                errorMessage={form.getError("fullName")}
               />
-              {errors.fullName && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.fullName.message}
-                </p>
-              )}
             </div>
 
             {/* Password */}
             <div className="md:col-span-2">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label className="block font-medium mb-2">
                 Mot de passe <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <input
-                  {...register("password")}
+                <Input
+                  value={form.values.password}
+                  onChange={(e) => form.setFieldValue("password", e.target.value)}
+                  onBlur={() => form.setFieldTouched("password")}
                   type={showPassword ? "text" : "password"}
-                  id="password"
-                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   placeholder="••••••••"
+                  error={form.hasError("password")}
+                  errorMessage={form.getError("password")}
+                  className="pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -166,11 +205,6 @@ export default function NewUserPage() {
                   )}
                 </button>
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.password.message}
-                </p>
-              )}
               <p className="mt-1 text-xs text-gray-500">
                 Minimum 8 caractères avec majuscule, minuscule et chiffre
               </p>
@@ -178,98 +212,139 @@ export default function NewUserPage() {
 
             {/* Role */}
             <div>
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label className="block font-medium mb-2 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-gray-400" />
                 Rôle <span className="text-red-500">*</span>
               </label>
-              <select
-                {...register("role")}
-                id="role"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              <Select
+                value={form.values.role}
+                onChange={(e) => form.setFieldValue("role", e.target.value)}
               >
-                <option value="viewer">Viewer</option>
-                <option value="editor">Editor</option>
-                <option value="admin">Admin</option>
-                <option value="super_admin">Super Admin</option>
-              </select>
-              {errors.role && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.role.message}
-                </p>
+                {roleOptions.map((role) => (
+                  <option key={role.value} value={role.value}>
+                    {role.label}
+                  </option>
+                ))}
+              </Select>
+              {selectedRole && (
+                <p className="mt-1 text-xs text-gray-500">{selectedRole.description}</p>
               )}
             </div>
 
-            {/* Is Active */}
-            <div className="flex items-center pt-8">
-              <input
-                {...register("isActive")}
-                type="checkbox"
-                id="isActive"
-                className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-              />
+            {/* Is Active - Toggle Card */}
+            <div className="flex items-end">
               <label
-                htmlFor="isActive"
-                className="ml-2 text-sm font-medium text-gray-700"
+                className={`w-full p-4 rounded-xl border-2 cursor-pointer transition-all ${form.values.isActive
+                    ? "border-emerald-500 bg-emerald-50"
+                    : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                  }`}
               >
-                Compte actif
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={form.values.isActive}
+                    onChange={(e) => form.setFieldValue("isActive", e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div
+                    className={`p-2 rounded-lg ${form.values.isActive ? "bg-emerald-500" : "bg-gray-300"
+                      }`}
+                  >
+                    <Check
+                      className={`w-5 h-5 ${form.values.isActive ? "text-white" : "text-gray-500"
+                        }`}
+                    />
+                  </div>
+                  <div>
+                    <p className="font-medium">Compte actif</p>
+                    <p className="text-sm text-gray-500">
+                      {form.values.isActive ? "Peut se connecter" : "Ne peut pas se connecter"}
+                    </p>
+                  </div>
+                </div>
               </label>
             </div>
           </div>
 
           {/* Role descriptions */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-gray-900 mb-2">
-              Description des rôles
+          <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              Permissions des rôles
             </h3>
-            <ul className="text-xs text-gray-600 space-y-1">
-              <li>
-                <strong>Viewer:</strong> Peut uniquement consulter le contenu, sans possibilité de modification
-              </li>
-              <li>
-                <strong>Editor:</strong> Accès complet sauf gestion des
-                utilisateurs et publication directe
-              </li>
-              <li>
-                <strong>Admin:</strong> Accès complet sauf gestion des
-                utilisateurs
-              </li>
-              <li>
-                <strong>Super Admin:</strong> Accès total incluant la gestion
-                des utilisateurs
-              </li>
-            </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 bg-white rounded-lg border border-gray-100">
+                <span className="font-semibold text-gray-700">👁️ Viewer:</span>
+                <span className="text-gray-600 ml-1">
+                  Consultation uniquement, aucune modification
+                </span>
+              </div>
+              <div className="p-3 bg-white rounded-lg border border-gray-100">
+                <span className="font-semibold text-gray-700">✏️ Editor:</span>
+                <span className="text-gray-600 ml-1">
+                  Création et édition de contenu
+                </span>
+              </div>
+              <div className="p-3 bg-white rounded-lg border border-gray-100">
+                <span className="font-semibold text-gray-700">🛡️ Admin:</span>
+                <span className="text-gray-600 ml-1">
+                  Accès complet sauf gestion utilisateurs
+                </span>
+              </div>
+              <div className="p-3 bg-white rounded-lg border border-gray-100">
+                <span className="font-semibold text-gray-700">👑 Super Admin:</span>
+                <span className="text-gray-600 ml-1">
+                  Accès total incluant gestion utilisateurs
+                </span>
+              </div>
+            </div>
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-            <Link
-              href="/admin/users"
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Annuler
-            </Link>
-            <button
-              type="submit"
-              disabled={createUserAction.status === "executing"}
-              className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {createUserAction.status === "executing" ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Création en cours...
-                </>
-              ) : (
-                <>
-                  <UserPlus className="w-4 h-4" />
-                  Créer l&apos;utilisateur
-                </>
-              )}
-            </button>
+        {/* Error Summary */}
+        {errorCount > 0 && (
+          <div className="mx-6 mb-4 flex items-start gap-2 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="text-red-600 text-sm">
+              <span className="font-bold block mb-1">
+                {errorCount} erreur{errorCount > 1 ? "s" : ""} à corriger
+              </span>
+              <ul className="list-disc ml-4 space-y-0.5">
+                {formatErrorsForToast(form.errors, 5).map((msg, i) => (
+                  <li key={i}>{msg}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </form>
-      </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex items-center justify-between gap-3 p-6 bg-gray-50 border-t">
+          <Link
+            href="/admin/users"
+            className="px-6 py-2.5 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            Annuler
+          </Link>
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-medium hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-200"
+          >
+            {mutation.isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Création en cours...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Créer l'utilisateur
+              </>
+            )}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

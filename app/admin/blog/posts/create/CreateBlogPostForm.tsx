@@ -1,33 +1,40 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import React, { useState, useEffect } from "react";
 import MarkdownEditor from "@/components/MarkdownEditor";
-import { FileText, Settings, Eye, Save } from "lucide-react";
+import { FileText, Settings, Eye, Save, AlertCircle } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { createBlogPost } from "../../posts-actions";
 import { listCategories } from "../../actions";
 import { listTags } from "../../tags-actions";
-import { createBlogPostSchema } from "@/lib/validations/blog";
-import type { z } from "zod";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import Input from "@/components/ui/InputField";
-import { AlertCircle } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { createBlogPostSchema } from "@/lib/validations/blog";
+import { useForm } from "@/hooks/useForm";
+import { useSlug } from "@/hooks/useSlug";
+import SlugField from "@/components/forms/SlugField";
+import { formatErrorsForToast, booleanToSelectValue, selectValueToBoolean } from "@/lib/form-utils";
 
 type FormTab = "basic" | "content" | "meta";
-type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>;
+
+/**
+ * Status options for blog posts
+ */
+const statusOptions = [
+  { value: "draft", label: "Brouillon" },
+  { value: "published", label: "Publié" },
+  { value: "archived", label: "Archivé" },
+];
 
 export default function CreateBlogPostForm() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<FormTab>("basic");
+  const router = useRouter();
   const { data: session } = useSession();
   const userRole = (session?.user as any)?.role;
   const isEditor = userRole === "editor";
-
-  // To prevent hydration issues, track if we're mounted/rendered on client
-  const [isMounted, setIsMounted] = useState(false);
 
   // State for categories and tags
   const [categoriesData, setCategoriesData] = useState<any[]>([]);
@@ -37,10 +44,7 @@ export default function CreateBlogPostForm() {
 
   // Fetch categories and tags on mount
   useEffect(() => {
-    setIsMounted(true);
-
     const fetchData = async () => {
-      // Fetch categories
       setCategoriesLoading(true);
       try {
         const categoriesResult = await listCategories();
@@ -54,7 +58,6 @@ export default function CreateBlogPostForm() {
         setCategoriesLoading(false);
       }
 
-      // Fetch tags
       setTagsLoading(true);
       try {
         const tagsResult = await listTags();
@@ -72,18 +75,11 @@ export default function CreateBlogPostForm() {
     fetchData();
   }, []);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    setValue,
-    reset,
-  } = useForm<CreateBlogPostInput>({
-    resolver: zodResolver(createBlogPostSchema),
-    mode: "onSubmit",
-    reValidateMode: "onChange",
-    defaultValues: {
+  // ========================================
+  // FORM MANAGEMENT with useForm hook
+  // ========================================
+  const form = useForm({
+    initialValues: {
       title: "",
       slug: "",
       excerpt: "",
@@ -92,60 +88,80 @@ export default function CreateBlogPostForm() {
       authorName: "",
       authorPosition: "",
       categoryId: 0,
-      tagIds: [],
+      tagIds: [] as number[],
       status: "draft",
       isFeatured: false,
       readTimeMinutes: 5,
       metaTitle: "",
       metaDescription: "",
     },
+    validationSchema: createBlogPostSchema as any,
+    validateOnChange: true,
+    customValidation: (values) => {
+      const errors: any = {};
+      if (isEditor && values.status !== "draft") {
+        errors.status = {
+          field: "status",
+          message: "En tant qu'éditeur, vous ne pouvez créer que des brouillons",
+        };
+      }
+      return errors;
+    },
   });
 
+  // ========================================
+  // SLUG MANAGEMENT with useSlug hook
+  // ========================================
+  const slug = useSlug({
+    sourceText: form.values.title,
+    onSlugChange: (value) => form.setFieldValue("slug", value),
+  });
+
+  // ========================================
+  // FORM SUBMISSION
+  // ========================================
   const createMutation = useMutation({
-    mutationFn: async (data: CreateBlogPostInput) => {
+    mutationFn: async (data: any) => {
       return await createBlogPost(data);
     },
     onSuccess: (result) => {
       if (result?.data) {
-        toast.success("Article créé avec succès");
-        reset();
+        toast.success("Article créé avec succès !");
+        form.resetForm();
+        slug.enableAutoMode();
         router.push("/admin/blog/posts");
       } else if (result?.serverError) {
         toast.error(result.serverError);
-        console.error("Échec de la création:", result.serverError);
-      } else if (result?.validationErrors) {
-        toast.error("Veuillez corriger les erreurs dans le formulaire");
-        console.error("Erreurs de validation:", result.validationErrors);
       }
     },
     onError: (error: any) => {
-      const errorMessage = error?.message || "Erreur lors de la création de l'article";
-      toast.error(errorMessage);
-      console.error("Erreur lors de la création:", error);
+      toast.error(error?.message || "Erreur lors de la création");
     },
   });
 
-  const onSubmit = (data: CreateBlogPostInput) => {
-    createMutation.mutate(data);
-  };
-
-  const titleValue = watch("title");
-  const contentValue = watch("content");
-
-  // Auto-generate slug from title
-  useEffect(() => {
-    if (!isMounted) return;
-    if (titleValue) {
-      const slug = titleValue
-        .toLocaleLowerCase("fr-FR")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      setValue("slug", slug);
+  const handleSubmit = form.handleSubmit(async (values) => {
+    // Show validation errors in toast if form is invalid
+    if (!form.isValid) {
+      const errorMessages = formatErrorsForToast(form.errors, 4);
+      toast.error(
+        <div>
+          <strong>Veuillez corriger les erreurs dans le formulaire :</strong>
+          <ul className="list-disc list-inside pl-2 text-xs mt-1 space-y-0.5">
+            {errorMessages.map((msg, idx) => (
+              <li key={idx}>{msg}</li>
+            ))}
+          </ul>
+        </div>
+      );
+      return;
     }
-  }, [titleValue, setValue, isMounted]);
 
+    createMutation.mutate(values);
+  });
+
+  // ========================================
+  // TABS
+  // ========================================
   const tabs = [
     { id: "basic" as FormTab, label: "Informations", icon: FileText },
     { id: "content" as FormTab, label: "Contenu", icon: Settings },
@@ -154,111 +170,93 @@ export default function CreateBlogPostForm() {
 
   const categories = categoriesData || [];
   const tags = tagsData || [];
-  const selectedTagIds = watch("tagIds") || [];
-
-  const tabErrors = {
-    basic: !!(
-      errors.title ||
-      errors.slug ||
-      errors.categoryId ||
-      errors.status ||
-      errors.authorName ||
-      errors.featuredImage ||
-      errors.excerpt ||
-      errors.readTimeMinutes ||
-      errors.isFeatured ||
-      errors.authorPosition
-    ),
-    content: !!errors.content,
-    meta: !!(errors.metaTitle || errors.metaDescription),
-  };
 
   return (
-    <form
-      onSubmit={handleSubmit((e)=>onSubmit(e))}
-      className="p-6"
-    >
+    <form onSubmit={handleSubmit} noValidate>
       <div className="space-y-4">
-        {/* Server validation errors */}
-
         {/* Tabs */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b mb-4">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
-              className={`flex items-center gap-2 px-4 py-2 -mb-px border-b-2 transition-colors relative ${
-                activeTab === tab.id
-                  ? "border-gray-900 text-gray-900 font-semibold"
-                  : "border-transparent text-gray-500 hover:text-gray-900"
-              }`}
+              className={
+                "flex items-center gap-2 px-4 py-2 font-medium text-sm transition-colors " +
+                (activeTab === tab.id
+                  ? "border-b-2 border-emerald-500 text-emerald-700 bg-emerald-50"
+                  : "text-gray-700 hover:text-emerald-600")
+              }
               onClick={() => setActiveTab(tab.id)}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
-              {tabErrors[tab.id] && <span className="w-2 h-2 bg-red-500 "></span>}
             </button>
           ))}
         </div>
 
         {/* Tab Content */}
         <div className="max-h-[60vh] overflow-y-auto px-1">
+          {/* BASIC TAB */}
           {activeTab === "basic" && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
+                {/* Title */}
                 <div className="col-span-2">
-                  <Input
-                    id="title"
-                    label="Titre de l'article *"
-                    placeholder="Ex: Les 10 meilleures pratiques entrepreneuriales"
-                    error={errors.title?.message as string}
-                    {...register("title")}
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <Input
-                    id="slug"
-                    label="Slug (URL) *"
-                    placeholder="les-10-meilleures-pratiques-entrepreneuriales"
-                    error={errors.slug?.message as string}
-                    className="bg-gray-50"
-                    {...register("slug")}
-                    hint="Le slug est généré automatiquement à partir du titre"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-1">
-                    Catégorie *
+                  <label className="block font-medium mb-1">
+                    Titre de l'article <span className="text-red-600">*</span>
                   </label>
-                  <select
-                    id="categoryId"
-                    {...register("categoryId", { valueAsNumber: true })}
-                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.categoryId ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
+                  <Input
+                    value={form.values.title}
+                    onChange={(e) => form.setFieldValue("title", e.target.value)}
+                    onBlur={() => form.setFieldTouched("title")}
+                    placeholder="Ex: Les 10 meilleures pratiques entrepreneuriales"
+                    error={form.hasError("title")}
+                    errorMessage={form.getError("title")}
+                  />
+                </div>
+
+                {/* Slug - Using SlugField component */}
+                <div className="col-span-2">
+                  <SlugField
+                    value={slug.slug}
+                    mode={slug.mode}
+                    inputRef={slug.slugInputRef}
+                    onChange={slug.setSlug}
+                    onEditClick={slug.enableCustomMode}
+                    onAutoClick={slug.enableAutoMode}
+                    error={form.getError("slug")}
+                  />
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="block font-medium mb-1">
+                    Catégorie <span className="text-red-600">*</span>
+                  </label>
+                  <Select
+                    value={String(form.values.categoryId)}
+                    onChange={(e) => form.setFieldValue("categoryId", Number(e.target.value))}
+                    onBlur={() => form.setFieldTouched("categoryId")}
+                    error={form.hasError("categoryId")}
+                    errorMessage={form.getError("categoryId")}
                     disabled={categoriesLoading}
                   >
-                    <option value={0}>{categoriesLoading ? "Chargement..." : "Sélectionnez une catégorie"}</option>
+                    <option value="0">{categoriesLoading ? "Chargement..." : "Sélectionnez une catégorie"}</option>
                     {categories.map((cat: any) => (
-                      <option key={cat.id} value={cat.id}>
+                      <option key={cat.id} value={String(cat.id)}>
                         {cat.name}
                       </option>
                     ))}
-                  </select>
-                  {errors.categoryId?.message && (
-                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      {errors.categoryId.message as string}
-                    </p>
-                  )}
+                  </Select>
                 </div>
 
+                {/* Tags */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                  <label className="block font-medium mb-1">Tags</label>
                   <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto">
                     {tagsLoading ? (
                       <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600  animate-spin" />
+                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
                         Chargement des tags...
                       </div>
                     ) : tags.length === 0 ? (
@@ -273,16 +271,16 @@ export default function CreateBlogPostForm() {
                             <input
                               type="checkbox"
                               value={tag.id}
-                              checked={selectedTagIds.includes(tag.id)}
+                              checked={form.values.tagIds.includes(tag.id)}
                               onChange={(e) => {
-                                const currentTags = selectedTagIds;
+                                const currentTags = form.values.tagIds;
                                 if (e.target.checked) {
-                                  setValue("tagIds", [...currentTags, tag.id]);
+                                  form.setFieldValue("tagIds", [...currentTags, tag.id]);
                                 } else {
-                                  setValue("tagIds", currentTags.filter((id: number) => id !== tag.id));
+                                  form.setFieldValue("tagIds", currentTags.filter((id: number) => id !== tag.id));
                                 }
                               }}
-                              className="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-2 focus:ring-gray-900"
+                              className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-2 focus:ring-emerald-500"
                             />
                             <span className="text-sm text-gray-900">{tag.name}</span>
                           </label>
@@ -292,216 +290,226 @@ export default function CreateBlogPostForm() {
                   </div>
                 </div>
 
+                {/* Status */}
                 <div>
-                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                    Statut *
+                  <label className="block font-medium mb-1">
+                    Statut <span className="text-red-600">*</span>
                     {isEditor && (
                       <span className="ml-2 text-xs text-amber-600 font-normal">
-                        (Brouillon uniquement pour les éditeurs)
+                        (Brouillon uniquement)
                       </span>
                     )}
                   </label>
-                  <select
-                    id="status"
-                    {...register("status")}
+                  <Select
+                    value={form.values.status}
                     disabled={isEditor}
-                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.status ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors ${isEditor ? "bg-gray-100 cursor-not-allowed opacity-60" : ""}`}
+                    onChange={(e) => form.setFieldValue("status", e.target.value)}
+                    onBlur={() => form.setFieldTouched("status")}
+                    error={form.hasError("status")}
+                    errorMessage={form.getError("status")}
+                    className={isEditor ? "opacity-60" : ""}
                   >
-                    <option value="draft">Brouillon</option>
-                    <option value="published">Publié</option>
-                    <option value="archived">Archivé</option>
-                  </select>
-                  {errors.status?.message && (
-                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      {errors.status.message as string}
-                    </p>
-                  )}
+                    {statusOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </Select>
                   {isEditor && (
-                    <p className="text-amber-600 text-xs mt-1 flex items-center gap-1">
+                    <span className="text-amber-600 flex items-center gap-1 text-xs mt-0.5">
                       <AlertCircle className="w-3 h-3" />
                       En tant qu'éditeur, vous ne pouvez créer que des brouillons
-                    </p>
+                    </span>
                   )}
                 </div>
 
+                {/* Author Name */}
                 <div>
+                  <label className="block font-medium mb-1">
+                    Auteur <span className="text-red-600">*</span>
+                  </label>
                   <Input
-                    id="authorName"
-                    label="Auteur *"
+                    value={form.values.authorName}
+                    onChange={(e) => form.setFieldValue("authorName", e.target.value)}
+                    onBlur={() => form.setFieldTouched("authorName")}
                     placeholder="Nom de l'auteur"
-                    error={errors.authorName?.message as string}
-                    {...register("authorName")}
+                    error={form.hasError("authorName")}
+                    errorMessage={form.getError("authorName")}
                   />
                 </div>
 
+                {/* Author Position */}
                 <div>
+                  <label className="block font-medium mb-1">Poste de l'auteur</label>
                   <Input
-                    id="authorPosition"
-                    label="Poste de l'auteur"
+                    value={form.values.authorPosition}
+                    onChange={(e) => form.setFieldValue("authorPosition", e.target.value)}
+                    onBlur={() => form.setFieldTouched("authorPosition")}
                     placeholder="Ex: CEO, Consultant, etc."
-                    error={errors.authorPosition?.message as string}
-                    {...register("authorPosition")}
+                    error={form.hasError("authorPosition")}
+                    errorMessage={form.getError("authorPosition")}
                   />
                 </div>
 
+                {/* Read Time */}
                 <div>
+                  <label className="block font-medium mb-1">Temps de lecture (minutes)</label>
                   <Input
-                    id="readTimeMinutes"
-                    label="Temps de lecture (minutes)"
                     type="number"
                     min={1}
-                    error={errors.readTimeMinutes?.message as string}
-                    {...register("readTimeMinutes", { valueAsNumber: true })}
+                    value={form.values.readTimeMinutes}
+                    onChange={(e) => form.setFieldValue("readTimeMinutes", Number(e.target.value))}
+                    onBlur={() => form.setFieldTouched("readTimeMinutes")}
+                    error={form.hasError("readTimeMinutes")}
+                    errorMessage={form.getError("readTimeMinutes")}
                   />
                 </div>
 
+                {/* Is Featured */}
                 <div>
-                  <label htmlFor="isFeatured" className="block text-sm font-medium text-gray-700 mb-1">
-                    Mettre en vedette ?
-                  </label>
-                  <select
-                    id="isFeatured"
-                    {...register("isFeatured", {
-                      setValueAs: (value) => {
-                        if (value === "true" || value === true) return true;
-                        if (value === "false" || value === false) return false;
-                        return false;
-                      },
-                    })}
-                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.isFeatured ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
-  >
+                  <label className="block font-medium mb-1">Mettre en vedette ?</label>
+                  <Select
+                    value={booleanToSelectValue(form.values.isFeatured)}
+                    onChange={(e) => form.setFieldValue("isFeatured", selectValueToBoolean(e.target.value))}
+                  >
                     <option value="false">Non</option>
                     <option value="true">Oui</option>
-                  </select>
-                  {errors.isFeatured?.message && (
-                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      {errors.isFeatured.message as string}
-                    </p>
-                  )}
+                  </Select>
                 </div>
 
+                {/* Featured Image */}
                 <div className="col-span-2">
+                  <label className="block font-medium mb-1">Image à la une (URL)</label>
                   <Input
-                    id="featuredImage"
-                    label="Image à la une (URL)"
+                    value={form.values.featuredImage}
+                    onChange={(e) => form.setFieldValue("featuredImage", e.target.value)}
+                    onBlur={() => form.setFieldTouched("featuredImage")}
                     placeholder="https://exemple.com/image.jpg"
-                    error={errors.featuredImage?.message as string}
-                    {...register("featuredImage")}
+                    error={form.hasError("featuredImage")}
+                    errorMessage={form.getError("featuredImage")}
                   />
                 </div>
 
+                {/* Excerpt */}
                 <div className="col-span-2">
-                  <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 mb-1">
-                    Extrait
-                  </label>
+                  <label className="block font-medium mb-1">Extrait</label>
                   <textarea
-                    id="excerpt"
-                    {...register("excerpt")}
+                    value={form.values.excerpt}
+                    onChange={(e) => form.setFieldValue("excerpt", e.target.value)}
+                    onBlur={() => form.setFieldTouched("excerpt")}
                     placeholder="Un court résumé de l'article (2-3 phrases)"
                     rows={3}
-                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.excerpt ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
-                  ></textarea>
-                  {errors.excerpt?.message && (
-                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      {errors.excerpt.message as string}
-                    </p>
+                    className={`w-full border rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 ${form.hasError("excerpt") ? "border-red-300" : "border-gray-300"
+                      }`}
+                  />
+                  {form.getError("excerpt") && (
+                    <span className="text-red-600 text-xs">{form.getError("excerpt")}</span>
                   )}
                 </div>
               </div>
             </div>
           )}
 
+          {/* CONTENT TAB */}
           {activeTab === "content" && (
             <div className="space-y-4">
+              <label className="block font-medium mb-1">
+                Contenu de l'article <span className="text-red-600">*</span>
+              </label>
               <MarkdownEditor
-                value={contentValue || ""}
-                onChange={(value) => setValue("content", value)}
+                value={form.values.content || ""}
+                onChange={(val) => form.setFieldValue("content", val)}
                 placeholder="Écrivez le contenu complet de votre article en Markdown..."
-                error={errors.content?.message}
-                label="Contenu de l'article"
-                rows={12}
-                required
               />
-              {errors.content?.message && (
-                <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  {errors.content.message as string}
-                </p>
+              {form.getError("content") && (
+                <span className="text-red-600 text-xs">{form.getError("content")}</span>
               )}
             </div>
           )}
 
+          {/* META TAB */}
           {activeTab === "meta" && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4">
+                {/* Meta Title */}
                 <div>
+                  <label className="block font-medium mb-1">Titre SEO</label>
                   <Input
-                    id="metaTitle"
-                    label="Titre SEO"
+                    value={form.values.metaTitle}
+                    onChange={(e) => form.setFieldValue("metaTitle", e.target.value)}
+                    onBlur={() => form.setFieldTouched("metaTitle")}
                     placeholder="Titre optimisé pour les moteurs de recherche"
-                    error={errors.metaTitle?.message as string}
-                    {...register("metaTitle")}
-                    hint="Laissez vide pour utiliser le titre de l'article par défaut"
+                    error={form.hasError("metaTitle")}
+                    errorMessage={form.getError("metaTitle")}
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Laissez vide pour utiliser le titre de l'article par défaut
+                  </p>
                 </div>
 
+                {/* Meta Description */}
                 <div>
-                  <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-1">
-                    Description SEO
-                  </label>
+                  <label className="block font-medium mb-1">Description SEO</label>
                   <textarea
-                    id="metaDescription"
-                    {...register("metaDescription")}
+                    value={form.values.metaDescription}
+                    onChange={(e) => form.setFieldValue("metaDescription", e.target.value)}
+                    onBlur={() => form.setFieldTouched("metaDescription")}
                     placeholder="Description optimisée pour les moteurs de recherche (150-160 caractères recommandés)"
                     rows={3}
-                    className={`w-full rounded-lg px-4 py-2.5 border ${errors.metaDescription ? "border-red-300 bg-red-50" : "border-gray-300"} transition-colors`}
-                  ></textarea>
-                  {errors.metaDescription?.message && (
-                    <p className="mt-1.5 text-sm text-error-600 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      {errors.metaDescription.message as string}
-                    </p>
+                    className={`w-full border rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 ${form.hasError("metaDescription") ? "border-red-300" : "border-gray-300"
+                      }`}
+                  />
+                  {form.getError("metaDescription") && (
+                    <span className="text-red-600 text-xs">{form.getError("metaDescription")}</span>
                   )}
-                  <p className="text-xs text-gray-500 mt-1">Laissez vide pour utiliser l'extrait par défaut</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Laissez vide pour utiliser l'extrait par défaut
+                  </p>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t">
-          <button
-            type="button"
-            onClick={() => {
-              reset();
-              router.push("/admin/blog/posts");
-            }}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            disabled={createMutation.isPending}
-            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-6 py-2.5 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {createMutation.isPending ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent  animate-spin" />
-                Création en cours...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Créer l'article
-              </>
-            )}
-          </button>
-        </div>
+        {/* Error Summary - Using safe rendering */}
+        {Object.keys(form.errors).length > 0 && (
+          <div className="mt-4">
+            <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="text-red-600 text-sm">
+                <span className="font-bold block mb-1">Certains champs contiennent des erreurs :</span>
+                <ul className="list-disc ml-4 space-y-0.5">
+                  {formatErrorsForToast(form.errors, 5).map((msg, i) => (
+                    <li key={i} className="pl-1">
+                      {msg}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex items-center justify-end pt-4 border-t mt-4">
+        <button
+          type="submit"
+          disabled={createMutation.isPending}
+          className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-6 py-2.5 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {createMutation.isPending ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Création en cours...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4" />
+              Créer l'article
+            </>
+          )}
+        </button>
       </div>
     </form>
   );

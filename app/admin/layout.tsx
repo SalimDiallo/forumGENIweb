@@ -1,14 +1,15 @@
 "use client"
 import { ReactNode, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import NextImage from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
   Briefcase,
   Calendar,
   FileText,
-  Image,
+  Image as ImageIcon,
   Video,
   Mail,
   BarChart3,
@@ -20,8 +21,16 @@ import {
   Settings,
   UserCog,
   Key,
+  Tag,
+  Folder,
+  PenLine,
+  Home,
+  ArrowLeft,
+  ShieldAlert,
 } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
+import { RoleProvider, useRole } from "@/contexts/RoleContext";
+import { getRoleDisplayName, getRoleBadgeClasses, type UserRole } from "@/lib/permissions";
 import { toast } from "sonner";
 import ChangePasswordModal from "./profile/ChangePasswordModal";
 
@@ -29,7 +38,7 @@ interface NavItem {
   href: string;
   label: string;
   icon: any;
-  children?: Array<{ href: string; label: string }>;
+  children?: Array<{ href: string; label: string; icon?: any }>;
   superAdminOnly?: boolean; // Nouveau: indique si l'item est réservé aux super admins
 }
 
@@ -44,8 +53,8 @@ const navItems: NavItem[] = [
     label: "CRM",
     icon: Users,
     children: [
-      { href: "/admin/crm", label: "Accueil" },
-      { href: "/admin/crm/contacts", label: "Contacts" },
+      { href: "/admin/crm", label: "Accueil", icon: Home },
+      { href: "/admin/crm/contacts", label: "Contacts", icon: Mail },
     ]
   },
   {
@@ -53,10 +62,10 @@ const navItems: NavItem[] = [
     label: "Blog",
     icon: FileText,
     children: [
-      { href: "/admin/blog", label: "Accueil" },
-      { href: "/admin/blog/posts", label: "Articles" },
-      { href: "/admin/blog/categories", label: "Catégories" },
-      { href: "/admin/blog/tags", label: "Tags" },
+      { href: "/admin/blog", label: "Tableau de bord", icon: BarChart3 },
+      { href: "/admin/blog/posts", label: "Articles", icon: PenLine },
+      { href: "/admin/blog/categories", label: "Catégories", icon: Folder },
+      { href: "/admin/blog/tags", label: "Tags", icon: Tag },
     ]
   },
   {
@@ -72,7 +81,7 @@ const navItems: NavItem[] = [
   {
     href: "/admin/gallery",
     label: "Galerie",
-    icon: Image
+    icon: ImageIcon
   },
   {
     href: "/admin/testimonials",
@@ -182,10 +191,21 @@ function AdminNav() {
         <div className="mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/admin" className="flex items-center gap-2">
-              <LayoutDashboard className="w-6 h-6 text-gray-900" />
-              <span className="text-lg font-bold text-gray-900">Admin Panel</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              {pathname !== "/admin" && (
+                <button
+                  onClick={() => router.back()}
+                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Retour"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+              )}
+              <Link href="/admin" className="flex items-center gap-2">
+                <LayoutDashboard className="w-6 h-6 text-gray-900" />
+                <span className="text-lg font-bold text-gray-900">Admin Panel</span>
+              </Link>
+            </div>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1">
@@ -200,11 +220,10 @@ function AdminNav() {
                       <div className="relative">
                         <button
                           onClick={() => toggleDropdown(item.href)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            active
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-700 hover:bg-gray-100"
-                          }`}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${active
+                            ? "bg-gray-900 text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           <Icon className="w-4 h-4" />
                           {item.label}
@@ -218,20 +237,22 @@ function AdminNav() {
                               className="fixed inset-0 z-10"
                               onClick={() => setOpenDropdown(null)}
                             />
-                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                            <div className="absolute top-full left-0 mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
                               {item.children?.map((child) => {
-                                const childActive = pathname?.startsWith(child.href);
+                                const childActive = pathname === child.href ||
+                                  (child.href !== "/admin/blog" && child.href !== "/admin/crm" && pathname?.startsWith(child.href));
+                                const ChildIcon = child.icon;
                                 return (
                                   <Link
                                     key={child.href}
                                     href={child.href}
                                     onClick={() => setOpenDropdown(null)}
-                                    className={`block px-4 py-2 text-sm transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                                      childActive
-                                        ? "bg-gray-100 text-gray-900 font-medium"
-                                        : "text-gray-700 hover:bg-gray-50"
-                                    }`}
+                                    className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${childActive
+                                      ? "bg-emerald-50 text-emerald-700 font-medium border-l-2 border-emerald-500"
+                                      : "text-gray-700 hover:bg-gray-50"
+                                      }`}
                                   >
+                                    {ChildIcon && <ChildIcon className="w-4 h-4" />}
                                     {child.label}
                                   </Link>
                                 );
@@ -243,11 +264,10 @@ function AdminNav() {
                     ) : (
                       <Link
                         href={item.href}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          active
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${active
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         <Icon className="w-4 h-4" />
                         {item.label}
@@ -387,11 +407,10 @@ function AdminNav() {
                       <>
                         <button
                           onClick={() => toggleDropdown(item.href)}
-                          className={`w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            active
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-700 hover:bg-gray-100"
-                          }`}
+                          className={`w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium transition-colors ${active
+                            ? "bg-gray-900 text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           <span className="flex items-center gap-2">
                             <Icon className="w-4 h-4" />
@@ -403,7 +422,9 @@ function AdminNav() {
                         {openDropdown === item.href && (
                           <div className="ml-4 mt-1 space-y-1">
                             {item.children?.map((child) => {
-                              const childActive = pathname?.startsWith(child.href);
+                              const childActive = pathname === child.href ||
+                                (child.href !== "/admin/blog" && child.href !== "/admin/crm" && pathname?.startsWith(child.href));
+                              const ChildIcon = child.icon;
                               return (
                                 <Link
                                   key={child.href}
@@ -412,12 +433,12 @@ function AdminNav() {
                                     setMobileMenuOpen(false);
                                     setOpenDropdown(null);
                                   }}
-                                  className={`block px-4 py-2 rounded-lg text-sm transition-colors ${
-                                    childActive
-                                      ? "bg-gray-100 text-gray-900 font-medium"
-                                      : "text-gray-700 hover:bg-gray-50"
-                                  }`}
+                                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${childActive
+                                    ? "bg-emerald-50 text-emerald-700 font-medium"
+                                    : "text-gray-700 hover:bg-gray-50"
+                                    }`}
                                 >
+                                  {ChildIcon && <ChildIcon className="w-4 h-4" />}
                                   {child.label}
                                 </Link>
                               );
@@ -429,11 +450,10 @@ function AdminNav() {
                       <Link
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          active
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${active
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         <Icon className="w-4 h-4" />
                         {item.label}
@@ -460,17 +480,38 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   /**
    * Layout admin avec authentification Better Auth
    * - Protection des routes via middleware (voir /middleware.ts)
+   * - RoleProvider pour l'accès au rôle dans toute l'application
    * - Affichage des infos utilisateur et déconnexion
    * - Navigation responsive avec menu mobile
-   *
-   * Note: Le middleware vérifie seulement la présence du cookie.
-   * La vérification du rôle et du statut actif se fait côté client via useSession.
-   * Si nécessaire, ajoutez une vérification serveur ici avec getSession().
    */
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNav />
-      <main className="p-6">{children}</main>
-    </div>
+    <RoleProvider>
+      <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+        {/* Background watermark logo - top left with animation */}
+        <div className="fixed top-20 left-0 pointer-events-none z-0 opacity-[0.02] animate-pulse">
+          <NextImage
+            src="/logo.svg"
+            alt=""
+            width={500}
+            height={190}
+            className="select-none -rotate-12"
+          />
+        </div>
+
+        {/* Background watermark logo - bottom right */}
+        <div className="fixed bottom-0 right-0 pointer-events-none z-0 opacity-[0.03]">
+          <NextImage
+            src="/logo.svg"
+            alt=""
+            width={600}
+            height={225}
+            className="select-none"
+          />
+        </div>
+
+        <AdminNav />
+        <main className="p-6 relative z-10">{children}</main>
+      </div>
+    </RoleProvider>
   );
 }

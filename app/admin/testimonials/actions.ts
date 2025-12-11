@@ -6,6 +6,7 @@ import {
   videoTestimonialSchema,
   updateVideoTestimonialSchema,
   deleteVideoTestimonialSchema,
+  bulkDeleteTestimonialsSchema,
 } from "@/lib/validations/testimonials";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -112,6 +113,25 @@ export const deleteTestimonial = adminAction
     revalidatePath("/admin/testimonials");
 
     return { ok: true };
+  });
+
+/**
+ * Bulk delete video testimonials
+ */
+export const bulkDeleteTestimonials = adminAction
+  .metadata({ actionName: "bulk-delete-testimonials" })
+  .inputSchema(bulkDeleteTestimonialsSchema)
+  .action(async ({ parsedInput }) => {
+    const { ids } = parsedInput;
+
+    const deleted = await prisma.videoTestimonial.deleteMany({
+      where: { id: { in: ids } },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/admin/testimonials");
+
+    return { ok: true, count: deleted.count };
   });
 
 /**

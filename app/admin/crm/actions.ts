@@ -1,7 +1,7 @@
 "use server";
 import { actionClient, writeAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
-import { createContactMessageSchema, updateContactMessageSchema } from "@/lib/validations/crm";
+import { createContactMessageSchema, updateContactMessageSchema, updateContactStatusSchema, contactMessageIdSchema } from "@/lib/validations/crm";
 
 export const listContacts = actionClient
   .metadata({ actionName: "list-contacts" })
@@ -29,12 +29,23 @@ export const updateContact = writeAction
     return { id: updated.id };
   });
 
+// Mise à jour du statut uniquement
+export const updateContactStatus = writeAction
+  .metadata({ actionName: "update-contact-status" })
+  .schema(updateContactStatusSchema)
+  .action(async ({ parsedInput }) => {
+    const { id, status } = parsedInput;
+    const updated = await prisma.contactMessage.update({
+      where: { id },
+      data: { status }
+    });
+    return { id: updated.id, status: updated.status };
+  });
+
 export const deleteContact = deleteAction
   .metadata({ actionName: "delete-contact" })
-  .schema(updateContactMessageSchema.pick({ id: true }))
+  .schema(contactMessageIdSchema)
   .action(async ({ parsedInput }) => {
     await prisma.contactMessage.delete({ where: { id: parsedInput.id } });
     return { ok: true };
   });
-
-

@@ -54,4 +54,11 @@ export const deleteVideoTestimonialSchema = z.object({
 
 export type DeleteVideoTestimonialInput = z.infer<typeof deleteVideoTestimonialSchema>;
 
+/**
+ * Schema for bulk deleting video testimonials
+ */
+export const bulkDeleteTestimonialsSchema = z.object({
+  ids: z.array(z.number().int().positive()).min(1, 'Sélectionnez au moins un témoignage'),
+});
 
+export type BulkDeleteTestimonialsInput = z.infer<typeof bulkDeleteTestimonialsSchema>;

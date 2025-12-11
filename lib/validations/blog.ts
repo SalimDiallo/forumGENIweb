@@ -1,29 +1,43 @@
 import { z } from "zod";
 
 export const createCategorySchema = z.object({
-  name: z.string().min(2),
-  slug: z.string().min(2),
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  slug: z.string().min(2, "Le slug doit contenir au moins 2 caractères"),
   description: z.string().optional(),
-  color: z.string().default("#10B981"),
+  color: z.string().min(1, "La couleur est requise").default("#10B981"),
   icon: z.string().optional(),
   isActive: z.boolean().default(true),
 });
 
-export const updateCategorySchema = createCategorySchema.partial().extend({
-  id: z.number().int().positive(),
+export const updateCategorySchema = createCategorySchema.and(
+  z.object({
+    id: z.number().int().positive("L'ID de la catégorie est requis"),
+  })
+);
+
+// Schema pour les opérations nécessitant uniquement l'ID (suppression, etc.)
+export const categoryIdSchema = z.object({
+  id: z.number().int().positive("L'ID de la catégorie est requis"),
 });
 
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>;
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>;
 
 export const createTagSchema = z.object({
-  name: z.string().min(2),
-  slug: z.string().min(2),
-  color: z.string().default("#10B981"),
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  slug: z.string().min(2, "Le slug doit contenir au moins 2 caractères"),
+  color: z.string().min(1, "La couleur est requise").default("#10B981"),
 });
 
-export const updateTagSchema = createTagSchema.partial().extend({
-  id: z.number().int().positive(),
+export const updateTagSchema = createTagSchema.and(
+  z.object({
+    id: z.number().int().positive("L'ID du tag est requis"),
+  })
+);
+
+// Schema pour les opérations nécessitant uniquement l'ID du tag
+export const tagIdSchema = z.object({
+  id: z.number().int().positive("L'ID du tag est requis"),
 });
 
 export type CreateTagInput = z.infer<typeof createTagSchema>;
@@ -50,9 +64,11 @@ export const createBlogPostSchema = z.object({
   metaDescription: z.string().optional(),
 });
 
-export const updateBlogPostSchema = createBlogPostSchema.partial().extend({
-  id: z.number().int().positive(),
-});
+export const updateBlogPostSchema = createBlogPostSchema.and(
+  z.object({
+    id: z.number().int().positive("L'ID de l'article est requis"),
+  })
+);
 
 export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>;
 export type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>;

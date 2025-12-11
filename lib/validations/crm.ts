@@ -11,11 +11,24 @@ export const createContactMessageSchema = z.object({
   priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
 });
 
-export const updateContactMessageSchema = createContactMessageSchema.partial().extend({
-  id: z.number().int().positive(),
+export const updateContactMessageSchema = createContactMessageSchema.and(
+  z.object({
+    id: z.number().int().positive("L'ID du message est requis"),
+  })
+);
+
+// Schema pour mise à jour partielle (statut uniquement)
+export const updateContactStatusSchema = z.object({
+  id: z.number().int().positive("L'ID du message est requis"),
+  status: z.enum(["new", "in_progress", "resolved", "closed"]),
+});
+
+// Schema pour les opérations nécessitant uniquement l'ID
+export const contactMessageIdSchema = z.object({
+  id: z.number().int().positive("L'ID du message est requis"),
 });
 
 export type CreateContactMessageInput = z.infer<typeof createContactMessageSchema>;
 export type UpdateContactMessageInput = z.infer<typeof updateContactMessageSchema>;
-
+export type UpdateContactStatusInput = z.infer<typeof updateContactStatusSchema>;
 

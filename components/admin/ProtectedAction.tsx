@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
-import { useUserRole } from '@/hooks/use-user-role';
+import { useRole } from '@/contexts/RoleContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Lock, AlertCircle } from 'lucide-react';
 
 interface ProtectedActionProps {
   children: React.ReactNode;
   /** Type d'action protégée */
-  action: 'write' | 'delete';
+  action: 'write' | 'delete' | 'publish';
   /** Message tooltip ou alternative pour les viewers */
   fallback?: React.ReactNode;
   /** Afficher un skeleton pendant le chargement */
@@ -16,18 +17,24 @@ interface ProtectedActionProps {
 
 /**
  * Composant qui masque les actions (boutons, formulaires, etc.) pour les utilisateurs
- * avec le rôle "viewer". Les viewers peuvent seulement voir les données, pas les modifier.
+ * sans les permissions appropriées.
  *
  * @example
- * // Bouton de création
+ * // Bouton de création (nécessite editor+)
  * <ProtectedAction action="write">
  *   <Button>Créer un article</Button>
  * </ProtectedAction>
  *
  * @example
- * // Bouton de suppression
+ * // Bouton de suppression (nécessite admin+)
  * <ProtectedAction action="delete">
  *   <Button variant="destructive">Supprimer</Button>
+ * </ProtectedAction>
+ *
+ * @example
+ * // Bouton de publication (nécessite admin+)
+ * <ProtectedAction action="publish">
+ *   <Button>Publier</Button>
  * </ProtectedAction>
  */
 export function ProtectedAction({
@@ -36,7 +43,7 @@ export function ProtectedAction({
   fallback = null,
   showLoadingSkeleton = false,
 }: ProtectedActionProps) {
-  const { isLoading, canWrite, canDelete } = useUserRole();
+  const { isLoading, canWrite, canDelete, canPublish } = useRole();
 
   // Pendant le chargement, afficher un skeleton ou rien
   if (isLoading) {
@@ -47,7 +54,18 @@ export function ProtectedAction({
   }
 
   // Vérifier les permissions selon le type d'action
-  const hasPermission = action === 'write' ? canWrite : canDelete;
+  let hasPermission = false;
+  switch (action) {
+    case 'write':
+      hasPermission = canWrite;
+      break;
+    case 'delete':
+      hasPermission = canDelete;
+      break;
+    case 'publish':
+      hasPermission = canPublish;
+      break;
+  }
 
   // Si l'utilisateur n'a pas la permission, afficher le fallback ou rien
   if (!hasPermission) {
@@ -58,33 +76,50 @@ export function ProtectedAction({
   return <>{children}</>;
 }
 
+interface RoleMessageProps {
+  message: string;
+  variant?: 'info' | 'warning';
+}
+
 /**
- * Alternative: Composant qui affiche un message pour les viewers
+ * Message affiché pour les utilisateurs avec permissions limitées
  */
-export function ViewerMessage({ message }: { message: string }) {
-  const { isViewer, isLoading } = useUserRole();
+export function ViewerMessage({ message, variant = 'info' }: RoleMessageProps) {
+  const { isViewer, isLoading } = useRole();
 
   if (isLoading || !isViewer) {
     return null;
   }
 
+  const colors = variant === 'warning'
+    ? 'bg-amber-50 border-amber-200 text-amber-800'
+    : 'bg-blue-50 border-blue-200 text-blue-800';
+
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-md p-4 text-sm text-blue-800">
+    <div className={`rounded-xl border p-4 text-sm ${colors}`}>
       <p className="flex items-center gap-2">
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+        <Lock className="w-4 h-4 flex-shrink-0" />
         {message}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Message affiché pour les utilisateurs ne pouvant pas modifier
+ */
+export function ReadOnlyMessage({ message }: { message?: string }) {
+  const { canWrite, isLoading } = useRole();
+
+  if (isLoading || canWrite) {
+    return null;
+  }
+
+  return (
+    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+      <p className="flex items-center gap-2">
+        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+        {message || "Vous êtes en mode lecture seule. Vous ne pouvez pas modifier le contenu."}
       </p>
     </div>
   );

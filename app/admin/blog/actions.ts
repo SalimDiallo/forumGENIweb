@@ -1,7 +1,7 @@
 "use server";
 import { actionClient, writeAction, deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
-import { createCategorySchema, updateCategorySchema } from "@/lib/validations/blog";
+import { createCategorySchema, updateCategorySchema, categoryIdSchema } from "@/lib/validations/blog";
 import { getCachedBlogCategoriesAdmin } from "@/lib/cache";
 
 export const listCategories = actionClient
@@ -72,7 +72,7 @@ export const updateCategory = writeAction
 
 export const deleteCategory = deleteAction
   .metadata({ actionName: "delete-category" })
-  .schema(updateCategorySchema.pick({ id: true }))
+  .schema(categoryIdSchema)
   .action(async ({ parsedInput }) => {
     try {
       // Vérifier si la catégorie est utilisée par des articles

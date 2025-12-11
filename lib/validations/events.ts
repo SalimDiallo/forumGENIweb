@@ -7,13 +7,16 @@ import { z } from "zod";
 export const EventTypeEnum = z.enum(["forum", "workshop", "conference", "networking", "webinar", "other"]);
 export const EventStatusEnum = z.enum(["draft", "published", "ongoing", "completed", "cancelled"]);
 
-// Fonction utilitaire pour convertir les dates
+/**
+ * Schema de validation de date avec transformation vers ISO
+ * Accepte les formats datetime-local et les convertit en ISO
+ */
 export const dateSchema = z.string().transform((str, ctx) => {
   // Si la chaîne est vide ou undefined, ne pas essayer de transformer
   if (!str || str.trim() === '') {
     ctx.addIssue({
       code: "custom",
-      message: "Date requise",
+      message: "La date est requise",
     });
     return z.NEVER;
   }
@@ -37,7 +40,7 @@ export const dateSchema = z.string().transform((str, ctx) => {
   // Si invalide
   ctx.addIssue({
     code: "custom",
-    message: "Date invalide",
+    message: "Format de date invalide",
   });
   return z.NEVER;
 });

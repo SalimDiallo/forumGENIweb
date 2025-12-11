@@ -1,119 +1,115 @@
 "use client";
-import { useAction } from "next-safe-action/hooks";
-import { createTag, listTags } from "../tags-actions";
-import { useEffect, useState } from "react";
-import Modal from "@/components/Modal";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createTagSchema } from "@/lib/validations/blog";
-import { toast } from "sonner";
+
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { listTags } from "../tags-actions";
 import { DeleteTagButton } from "./DeleteTagButton";
+import CreateTagModal from "./CreateTagModal";
+import { Plus, Tag } from "lucide-react";
 
 export default function AdminTagsPage() {
-  const list = useAction(listTags);
-  const create = useAction(createTag);
-
-  useEffect(() => {
-    list.execute();
-  }, []);
-
   const [open, setOpen] = useState(false);
-  const form = useForm<z.infer<typeof createTagSchema>>({
-    resolver: zodResolver(createTagSchema),
-    defaultValues: { name: "", slug: "", color: "#10B981" },
+
+  // ========================================
+  // FETCH TAGS
+  // ========================================
+  const { data: tagsData, isLoading, refetch } = useQuery({
+    queryKey: ["blog-tags"],
+    queryFn: async () => {
+      const result = await listTags();
+      return result?.data?.tags || [];
+    },
   });
 
-  function onSubmit(values: z.infer<typeof createTagSchema>) {
-    create.execute(values);
-  }
-
-  const handleRefresh = () => {
-    list.execute();
-  };
-
-  // Auto-generate slug from name
-  const nameValue = form.watch("name");
-  useEffect(() => {
-    if (nameValue) {
-      const slug = nameValue
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      form.setValue("slug", slug);
-    }
-  }, [nameValue, form]);
-
-  useEffect(() => {
-    if (create.status === "hasSucceeded") {
-      list.execute();
-      setOpen(false);
-      form.reset();
-      toast.success("Tag créé avec succès");
-    }
-    if (create.status === "hasErrored") {
-      toast.error(create.result?.serverError || "Erreur lors de la création");
-    }
-  }, [create.status, create.result]);
+  const tags = tagsData || [];
 
   return (
     <div className="space-y-6">
-      <section className="p-4 bg-white rounded-md border">
+      {/* En-tête */}
+      <section className="p-4 bg-white rounded-lg border shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Tags</h2>
-          <button onClick={() => setOpen(true)} className="bg-gray-900 text-white rounded px-3 py-2">Nouveau tag</button>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Tag className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Tags</h2>
+              <p className="text-sm text-gray-500">Gérez les tags de votre blog</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setOpen(true)}
+            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-2.5 hover:bg-gray-800 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Nouveau tag
+          </button>
         </div>
       </section>
 
-      <Modal open={open} title="Créer un tag" onClose={() => setOpen(false)}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 gap-3">
-          <input {...form.register("name")} placeholder="Nom" className="border rounded px-3 py-2" />
-          {form.formState.errors.name && <p className="text-red-600 text-sm">{form.formState.errors.name.message as string}</p>}
-          <input {...form.register("slug")} placeholder="Slug" className="border rounded px-3 py-2" />
-          {form.formState.errors.slug && <p className="text-red-600 text-sm">{form.formState.errors.slug.message as string}</p>}
-          <div className="flex items-center justify-end gap-2 mt-2">
-            <button type="button" onClick={() => setOpen(false)} className="px-3 py-2">Annuler</button>
-            <button type="submit" className="bg-gray-900 text-white rounded px-3 py-2" disabled={create.status === "executing"}>
-              {create.status === "executing" ? "Création…" : "Créer"}
+      {/* Modal de création */}
+      <CreateTagModal
+        open={open}
+        onClose={() => setOpen(false)}
+        onSuccess={() => refetch()}
+      />
+
+      {/* Liste des tags */}
+      <section className="p-4 bg-white rounded-lg border shadow-sm">
+        <h2 className="text-lg font-semibold mb-4">Liste des tags</h2>
+
+        {isLoading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+            <span className="ml-3 text-gray-600">Chargement...</span>
+          </div>
+        )}
+
+        {!isLoading && tags.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            <Tag className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p>Aucun tag créé</p>
+            <button
+              onClick={() => setOpen(true)}
+              className="mt-3 text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Créer votre premier tag
             </button>
           </div>
-          {create.result?.serverError && (
-            <p className="text-red-600">{create.result.serverError}</p>
-          )}
-        </form>
-      </Modal>
+        )}
 
-      <section className="p-4 bg-white rounded-md border">
-        <h2 className="text-lg font-semibold mb-3">Liste des tags</h2>
-        {list.status === "executing" && <p>Chargement…</p>}
-        <ul className="divide-y">
-          {list.result?.data?.tags?.map((t: any) => (
-            <li key={t.id} className="flex items-center justify-between py-2">
-              <div>
-                <p className="font-medium">{t.name}</p>
-                <p className="text-sm text-gray-600">
-                  /{t.slug}
-                  {t._count?.posts > 0 && (
-                    <span className="ml-2 text-xs text-gray-500">
-                      ({t._count.posts} article{t._count.posts > 1 ? 's' : ''})
-                    </span>
-                  )}
-                </p>
-              </div>
-              <DeleteTagButton
-                tagId={t.id}
-                tagName={t.name}
-                postCount={t._count?.posts || 0}
-                onSuccess={handleRefresh}
-              />
-            </li>
-          ))}
-        </ul>
+        {!isLoading && tags.length > 0 && (
+          <ul className="divide-y divide-gray-100">
+            {tags.map((t: any) => (
+              <li key={t.id} className="flex items-center justify-between py-3 hover:bg-gray-50 px-2 rounded-lg transition-colors">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: t.color || "#10B981" }}
+                  />
+                  <div>
+                    <p className="font-medium text-gray-900">{t.name}</p>
+                    <p className="text-sm text-gray-500">
+                      /{t.slug}
+                      {t._count?.posts > 0 && (
+                        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                          {t._count.posts} article{t._count.posts > 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <DeleteTagButton
+                  tagId={t.id}
+                  tagName={t.name}
+                  postCount={t._count?.posts || 0}
+                  onSuccess={() => refetch()}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );
 }
-
-
