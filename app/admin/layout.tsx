@@ -142,11 +142,28 @@ function AdminNav() {
   }, [session, handleSignOut]);
 
   // Filtrer les éléments de navigation en fonction du rôle
-  const isSuperAdmin = (session?.user as any)?.role === "super_admin";
+  const userRole = (session?.user as any)?.role as string | undefined;
+  const isSuperAdmin = userRole === "super_admin";
+  const isRevue = userRole === "revue";
+  const isProspection = userRole === "prospection";
+
   const visibleNavItems = navItems.filter((item) => {
+    // Super admin only items
     if (item.superAdminOnly) {
       return isSuperAdmin;
     }
+
+    // Specialized role: revue - only sees Dashboard and Blog
+    if (isRevue) {
+      return item.href === "/admin" || item.href === "/admin/blog";
+    }
+
+    // Specialized role: prospection - only sees Dashboard, CRM and Jobs
+    if (isProspection) {
+      return item.href === "/admin" || item.href === "/admin/crm" || item.href === "/admin/jobs";
+    }
+
+    // Standard roles see all non-superAdminOnly items
     return true;
   });
 
@@ -475,17 +492,25 @@ function AdminNav() {
     </>
   );
 }
+import { SpecializedRouteGuard } from "@/components/admin/SpecializedRouteGuard";
+import { SessionWatcher } from "@/components/admin/SessionWatcher";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   /**
    * Layout admin avec authentification Better Auth
    * - Protection des routes via middleware (voir /middleware.ts)
    * - RoleProvider pour l'accès au rôle dans toute l'application
+   * - SpecializedRouteGuard pour rediriger les rôles spécialisés
+   * - SessionWatcher pour déconnexion automatique si compte désactivé ou mot de passe changé
    * - Affichage des infos utilisateur et déconnexion
    * - Navigation responsive avec menu mobile
    */
   return (
     <RoleProvider>
+      {/* Session validity watcher - auto-logout if account deactivated or password reset */}
+      {/* Checks every 10 seconds for account status changes */}
+      <SessionWatcher checkInterval={10000} />
+
       <div className="min-h-screen bg-gray-50 relative overflow-hidden">
         {/* Background watermark logo - top left with animation */}
         <div className="fixed top-20 left-0 pointer-events-none z-0 opacity-[0.02] animate-pulse">
@@ -510,8 +535,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
 
         <AdminNav />
-        <main className="p-6 relative z-10">{children}</main>
+        <main className="p-6 relative z-10">
+          <SpecializedRouteGuard>
+            {children}
+          </SpecializedRouteGuard>
+        </main>
       </div>
     </RoleProvider>
   );
 }
+

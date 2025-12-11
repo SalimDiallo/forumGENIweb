@@ -25,7 +25,7 @@ export const createUserSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       "Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre"
     ),
-  role: z.enum(["viewer", "editor", "admin", "super_admin"]),
+  role: z.enum(["viewer", "editor", "admin", "super_admin", "revue", "prospection"]),
   isActive: z.boolean().default(true),
 });
 
@@ -49,7 +49,7 @@ export const updateUserSchema = z.object({
     .min(2, "Le nom complet doit contenir au moins 2 caractères")
     .trim()
     .optional(),
-  role: z.enum(["viewer", "editor", "admin", "super_admin"]).optional(),
+  role: z.enum(["viewer", "editor", "admin", "super_admin", "revue", "prospection"]).optional(),
   isActive: z.boolean().optional(),
 });
 

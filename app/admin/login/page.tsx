@@ -18,7 +18,7 @@ import {
 import { toast } from "sonner";
 import Image from "next/image";
 
-type LoginReason = "session_expired" | "account_disabled" | "access_denied" | null;
+type LoginReason = "session_expired" | "account_disabled" | "access_denied" | "forced_logout" | "password_reset" | null;
 
 const REASON_MESSAGES: Record<string, { icon: typeof AlertCircle; message: string; type: "warning" | "error" }> = {
   session_expired: {
@@ -34,6 +34,16 @@ const REASON_MESSAGES: Record<string, { icon: typeof AlertCircle; message: strin
   access_denied: {
     icon: ShieldCheck,
     message: "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",
+    type: "warning",
+  },
+  forced_logout: {
+    icon: XCircle,
+    message: "Votre session a été invalidée. Veuillez vous reconnecter.",
+    type: "error",
+  },
+  password_reset: {
+    icon: AlertTriangle,
+    message: "Votre mot de passe a été réinitialisé. Veuillez vous reconnecter.",
     type: "warning",
   },
 };

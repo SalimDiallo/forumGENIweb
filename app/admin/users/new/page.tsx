@@ -38,6 +38,8 @@ const roleOptions = [
   { value: "editor", label: "✏️ Editor", description: "Création et édition" },
   { value: "admin", label: "🛡️ Admin", description: "Accès complet (hors utilisateurs)" },
   { value: "super_admin", label: "👑 Super Admin", description: "Accès total" },
+  { value: "revue", label: "📝 Revue", description: "Accès Blog uniquement" },
+  { value: "prospection", label: "💼 Prospection", description: "Accès CRM et Emplois uniquement" },
 ];
 
 export default function NewUserPage() {
@@ -235,8 +237,8 @@ export default function NewUserPage() {
             <div className="flex items-end">
               <label
                 className={`w-full p-4 rounded-xl border-2 cursor-pointer transition-all ${form.values.isActive
-                    ? "border-emerald-500 bg-emerald-50"
-                    : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                  ? "border-emerald-500 bg-emerald-50"
+                  : "border-gray-200 bg-gray-50 hover:border-gray-300"
                   }`}
               >
                 <div className="flex items-center gap-3">
@@ -272,7 +274,7 @@ export default function NewUserPage() {
               <Shield className="w-4 h-4" />
               Permissions des rôles
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
               <div className="p-3 bg-white rounded-lg border border-gray-100">
                 <span className="font-semibold text-gray-700">👁️ Viewer:</span>
                 <span className="text-gray-600 ml-1">
@@ -295,6 +297,18 @@ export default function NewUserPage() {
                 <span className="font-semibold text-gray-700">👑 Super Admin:</span>
                 <span className="text-gray-600 ml-1">
                   Accès total incluant gestion utilisateurs
+                </span>
+              </div>
+              <div className="p-3 bg-white rounded-lg border border-orange-100">
+                <span className="font-semibold text-orange-700">📝 Revue:</span>
+                <span className="text-gray-600 ml-1">
+                  Accès Blog uniquement (CRUD complet)
+                </span>
+              </div>
+              <div className="p-3 bg-white rounded-lg border border-cyan-100">
+                <span className="font-semibold text-cyan-700">💼 Prospection:</span>
+                <span className="text-gray-600 ml-1">
+                  Accès CRM et Emplois uniquement (CRUD complet)
                 </span>
               </div>
             </div>

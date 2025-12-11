@@ -68,7 +68,7 @@ export const auth = betterAuth({
 });
 
 export type Session = typeof auth.$Infer.Session;
-export type UserRole = "viewer" | "editor" | "admin" | "super_admin";
+export type UserRole = "viewer" | "editor" | "admin" | "super_admin" | "revue" | "prospection";
 
 /**
  * Récupère la session de l'utilisateur connecté
@@ -139,12 +139,13 @@ export async function requireAuth() {
 
 /**
  * Lance une erreur si l'utilisateur n'est pas admin
- * Les editors ont aussi accès (avec restrictions sur les statuts)
+ * Les editors et rôles spécialisés (revue, prospection) ont aussi accès (avec restrictions)
  */
 export async function requireAdmin() {
   const session = await requireAuth();
   const role = (session.user as any).role;
-  if (role !== "admin" && role !== "super_admin" && role !== "editor") {
+  // Standard roles + specialized roles have base access
+  if (role !== "admin" && role !== "super_admin" && role !== "editor" && role !== "revue" && role !== "prospection") {
     throw new AuthError("Accès admin requis");
   }
   return session;
@@ -164,7 +165,7 @@ export async function requireSuperAdmin() {
 
 /**
  * Lance une erreur si l'utilisateur n'a pas la permission d'écrire (créer/modifier)
- * Les viewers ne peuvent que lire, les editors/admins/super admins peuvent modifier
+ * Les viewers ne peuvent que lire, les editors/admins/super admins et rôles spécialisés peuvent modifier
  */
 export async function requireWritePermission() {
   const session = await requireAuth();
@@ -172,7 +173,8 @@ export async function requireWritePermission() {
   if (role === "viewer") {
     throw new AuthError("Vous n'avez pas la permission de modifier. Seuls les administrateurs peuvent effectuer cette action.");
   }
-  if (role !== "editor" && role !== "admin" && role !== "super_admin") {
+  // Standard roles + specialized roles can write
+  if (role !== "editor" && role !== "admin" && role !== "super_admin" && role !== "revue" && role !== "prospection") {
     throw new AuthError("Permission d'écriture refusée");
   }
   return session;

@@ -24,6 +24,8 @@ import {
   Mail,
   Key,
   Eye,
+  FileText,
+  Briefcase,
 } from "lucide-react";
 import { toast } from "sonner";
 import ResetPasswordModal from "./ResetPasswordModal";
@@ -102,8 +104,14 @@ export default function UsersManagementPage() {
         return <ShieldAlert className="w-4 h-4 text-red-600" />;
       case "admin":
         return <ShieldCheck className="w-4 h-4 text-blue-600" />;
+      case "editor":
+        return <UserCog className="w-4 h-4 text-emerald-600" />;
       case "viewer":
         return <Shield className="w-4 h-4 text-gray-600" />;
+      case "revue":
+        return <FileText className="w-4 h-4 text-orange-600" />;
+      case "prospection":
+        return <Briefcase className="w-4 h-4 text-cyan-600" />;
       default:
         return <UserCog className="w-4 h-4 text-gray-400" />;
     }
@@ -115,8 +123,14 @@ export default function UsersManagementPage() {
         return "bg-red-100 text-red-700 border-red-200";
       case "admin":
         return "bg-blue-100 text-blue-700 border-blue-200";
+      case "editor":
+        return "bg-emerald-100 text-emerald-700 border-emerald-200";
       case "viewer":
         return "bg-gray-100 text-gray-700 border-gray-200";
+      case "revue":
+        return "bg-orange-100 text-orange-700 border-orange-200";
+      case "prospection":
+        return "bg-cyan-100 text-cyan-700 border-cyan-200";
       default:
         return "bg-gray-100 text-gray-500 border-gray-200";
     }
@@ -228,6 +242,8 @@ export default function UsersManagementPage() {
               <option value="admin">Admin</option>
               <option value="editor">Editor</option>
               <option value="viewer">Viewer</option>
+              <option value="revue">Revue (Blog)</option>
+              <option value="prospection">Prospection (CRM/Emplois)</option>
             </select>
           </div>
         </div>

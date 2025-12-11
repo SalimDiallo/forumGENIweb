@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { getSession } from "@/lib/auth";
-import { canAccessRoute, getRoleDisplayName, type UserRole } from "@/lib/permissions";
+import { canAccessRoute, getRoleDisplayName, isSpecializedRole, type UserRole } from "@/lib/permissions";
 
 interface AuthGuardResult {
     session: any;
@@ -65,10 +65,17 @@ export async function getAdminSession(): Promise<AuthGuardResult | null> {
 /**
  * Check if current user has at least the specified role
  * For use in server components
+ * Note: Specialized roles (revue, prospection) don't participate in hierarchy
  */
 export async function hasRole(minRole: UserRole): Promise<boolean> {
     const session = await getAdminSession();
     if (!session) return false;
+
+    // Specialized roles don't participate in hierarchy
+    // They should only access routes via explicit allowedRoles
+    if (isSpecializedRole(session.role)) {
+        return false;
+    }
 
     const roleHierarchy: UserRole[] = ["viewer", "editor", "admin", "super_admin"];
     const userLevel = roleHierarchy.indexOf(session.role);
@@ -85,9 +92,17 @@ export async function isSuperAdminAuth(): Promise<boolean> {
 }
 
 /**
- * Check if current user can write (editor+)
+ * Check if current user can write (editor+ or specialized roles)
  */
 export async function canWriteAuth(): Promise<boolean> {
+    const session = await getAdminSession();
+    if (!session) return false;
+
+    // Specialized roles can write in their sections
+    if (isSpecializedRole(session.role)) {
+        return true;
+    }
+
     return hasRole("editor");
 }
 
