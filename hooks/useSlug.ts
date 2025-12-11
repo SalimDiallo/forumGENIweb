@@ -35,7 +35,7 @@ export interface UseSlugReturn {
   /** Current slug mode (auto or custom) */
   mode: SlugMode;
   /** Ref for slug input (for focus management) */
-  slugInputRef: React.RefObject<HTMLInputElement | null>;
+  slugInputRef: React.RefObject<HTMLInputElement>;
   /** Set slug value */
   setSlug: (value: string) => void;
   /** Switch to custom mode and focus input */
@@ -76,7 +76,7 @@ export function useSlug({
 }: UseSlugOptions): UseSlugReturn {
   const [slug, setSlugState] = useState(initialSlug);
   const [mode, setMode] = useState<SlugMode>("auto");
-  const slugInputRef = useRef<HTMLInputElement | null>(null);
+  const slugInputRef = useRef<HTMLInputElement>(null) as React.RefObject<HTMLInputElement>;
 
   // Auto-generate slug from source text when in auto mode
   useEffect(() => {
