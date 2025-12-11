@@ -92,10 +92,10 @@ export default function AdminLoginPage() {
         setIsLoading(false);
       } else {
         toast.success("Connexion réussie !");
-        // Wait for session cookie to propagate
-        setTimeout(() => {
-          window.location.href = redirectPath;
-        }, 1500);
+        // Force router refresh to update session state
+        router.refresh();
+        // Fallback redirection if the useEffect doesn't trigger fast enough
+        router.push(redirectPath);
       }
     } catch (err: any) {
       const errorMessage = err?.message || "Une erreur est survenue";
@@ -189,8 +189,8 @@ export default function AdminLoginPage() {
             {loginReason && REASON_MESSAGES[loginReason] && (
               <div
                 className={`mb-6 p-4 rounded-xl flex items-start gap-3 ${REASON_MESSAGES[loginReason].type === "error"
-                    ? "bg-red-50 border border-red-200"
-                    : "bg-amber-50 border border-amber-200"
+                  ? "bg-red-50 border border-red-200"
+                  : "bg-amber-50 border border-amber-200"
                   }`}
               >
                 {(() => {
@@ -198,16 +198,16 @@ export default function AdminLoginPage() {
                   return (
                     <Icon
                       className={`w-5 h-5 flex-shrink-0 mt-0.5 ${REASON_MESSAGES[loginReason].type === "error"
-                          ? "text-red-600"
-                          : "text-amber-600"
+                        ? "text-red-600"
+                        : "text-amber-600"
                         }`}
                     />
                   );
                 })()}
                 <p
                   className={`text-sm ${REASON_MESSAGES[loginReason].type === "error"
-                      ? "text-red-800"
-                      : "text-amber-800"
+                    ? "text-red-800"
+                    : "text-amber-800"
                     }`}
                 >
                   {REASON_MESSAGES[loginReason].message}

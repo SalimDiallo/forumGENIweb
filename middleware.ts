@@ -15,7 +15,9 @@ export async function middleware(request: NextRequest) {
   // Si l'utilisateur essaie d'accéder à une route admin (sauf /admin/login)
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     // Vérifier la présence du cookie de session Better Auth
-    const sessionToken = request.cookies.get("admin-auth.session_token");
+    // En production, le cookie peut avoir le préfixe __Secure-
+    const sessionToken = request.cookies.get("admin-auth.session_token") ||
+      request.cookies.get("__Secure-admin-auth.session_token");
 
     // Si pas de cookie de session, rediriger vers la page de login
     if (!sessionToken) {
@@ -31,7 +33,8 @@ export async function middleware(request: NextRequest) {
 
   // Si l'utilisateur est sur /admin/login et a un cookie de session
   if (pathname === "/admin/login") {
-    const sessionToken = request.cookies.get("admin-auth.session_token");
+    const sessionToken = request.cookies.get("admin-auth.session_token") ||
+      request.cookies.get("__Secure-admin-auth.session_token");
 
     if (sessionToken) {
       // Rediriger vers /admin si déjà une session

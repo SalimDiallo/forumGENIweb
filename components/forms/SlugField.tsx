@@ -20,7 +20,7 @@ export interface SlugFieldProps {
   /** Slug mode (auto or custom) */
   mode: SlugMode;
   /** Input ref for focus management */
-  inputRef?: React.RefObject<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
   /** Change handler */
   onChange?: (value: string) => void;
   /** Blur handler */
@@ -85,16 +85,15 @@ export default function SlugField({
           type="text"
           value={value}
           readOnly={isAutoMode}
-          ref={mode === "custom" ? inputRef : undefined}
+          ref={mode === "custom" ? (inputRef as React.RefObject<HTMLInputElement>) : undefined}
           onChange={onChange ? (e) => onChange(e.target.value) : undefined}
           onBlur={onBlur}
           placeholder={placeholder}
           className={
             isAutoMode
               ? "flex-1 border border-gray-200 bg-gray-50 rounded-lg px-4 py-2.5 text-gray-500 focus:outline-none cursor-not-allowed"
-              : `flex-1 border rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 ${
-                  error ? "border-red-300" : "border-gray-300"
-                }`
+              : `flex-1 border rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 ${error ? "border-red-300" : "border-gray-300"
+              }`
           }
           style={isAutoMode ? { pointerEvents: "none" } : {}}
           aria-invalid={!!error}
