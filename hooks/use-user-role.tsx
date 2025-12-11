@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getUserRoleAction } from '@/app/admin/profile/actions';
-
-export type UserRole = 'viewer' | 'editor' | 'admin' | 'super_admin';
+import type { UserRole } from '@/lib/auth';
 
 export function useUserRole() {
   const [role, setRole] = useState<UserRole | null>(null);
