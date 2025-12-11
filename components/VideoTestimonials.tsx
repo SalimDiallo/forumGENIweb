@@ -76,7 +76,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
             <Users className="text-yellow-300" size={20} />
             <span className="text-white font-medium">Association GENI</span>
           </div>
-          
+
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
             Témoignages de nos
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-700"> Membres</span>
@@ -165,7 +165,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
           <h3 className="text-2xl font-bold text-white text-center mb-8">
             Témoignage à la une
           </h3>
-          
+
           <div className="relative">
             <div className="text-center max-w-4xl mx-auto">
               <Quote className="text-emerald-600 mx-auto mb-6" size={48} />
@@ -210,21 +210,20 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
               >
                 <ChevronLeft className="text-white" size={20} />
               </button>
-              
+
               <div className="flex gap-2">
                 {displayTestimonials.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentTestimonial(index)}
-                    className={`w-3 h-3  transition-all ${
-                      index === currentTestimonial
-                        ? 'bg-emerald-600'
-                        : 'bg-white/20 hover:bg-white/40'
-                    }`}
+                    className={`w-3 h-3  transition-all ${index === currentTestimonial
+                      ? 'bg-emerald-600'
+                      : 'bg-white/20 hover:bg-white/40'
+                      }`}
                   />
                 ))}
               </div>
-              
+
               <button
                 onClick={nextTestimonial}
                 className="bg-white/5 hover:bg-white/10 border border-white/10  p-3 transition-colors"
@@ -272,13 +271,13 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                 </h3>
                 {(displayTestimonials.find(t => t.id === playingVideo)?.role ||
                   displayTestimonials.find(t => t.id === playingVideo)?.company) && (
-                  <p className="text-gray-400">
-                    {[
-                      displayTestimonials.find(t => t.id === playingVideo)?.role,
-                      displayTestimonials.find(t => t.id === playingVideo)?.company
-                    ].filter(Boolean).join(' • ')}
-                  </p>
-                )}
+                    <p className="text-gray-400">
+                      {[
+                        displayTestimonials.find(t => t.id === playingVideo)?.role,
+                        displayTestimonials.find(t => t.id === playingVideo)?.company
+                      ].filter(Boolean).join(' • ')}
+                    </p>
+                  )}
               </div>
             </div>
           </div>

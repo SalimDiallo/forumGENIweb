@@ -16,8 +16,10 @@ interface PageProps {
     year?: string;
     category?: string;
     type?: string;
+    search?: string;
   }>;
 }
+
 
 export default async function GalleryPage({ searchParams }: PageProps) {
   const params = await searchParams;
@@ -38,6 +40,18 @@ export default async function GalleryPage({ searchParams }: PageProps) {
   if (selectedCategory) {
     videoFilters.category = selectedCategory;
     photoFilters.category = selectedCategory;
+  }
+
+  const searchQuery = params.search;
+  if (searchQuery) {
+    const searchFilter = {
+      OR: [
+        { title: { contains: searchQuery, mode: "insensitive" } },
+        { description: { contains: searchQuery, mode: "insensitive" } },
+      ],
+    };
+    videoFilters.AND = searchFilter;
+    photoFilters.AND = searchFilter;
   }
 
   // Fetch data based on type
@@ -96,16 +110,16 @@ export default async function GalleryPage({ searchParams }: PageProps) {
 
   return (
     <>
-    <GalleryClient
-      videos={videos}
-      photos={photos}
-      years={allYears as number[]}
-      categories={allCategories as string[]}
-      selectedYear={selectedYear}
-      selectedCategory={selectedCategory}
-      selectedType={selectedType}
-    />
-    <VideoTestimonialsWrapper />
+      <GalleryClient
+        videos={videos}
+        photos={photos}
+        years={allYears as number[]}
+        categories={allCategories as string[]}
+        selectedYear={selectedYear}
+        selectedCategory={selectedCategory}
+        selectedType={selectedType}
+      />
+      <VideoTestimonialsWrapper />
     </>
   );
 }
