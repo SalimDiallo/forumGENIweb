@@ -2,6 +2,7 @@ import { Plus, Video } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { TestimonialsList } from "./TestimonialsList";
+import { TestimonialsHeaderActions } from "@/components/admin/TestimonialsHeaderActions";
 
 interface PageProps {
   searchParams?: Promise<{
@@ -44,13 +45,7 @@ export default async function AdminTestimonialsPage({ searchParams }: PageProps)
               </p>
             </div>
           </div>
-          <Link
-            href="/admin/testimonials/create"
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg px-5 py-2.5 font-medium hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg shadow-purple-200"
-          >
-            <Plus className="w-5 h-5" />
-            Nouveau témoignage
-          </Link>
+          <TestimonialsHeaderActions />
         </div>
       </section>
 

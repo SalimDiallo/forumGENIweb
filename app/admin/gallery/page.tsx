@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getYouTubeThumbnailUrl } from "@/lib/services/youtube";
 import { getDriveThumbnailUrl } from "@/lib/validations/gallery";
 import { GalleryTabs } from "./GalleryTabs";
+import { GalleryHeaderActions } from "@/components/admin/GalleryHeaderActions";
 
 interface PageProps {
   searchParams: Promise<{
@@ -61,22 +62,7 @@ export default async function AdminGalleryPage({ searchParams }: PageProps) {
               {totalVideos} vidéo(s) • {totalPhotos} photo(s)
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/admin/gallery/bulk?type=${activeTab === "videos" ? "video" : "photo"}`}
-              className="flex items-center gap-2 border border-gray-300 text-gray-700 rounded-lg px-4 py-2.5 font-medium hover:bg-gray-50 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Multiple
-            </Link>
-            <Link
-              href={`/admin/gallery/create?type=${activeTab}`}
-              className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-2.5 font-medium hover:bg-gray-800 transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              Ajouter {activeTab === "videos" ? "une vidéo" : "une photo"}
-            </Link>
-          </div>
+          <GalleryHeaderActions activeTab={activeTab} />
         </div>
       </section>
 

@@ -6,9 +6,11 @@ import { listCategories } from "../actions";
 import { DeleteCategoryButton } from "./DeleteCategoryButton";
 import CreateCategoryModal from "./CreateCategoryModal";
 import { Plus, Folder } from "lucide-react";
+import { useRole } from "@/contexts/RoleContext";
 
 export default function AdminBlogCategoriesPage() {
   const [open, setOpen] = useState(false);
+  const { canWrite, canDelete } = useRole();
 
   // ========================================
   // FETCH CATEGORIES
@@ -37,13 +39,15 @@ export default function AdminBlogCategoriesPage() {
               <p className="text-sm text-gray-500">Gérez les catégories de votre blog</p>
             </div>
           </div>
-          <button
-            onClick={() => setOpen(true)}
-            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-2.5 hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Nouvelle catégorie
-          </button>
+          {canWrite && (
+            <button
+              onClick={() => setOpen(true)}
+              className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-2.5 hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Nouvelle catégorie
+            </button>
+          )}
         </div>
       </section>
 
@@ -99,12 +103,14 @@ export default function AdminBlogCategoriesPage() {
                     </p>
                   </div>
                 </div>
-                <DeleteCategoryButton
-                  categoryId={c.id}
-                  categoryName={c.name}
-                  postCount={c._count?.posts || 0}
-                  onSuccess={() => refetch()}
-                />
+                {canDelete && (
+                  <DeleteCategoryButton
+                    categoryId={c.id}
+                    categoryName={c.name}
+                    postCount={c._count?.posts || 0}
+                    onSuccess={() => refetch()}
+                  />
+                )}
               </li>
             ))}
           </ul>

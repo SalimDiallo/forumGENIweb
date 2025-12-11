@@ -1,9 +1,10 @@
-import { Calendar, MapPin, Users, Globe, DollarSign, Trash2, Edit2, Plus, Eye } from "lucide-react";
+import { Calendar, MapPin, Globe, DollarSign, Plus } from "lucide-react";
 import Link from "next/link";
 import { statusOptions } from "@/lib/utils";
 import { prisma } from "@/lib/db";
 import { ServerPaginationClient } from "./ServerPaginationClient";
-import { DeleteEventButton } from "./DeleteEventButton";
+import { EventActionsWrapper } from "@/components/admin/EventActionsWrapper";
+import { CreateButtonWrapper } from "@/components/admin/CreateButtonWrapper";
 
 interface PageProps {
   searchParams?: Promise<{
@@ -39,13 +40,15 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
               {total} événement(s) au total
             </p>
           </div>
-          <Link
-            href={"/admin/events/event/create"}
-            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Nouvel événement
-          </Link>
+          <CreateButtonWrapper>
+            <Link
+              href={"/admin/events/event/create"}
+              className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Nouvel événement
+            </Link>
+          </CreateButtonWrapper>
         </div>
       </section>
 
@@ -118,28 +121,11 @@ export default async function AdminEventsPage({ searchParams }: PageProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/admin/events/event/${e.id}`}
-                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <Eye className="w-4 h-4" />
-                      Voir
-                    </Link>
-                    <Link
-                      href={`/admin/events/event/${e.id}/edit`}
-                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Éditer
-                    </Link>
-
-                    <DeleteEventButton
-                      eventId={e.id}
-                      eventTitle={e.title}
-                      hasRegistrations={e.currentParticipants > 0}
-                    />
-                  </div>
+                  <EventActionsWrapper
+                    eventId={e.id}
+                    eventTitle={e.title}
+                    hasRegistrations={e.currentParticipants > 0}
+                  />
                 </div>
               </div>
             );

@@ -17,6 +17,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { DeleteBlogPostButton } from "./DeleteBlogPostButton";
+import { useRole } from "@/contexts/RoleContext";
 
 type BlogPostWithRelations = BlogPost & {
   category: BlogCategory;
@@ -38,6 +39,7 @@ const STATUS_LABELS: Record<string, string> = {
 export default function AdminBlogPostsPage() {
   const list = useAction(listBlogPosts);
   const toggleFeaturedAction = useAction(toggleFeatured);
+  const { canWrite, canDelete } = useRole();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -92,13 +94,15 @@ export default function AdminBlogPostsPage() {
             </div>
             <p className="text-gray-600">Gérez tous vos articles de blog</p>
           </div>
-          <Link
-            href="/admin/blog/posts/create"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Nouvel Article
-          </Link>
+          {canWrite && (
+            <Link
+              href="/admin/blog/posts/create"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Nouvel Article
+            </Link>
+          )}
         </div>
       </div>
 
@@ -155,11 +159,10 @@ export default function AdminBlogPostsPage() {
                       <div className="flex items-start gap-3 mb-2">
                         <button
                           onClick={() => handleToggleFeatured(post.id, post.isFeatured)}
-                          className={`mt-1 ${
-                            post.isFeatured
+                          className={`mt-1 ${post.isFeatured
                               ? "text-yellow-500 hover:text-yellow-600"
                               : "text-gray-300 hover:text-gray-400"
-                          } transition-colors`}
+                            } transition-colors`}
                           title={post.isFeatured ? "Retirer de la vedette" : "Mettre en vedette"}
                         >
                           <Star className={`w-5 h-5 ${post.isFeatured ? "fill-current" : ""}`} />
@@ -224,13 +227,12 @@ export default function AdminBlogPostsPage() {
                           )}
                         </div>
                         <span
-                          className={`px-2 py-1 text-xs font-medium  ${
-                            post.status === "published"
+                          className={`px-2 py-1 text-xs font-medium  ${post.status === "published"
                               ? "bg-green-100 text-green-800 border border-green-200"
                               : post.status === "draft"
-                              ? "bg-gray-100 text-gray-800 border border-gray-200"
-                              : "bg-orange-100 text-orange-800 border border-orange-200"
-                          }`}
+                                ? "bg-gray-100 text-gray-800 border border-gray-200"
+                                : "bg-orange-100 text-orange-800 border border-orange-200"
+                            }`}
                         >
                           {STATUS_LABELS[post.status]}
                         </span>
@@ -239,18 +241,22 @@ export default function AdminBlogPostsPage() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-2">
-                      <Link
-                        href={`/admin/blog/posts/${post.id}/edit`}
-                        className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                        title="Modifier"
-                      >
-                        <Edit className="w-5 h-5" />
-                      </Link>
-                      <DeleteBlogPostButton
-                        postId={post.id}
-                        postTitle={post.title}
-                        onSuccess={handleRefresh}
-                      />
+                      {canWrite && (
+                        <Link
+                          href={`/admin/blog/posts/${post.id}/edit`}
+                          className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Modifier"
+                        >
+                          <Edit className="w-5 h-5" />
+                        </Link>
+                      )}
+                      {canDelete && (
+                        <DeleteBlogPostButton
+                          postId={post.id}
+                          postTitle={post.title}
+                          onSuccess={handleRefresh}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

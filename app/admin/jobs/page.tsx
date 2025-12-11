@@ -1,6 +1,5 @@
 import {
   Plus,
-  Edit2,
   Briefcase,
   Building2,
   MapPin,
@@ -17,12 +16,12 @@ import {
   ListChecks,
   Clock,
   Home,
-  Eye,
 } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ServerPaginationClient } from "./ServerPaginationClient";
-import { DeleteJobButton } from "./DeleteJobButton";
+import { JobActionsWrapper } from "@/components/admin/JobActionsWrapper";
+import { CreateButtonWrapper } from "@/components/admin/CreateButtonWrapper";
 
 interface PageProps {
   searchParams?: Promise<{
@@ -83,13 +82,15 @@ export default async function AdminJobsPage({ searchParams }: PageProps) {
               {total} annonce(s) au total
             </p>
           </div>
-          <Link
-            href="/admin/jobs/job/create"
-            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Nouvelle annonce
-          </Link>
+          <CreateButtonWrapper>
+            <Link
+              href="/admin/jobs/job/create"
+              className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-5 py-3 font-medium hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Nouvelle annonce
+            </Link>
+          </CreateButtonWrapper>
         </div>
       </section>
 
@@ -173,10 +174,10 @@ export default async function AdminJobsPage({ searchParams }: PageProps) {
                           {j.salaryMin && j.salaryMax
                             ? `${j.salaryMin} - ${j.salaryMax}`
                             : j.salaryMin
-                            ? `${j.salaryMin}`
-                            : j.salaryMax
-                            ? `${j.salaryMax}`
-                            : ""}
+                              ? `${j.salaryMin}`
+                              : j.salaryMax
+                                ? `${j.salaryMax}`
+                                : ""}
                           {j.salaryCurrency && ` ${j.salaryCurrency}`}
                           {j.salaryPeriod && ` /${j.salaryPeriod}`}
                         </span>
@@ -219,26 +220,10 @@ export default async function AdminJobsPage({ searchParams }: PageProps) {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/admin/jobs/job/${j.id}`}
-                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <Eye className="w-4 h-4" />
-                      Détails
-                    </Link>
-                    <Link
-                      href={`/admin/jobs/job/${j.id}/edit`}
-                      className="flex items-center gap-1.5 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Éditer
-                    </Link>
-                    <DeleteJobButton
-                      jobId={j.id}
-                      jobTitle={j.title}
-                    />
-                  </div>
+                  <JobActionsWrapper
+                    jobId={j.id}
+                    jobTitle={j.title}
+                  />
                 </div>
                 {j.requirements && (
                   <div className="mt-1 text-xs text-gray-500">

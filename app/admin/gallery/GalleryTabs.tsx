@@ -24,6 +24,7 @@ import { getYouTubeThumbnailUrl } from "@/lib/services/youtube";
 import { getDriveThumbnailUrl } from "@/lib/validations/gallery";
 import { bulkDeleteVideos, bulkDeletePhotos, deleteVideo, deletePhoto } from "./actions";
 import { toast } from "sonner";
+import { useRole } from "@/contexts/RoleContext";
 
 type VideoItem = {
   id: number;
@@ -80,6 +81,7 @@ type FilterStatus = "all" | "active" | "inactive" | "featured";
 
 export function GalleryTabs({ activeTab, videos, photos }: GalleryTabsProps) {
   const router = useRouter();
+  const { canWrite, canDelete } = useRole();
 
   // Selection state
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -283,20 +285,24 @@ export function GalleryTabs({ activeTab, videos, photos }: GalleryTabsProps) {
 
           {/* Actions */}
           <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
-            <Link
-              href={`/admin/gallery/video/${video.id}/edit`}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              <Edit2 className="w-3.5 h-3.5" />
-              Modifier
-            </Link>
-            <button
-              onClick={() => handleSingleDelete(video.id, video.title)}
-              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-              title="Supprimer"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+            {canWrite && (
+              <Link
+                href={`/admin/gallery/video/${video.id}/edit`}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+                Modifier
+              </Link>
+            )}
+            {canDelete && (
+              <button
+                onClick={() => handleSingleDelete(video.id, video.title)}
+                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                title="Supprimer"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -370,20 +376,24 @@ export function GalleryTabs({ activeTab, videos, photos }: GalleryTabsProps) {
 
           {/* Actions - compact */}
           <div className="flex items-center gap-1 mt-2 pt-2 border-t border-gray-100">
-            <Link
-              href={`/admin/gallery/photo/${photo.id}/edit`}
-              className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              <Edit2 className="w-3 h-3" />
-              Modifier
-            </Link>
-            <button
-              onClick={() => handleSingleDelete(photo.id, photo.title)}
-              className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-              title="Supprimer"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
+            {canWrite && (
+              <Link
+                href={`/admin/gallery/photo/${photo.id}/edit`}
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <Edit2 className="w-3 h-3" />
+                Modifier
+              </Link>
+            )}
+            {canDelete && (
+              <button
+                onClick={() => handleSingleDelete(photo.id, photo.title)}
+                className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                title="Supprimer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -474,7 +484,7 @@ export function GalleryTabs({ activeTab, videos, photos }: GalleryTabsProps) {
             </select>
           </div>
 
-          {/* Selection actions */}
+          {/* Selection actions - only show bulk delete for admins */}
           {isSelectionMode && selectedIds.size > 0 && (
             <div className="flex items-center gap-2 ml-auto bg-white border border-gray-200 rounded-lg px-3 py-1.5">
               <span className="text-sm text-gray-600">
@@ -493,14 +503,18 @@ export function GalleryTabs({ activeTab, videos, photos }: GalleryTabsProps) {
               >
                 Aucun
               </button>
-              <div className="w-px h-5 bg-gray-200" />
-              <button
-                onClick={handleBulkDelete}
-                className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 font-medium"
-              >
-                <Trash2 className="w-4 h-4" />
-                Supprimer
-              </button>
+              {canDelete && (
+                <>
+                  <div className="w-px h-5 bg-gray-200" />
+                  <button
+                    onClick={handleBulkDelete}
+                    className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 font-medium"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Supprimer
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -609,18 +623,22 @@ export function GalleryTabs({ activeTab, videos, photos }: GalleryTabsProps) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-1">
-                  <Link
-                    href={`/admin/gallery/${activeTab === "videos" ? "video" : "photo"}/${item.id}/edit`}
-                    className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </Link>
-                  <button
-                    onClick={() => handleSingleDelete(item.id, item.title)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {canWrite && (
+                    <Link
+                      href={`/admin/gallery/${activeTab === "videos" ? "video" : "photo"}/${item.id}/edit`}
+                      className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Link>
+                  )}
+                  {canDelete && (
+                    <button
+                      onClick={() => handleSingleDelete(item.id, item.title)}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

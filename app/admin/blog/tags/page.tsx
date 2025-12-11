@@ -6,9 +6,11 @@ import { listTags } from "../tags-actions";
 import { DeleteTagButton } from "./DeleteTagButton";
 import CreateTagModal from "./CreateTagModal";
 import { Plus, Tag } from "lucide-react";
+import { useRole } from "@/contexts/RoleContext";
 
 export default function AdminTagsPage() {
   const [open, setOpen] = useState(false);
+  const { canWrite, canDelete } = useRole();
 
   // ========================================
   // FETCH TAGS
@@ -37,13 +39,15 @@ export default function AdminTagsPage() {
               <p className="text-sm text-gray-500">Gérez les tags de votre blog</p>
             </div>
           </div>
-          <button
-            onClick={() => setOpen(true)}
-            className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-2.5 hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Nouveau tag
-          </button>
+          {canWrite && (
+            <button
+              onClick={() => setOpen(true)}
+              className="flex items-center gap-2 bg-gray-900 text-white rounded-lg px-4 py-2.5 hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Nouveau tag
+            </button>
+          )}
         </div>
       </section>
 
@@ -99,12 +103,14 @@ export default function AdminTagsPage() {
                     </p>
                   </div>
                 </div>
-                <DeleteTagButton
-                  tagId={t.id}
-                  tagName={t.name}
-                  postCount={t._count?.posts || 0}
-                  onSuccess={() => refetch()}
-                />
+                {canDelete && (
+                  <DeleteTagButton
+                    tagId={t.id}
+                    tagName={t.name}
+                    postCount={t._count?.posts || 0}
+                    onSuccess={() => refetch()}
+                  />
+                )}
               </li>
             ))}
           </ul>

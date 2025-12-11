@@ -25,6 +25,7 @@ import {
 import { getYouTubeThumbnailUrl, getYouTubeEmbedUrl } from "@/lib/services/youtube";
 import { deleteTestimonial, bulkDeleteTestimonials } from "./actions";
 import { toast } from "sonner";
+import { useRole } from "@/contexts/RoleContext";
 
 type Testimonial = {
     id: number;
@@ -52,6 +53,7 @@ type FilterStatus = "all" | "active" | "inactive" | "featured";
 
 export function TestimonialsList({ testimonials, total }: TestimonialsListProps) {
     const router = useRouter();
+    const { canWrite, canDelete } = useRole();
 
     // Selection state
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -165,8 +167,8 @@ export function TestimonialsList({ testimonials, total }: TestimonialsListProps)
         return (
             <div
                 className={`group relative bg-white border rounded-xl overflow-hidden transition-all duration-200 ${isSelected
-                        ? "border-purple-500 ring-2 ring-purple-200 shadow-lg"
-                        : "border-gray-200 hover:border-gray-300 hover:shadow-md"
+                    ? "border-purple-500 ring-2 ring-purple-200 shadow-lg"
+                    : "border-gray-200 hover:border-gray-300 hover:shadow-md"
                     }`}
             >
                 {/* Selection checkbox */}
@@ -176,8 +178,8 @@ export function TestimonialsList({ testimonials, total }: TestimonialsListProps)
                         toggleSelection(item.id);
                     }}
                     className={`absolute top-3 left-3 z-10 p-1.5 rounded-lg transition-all ${isSelected
-                            ? "bg-purple-500 text-white"
-                            : "bg-white/90 text-gray-600 opacity-0 group-hover:opacity-100"
+                        ? "bg-purple-500 text-white"
+                        : "bg-white/90 text-gray-600 opacity-0 group-hover:opacity-100"
                         }`}
                 >
                     {isSelected ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
@@ -261,20 +263,24 @@ export function TestimonialsList({ testimonials, total }: TestimonialsListProps)
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
-                        <Link
-                            href={`/admin/testimonials/${item.id}/edit`}
-                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                        >
-                            <Edit2 className="w-3.5 h-3.5" />
-                            Modifier
-                        </Link>
-                        <button
-                            onClick={() => handleSingleDelete(item.id, item.name)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Supprimer"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canWrite && (
+                            <Link
+                                href={`/admin/testimonials/${item.id}/edit`}
+                                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                                <Edit2 className="w-3.5 h-3.5" />
+                                Modifier
+                            </Link>
+                        )}
+                        {canDelete && (
+                            <button
+                                onClick={() => handleSingleDelete(item.id, item.name)}
+                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Supprimer"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -329,7 +335,7 @@ export function TestimonialsList({ testimonials, total }: TestimonialsListProps)
                         </button>
                     </div>
 
-                    {/* Selection actions */}
+                    {/* Selection actions - only show bulk delete for admins */}
                     {isSelectionMode && selectedIds.size > 0 && (
                         <div className="flex items-center gap-2 ml-auto bg-white border border-gray-200 rounded-lg px-3 py-1.5">
                             <span className="text-sm text-gray-600">
@@ -348,14 +354,18 @@ export function TestimonialsList({ testimonials, total }: TestimonialsListProps)
                             >
                                 Aucun
                             </button>
-                            <div className="w-px h-5 bg-gray-200" />
-                            <button
-                                onClick={handleBulkDelete}
-                                className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 font-medium"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                                Supprimer
-                            </button>
+                            {canDelete && (
+                                <>
+                                    <div className="w-px h-5 bg-gray-200" />
+                                    <button
+                                        onClick={handleBulkDelete}
+                                        className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 font-medium"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                        Supprimer
+                                    </button>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
@@ -513,20 +523,24 @@ export function TestimonialsList({ testimonials, total }: TestimonialsListProps)
                                                             <ExternalLink className="w-4 h-4" />
                                                         </a>
                                                     )}
-                                                    <Link
-                                                        href={`/admin/testimonials/${item.id}/edit`}
-                                                        className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
-                                                        title="Modifier"
-                                                    >
-                                                        <Edit2 className="w-4 h-4" />
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => handleSingleDelete(item.id, item.name)}
-                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                                                        title="Supprimer"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
+                                                    {canWrite && (
+                                                        <Link
+                                                            href={`/admin/testimonials/${item.id}/edit`}
+                                                            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
+                                                            title="Modifier"
+                                                        >
+                                                            <Edit2 className="w-4 h-4" />
+                                                        </Link>
+                                                    )}
+                                                    {canDelete && (
+                                                        <button
+                                                            onClick={() => handleSingleDelete(item.id, item.name)}
+                                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                                            title="Supprimer"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
