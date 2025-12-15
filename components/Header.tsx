@@ -84,8 +84,8 @@ const Header = () => {
             <Link href="/" className="flex items-center gap-2 group">
               <motion.div
                 className={`relative transition-all duration-300 ${scrolled || !isHomePage
-                    ? 'bg-white rounded-lg p-1.5 shadow-sm'
-                    : ''
+                  ? 'bg-white rounded-lg p-1.5 shadow-sm'
+                  : ''
                   }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
