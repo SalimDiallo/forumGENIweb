@@ -20,7 +20,15 @@
 # production
 /build
 
-/public/uploads
+# Uploads - ignore all uploaded files but keep directory structure
+/public/uploads/**/*
+!/public/uploads/.gitkeep
+!/public/uploads/events/
+!/public/uploads/events/.gitkeep
+!/public/uploads/blog/
+!/public/uploads/blog/.gitkeep
+!/public/uploads/jobs/
+!/public/uploads/jobs/.gitkeep
 
 # misc
 .DS_Store

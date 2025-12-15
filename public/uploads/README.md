@@ -1,33 +1,30 @@
 # Dossier Uploads
 
-Ce dossier contient les fichiers uploadés pour le site web.
+Ce dossier contient toutes les images uploadées par les utilisateurs dans l'interface d'administration.
 
 ## Structure
 
 ```
 uploads/
-├── sponsors/       # Logos des sponsors et partenaires
-├── events/         # Images des événements
-├── blog/           # Images des articles de blog
-└── jobs/           # Logos des entreprises pour les offres d'emploi
+├── events/       # Images des événements
+├── blog/         # Images des articles de blog
+└── jobs/         # Images des offres d'emploi
 ```
 
-## Sponsors
+## Configuration Git
 
-- **Format recommandé**: PNG avec fond transparent
-- **Dimensions recommandées**: 400x400px minimum
-- **Poids max**: 500KB par logo
-- **Formats supportés**: PNG, JPG, SVG, WebP
+Les fichiers uploadés dans ce dossier sont **automatiquement ignorés par Git** pour éviter de polluer le dépôt avec des fichiers binaires volumineux.
 
-### Exemple de nommage
-```
-/uploads/sponsors/entreprise-nom-logo.png
-/uploads/sponsors/partenaire-xyz.png
-```
+Seuls les fichiers `.gitkeep` sont suivis pour préserver la structure des dossiers.
 
-## Bonnes pratiques
+## En production
 
-1. Utilisez des noms de fichiers descriptifs en minuscules
-2. Remplacez les espaces par des tirets (-)
-3. Optimisez les images avant upload
-4. Utilisez des formats modernes (WebP) quand possible
+Sur votre serveur de production, assurez-vous que :
+
+1. Le dossier `public/uploads` existe et est accessible en écriture
+2. Les permissions sont correctement configurées (755 pour les dossiers, 644 pour les fichiers)
+3. Un système de backup régulier est en place pour les images uploadées
+
+## Nettoyage
+
+Pour supprimer les images orphelines (non référencées en base de données), consultez la documentation dans `/docs/IMAGE_MANAGEMENT.md` - section "Maintenance".
