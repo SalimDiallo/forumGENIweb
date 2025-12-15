@@ -1,6 +1,13 @@
 import { dateSchema, EventStatusEnum, EventTypeEnum } from "@/lib/validations/events";
 import z from "zod";
 
+// Image item schema for multi-image upload
+const imageItemSchema = z.object({
+  id: z.string(),
+  url: z.string(),
+  isCover: z.boolean(),
+});
+
 /**
  * Schema de création d'événement avec messages d'erreur en français
  */
@@ -9,7 +16,8 @@ export const createEventSchema = z.object({
   slug: z.string().min(2, "Le slug doit contenir au moins 2 caractères"),
   description: z.string().optional(),
   shortDescription: z.string().max(280, "La description courte ne peut pas dépasser 280 caractères").optional(),
-  featuredImage: z.string().url({ message: "URL d'image invalide" }).optional().or(z.literal("")),
+  featuredImage: z.string().optional().or(z.literal("")),
+  images: z.array(imageItemSchema).optional().default([]),
   eventType: EventTypeEnum,
   location: z.string().optional(),
   isVirtual: z.boolean().default(false),

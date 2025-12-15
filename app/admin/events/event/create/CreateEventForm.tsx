@@ -14,6 +14,7 @@ import { createEventSchema } from "./event.create.schema";
 import { useForm } from "@/hooks/useForm";
 import { useSlug } from "@/hooks/useSlug";
 import SlugField from "@/components/forms/SlugField";
+import MultiImageUpload, { type ImageItem } from "@/components/forms/MultiImageUpload";
 import { formatErrorsForToast, booleanToSelectValue, selectValueToBoolean } from "@/lib/form-utils";
 import type { EventType, EventStatus } from "@/lib/validations/events";
 
@@ -60,6 +61,7 @@ export default function CreateEventForm() {
       organizerName: "FGE",
       status: (isEditor ? "draft" : "draft") as EventStatus,
       featuredImage: "",
+      images: [] as ImageItem[],
       shortDescription: "",
       description: "",
       startDate: "",
@@ -281,16 +283,21 @@ export default function CreateEventForm() {
                   />
                 </div>
 
-                {/* Featured Image */}
-                <div>
-                  <label className="block font-medium mb-1">Image à la une (URL)</label>
-                  <Input
-                    value={form.values.featuredImage}
-                    onChange={(e) => form.setFieldValue("featuredImage", e.target.value)}
-                    onBlur={() => form.setFieldTouched("featuredImage")}
-                    placeholder="https://..."
-                    error={form.hasError("featuredImage")}
-                    errorMessage={form.getError("featuredImage")}
+                {/* Event Images */}
+                <div className="col-span-2">
+                  <MultiImageUpload
+                    value={form.values.images}
+                    onChange={(images) => {
+                      form.setFieldValue("images", images);
+                      // Set featuredImage to cover image URL
+                      const cover = images.find(img => img.isCover);
+                      form.setFieldValue("featuredImage", cover?.url || "");
+                    }}
+                    uploadEndpoint="/api/admin/upload/events"
+                    label="Images de l'événement"
+                    maxImages={10}
+                    error={form.hasError("images")}
+                    errorMessage={form.getError("images")}
                   />
                 </div>
 
@@ -303,9 +310,8 @@ export default function CreateEventForm() {
                     onBlur={() => form.setFieldTouched("shortDescription")}
                     placeholder="Résumé en une phrase"
                     rows={2}
-                    className={`w-full border rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 ${
-                      form.hasError("shortDescription") ? "border-red-300" : "border-gray-300"
-                    }`}
+                    className={`w-full border rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 ${form.hasError("shortDescription") ? "border-red-300" : "border-gray-300"
+                      }`}
                   />
                   {form.getError("shortDescription") && (
                     <span className="text-red-600 text-xs">{form.getError("shortDescription")}</span>

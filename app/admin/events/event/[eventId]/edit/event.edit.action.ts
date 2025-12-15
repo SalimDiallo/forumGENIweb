@@ -7,33 +7,48 @@ import { updateEventSchema } from "./event.edit.schema";
 import { enforceDraftStatusForEditor } from "@/lib/auth";
 
 export const doEditEvent = writeAction
-    .metadata({ actionName: "edit-event-admin" })
-    .inputSchema(updateEventSchema)
-    .action(async ({ parsedInput }) => {
-        const { id, ...event } = parsedInput;
-        console.log(event);
+  .metadata({ actionName: "edit-event-admin" })
+  .inputSchema(updateEventSchema)
+  .action(async ({ parsedInput }) => {
+    const { id, images, ...eventData } = parsedInput;
 
-        // Force le statut à "draft" si l'utilisateur est un editor
-        const finalStatus = event.status ? await enforceDraftStatusForEditor(event.status) : undefined;
+    // Force le statut à "draft" si l'utilisateur est un editor
+    const finalStatus = eventData.status ? await enforceDraftStatusForEditor(eventData.status) : undefined;
 
-        const editedEvent = await prisma.event.update({
-            where: { id },
-         data:{
-        ...event,
-        status: finalStatus,
-        maxParticipants: event.maxParticipants ? Number(event.maxParticipants) : 0
+    // Build update data
+    const updateData: any = {
+      ...eventData,
+      status: finalStatus,
+      maxParticipants: eventData.maxParticipants && !isNaN(Number(eventData.maxParticipants))
+        ? Number(eventData.maxParticipants)
+        : null,
+    };
 
-      }
-        });
+    // Handle images: delete all existing and create new ones
+    if (images !== undefined) {
+      updateData.images = {
+        deleteMany: {}, // Delete all existing images
+        create: images.map((img, index) => ({
+          url: img.url,
+          isCover: img.isCover,
+          sortOrder: index,
+        })),
+      };
+    }
 
-        // Revalidate paths
-        revalidatePath("/admin/events");
-        revalidatePath(`/admin/events/event/${id}`);
-        revalidatePath("/events");
-        revalidatePath("/");
-
-        // Revalidate cache tags
-        revalidateTag('events');
-
-        return { success: true, editedEvent };
+    const editedEvent = await prisma.event.update({
+      where: { id },
+      data: updateData,
     });
+
+    // Revalidate paths
+    revalidatePath("/admin/events");
+    revalidatePath(`/admin/events/event/${id}`);
+    revalidatePath("/events");
+    revalidatePath("/");
+
+    // Revalidate cache tags
+    revalidateTag('events');
+
+    return { success: true, editedEvent };
+  });

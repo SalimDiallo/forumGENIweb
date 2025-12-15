@@ -50,7 +50,7 @@ export const getCachedUpcomingEvents = unstable_cache(
         maxParticipants: true,
         currentParticipants: true,
         isFeatured: true,
-      
+
       },
     });
 
@@ -100,6 +100,12 @@ export const getCachedEventBySlug = unstable_cache(
         status: 'published'
       },
       include: {
+        images: {
+          orderBy: [
+            { isCover: 'desc' },
+            { sortOrder: 'asc' }
+          ]
+        },
         videos: {
           where: { isActive: true },
           orderBy: [
@@ -555,8 +561,8 @@ export const getCachedDashboardStats = unstable_cache(
           status: 'new'
         }
       }),
-    
-    
+
+
     ]);
 
     return {
@@ -575,8 +581,8 @@ export const getCachedDashboardStats = unstable_cache(
         total: contacts,
         new: newContacts
       },
-     
-    
+
+
     };
   },
   ['dashboard-stats'],

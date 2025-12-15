@@ -50,8 +50,8 @@ export const createBlogPostSchema = z.object({
   excerpt: z.string().optional(),
   content: z.string().min(10, "Le contenu doit contenir au moins 10 caractères"),
   featuredImage: z.string().optional().transform(val => val === "" || !val ? undefined : val).refine(
-    (val) => !val || /^https?:\/\/.+/.test(val),
-    { message: "URL d'image invalide" }
+    (val) => !val || /^(https?:\/\/.+|\/uploads\/.+)/.test(val),
+    { message: "URL d'image invalide. Utilisez une URL (http/https) ou uploadez une image." }
   ),
   authorName: z.string().min(2, "Le nom de l'auteur est requis"),
   authorPosition: z.string().optional(),

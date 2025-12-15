@@ -257,6 +257,7 @@ model Event {
   // Relations
   videos              VideoGallery[]
   photos              PhotoGallery[]
+  images              EventImage[]
 
   @@index([slug])
   @@index([eventType])
@@ -264,6 +265,21 @@ model Event {
   @@index([status])
   @@index([isFeatured])
   @@map("events")
+}
+
+// EventImage - Multiple images per event with cover selection
+model EventImage {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  url       String
+  isCover   Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_images")
 }
 
 

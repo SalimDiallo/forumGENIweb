@@ -16,6 +16,7 @@ import { updateBlogPostSchema } from "@/lib/validations/blog";
 import { useForm } from "@/hooks/useForm";
 import { useSlug } from "@/hooks/useSlug";
 import SlugField from "@/components/forms/SlugField";
+import ImageUploadInput from "@/components/forms/ImageUploadInput";
 import { formatErrorsForToast, booleanToSelectValue, selectValueToBoolean } from "@/lib/form-utils";
 
 type FormTab = "basic" | "content" | "meta";
@@ -436,14 +437,14 @@ export default function EditBlogPostForm({ postId }: EditBlogPostFormProps) {
 
                 {/* Featured Image */}
                 <div className="col-span-2">
-                  <label className="block font-medium mb-1">Image à la une (URL)</label>
-                  <Input
+                  <ImageUploadInput
                     value={form.values.featuredImage}
-                    onChange={(e) => form.setFieldValue("featuredImage", e.target.value)}
+                    onChange={(url) => form.setFieldValue("featuredImage", url)}
                     onBlur={() => form.setFieldTouched("featuredImage")}
-                    placeholder="https://exemple.com/image.jpg"
+                    label="Image à la une"
                     error={form.hasError("featuredImage")}
                     errorMessage={form.getError("featuredImage")}
+                    uploadEndpoint="/api/admin/upload/blog"
                   />
                 </div>
 
