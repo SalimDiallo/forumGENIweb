@@ -4,20 +4,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronDown, Calendar, Users, Award, Camera, FileText, Briefcase, Mail, ArrowRight, School } from 'lucide-react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { Menu, X, Calendar, Users, Camera, FileText, Briefcase, Mail, ArrowRight, School } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Smooth scroll tracking avec framer-motion
 
   useEffect(() => {
     let ticking = false;
@@ -25,7 +20,7 @@ const Header = () => {
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 50);
+          setScrolled(window.scrollY > 20);
           ticking = false;
         });
         ticking = true;
@@ -36,22 +31,9 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fermer le dropdown quand on clique ailleurs
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setActiveDropdown(null);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   // Fermer le menu mobile sur changement de route
   useEffect(() => {
     setIsMenuOpen(false);
-    setActiveDropdown(null);
   }, [pathname]);
 
   // Gestion du keyboard navigation
@@ -59,8 +41,6 @@ const Header = () => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsMenuOpen(false);
-        setActiveDropdown(null);
-        setIsSearchOpen(false);
       }
     };
 
@@ -68,69 +48,15 @@ const Header = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    setActiveDropdown(null);
-  };
-
-  const handleDropdownToggle = (itemName: string) => {
-    setActiveDropdown(activeDropdown === itemName ? null : itemName);
-  };
-
   const navItems = [
-    { 
-      name: 'Accueil', 
-      path: '/',
-      icon: null
-    },
-    { 
-      name: 'À Propos', 
-      path: '/about',
-      icon: Users
-    },
-    { 
-      name: 'Notre Ecole', 
-      path: '/insea',
-      icon: School
-    },
-    { 
-      name: 'Événements', 
-      path: '/events',
-      icon: Calendar,
-      hasDropdown: false,
-      dropdownItems: [
-        { name: 'Forum 2025', path: '/events/forum-2025', description: 'L\'événement principal de l\'année' },
-        { name: 'Conférences', path: '/events/conferences', description: 'Rencontres avec les experts' },
-        { name: 'Ateliers', path: '/events/workshops', description: 'Sessions pratiques et interactives' },
-        { name: 'Networking', path: '/events/networking', description: 'Opportunités de réseautage' }
-      ]
-    },
-    { 
-      name: 'Galerie', 
-      path: '/gallery',
-      icon: Camera
-    },
-    { 
-      name: 'Blog', 
-      path: '/blog',
-      icon: FileText
-    },
-    { 
-      name: 'Carrières', 
-      path: '/careers',
-      icon: Briefcase,
-      hasDropdown: false,
-      dropdownItems: [
-        { name: 'Offres d\'emploi', path: '/careers/jobs', description: 'Découvrez les opportunités' },
-        { name: 'Stages', path: '/careers/internships', description: 'Programme de stages' },
-        { name: 'Entreprises partenaires', path: '/careers/partners', description: 'Nos partenaires recruteurs' }
-      ]
-    },
-    { 
-      name: 'Contact', 
-      path: '/contact',
-      icon: Mail
-    }
+    { name: 'Accueil', path: '/', icon: null },
+    { name: 'À Propos', path: '/about', icon: Users },
+    { name: 'INSEA', path: '/insea', icon: School },
+    { name: 'Événements', path: '/events', icon: Calendar },
+    { name: 'Galerie', path: '/gallery', icon: Camera },
+    { name: 'Blog', path: '/blog', icon: FileText },
+    { name: 'Carrières', path: '/careers', icon: Briefcase },
+    { name: 'Contact', path: '/contact', icon: Mail }
   ];
 
   const isActive = (path: string) => {
@@ -138,325 +64,120 @@ const Header = () => {
     return pathname.startsWith(path);
   };
 
-  // Vérifier si on est sur la page d'accueil
   const isHomePage = pathname === '/';
 
   return (
     <>
       <motion.header
         ref={headerRef}
-        className={`fixed w-full z-30 transition-all duration-500 ${
-          scrolled
-            ? 'bg-white/90 backdrop-blur-2xl border-b border-gray-200/30 shadow-2xl shadow-black/10'
-            : ''
-        }`}
+        className={`fixed w-full z-50 transition-all duration-300 ${scrolled
+          ? 'bg-white/95 backdrop-blur-xl border-b border-gray-100 shadow-sm'
+          : 'bg-transparent'
+          }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-        style={{
-          backgroundColor: scrolled ? undefined : 'transparent',
-        }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        {/* Bande décorative supérieure avec animation */}
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo amélioré avec micro-interactions */}
-            <Link href="/" className="flex items-center gap-3 group">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 group">
               <motion.div
-                className={`relative transition-all duration-500 rounded-xl ${
-                  scrolled
-                    ? 'p-3 bg-white/80 backdrop-blur-2xl border border-white/30 shadow-lg'
-                    : isHomePage
-                      ? 'p-2 bg-transparent shadow-emerald-700/10'
-                      : 'p-2 bg-white/80 backdrop-blur-2xl shadow-emerald-700/10 shadow-lg'
-                }`}
-                whileHover={{ 
-                  scale: 1.05,
-                  rotate: [0, -1, 1, 0],
-                  transition: { duration: 0.6 }
-                }}
-                whileTap={{ scale: 0.95 }}
+                className={`relative transition-all duration-300 ${scrolled || !isHomePage
+                    ? 'bg-white rounded-lg p-1.5 shadow-sm'
+                    : ''
+                  }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <div className="relative flex items-center">
-                  {/* Effet blur blanc derrière le logo */}
-                  <div className="absolute inset-0 z-0 blur-lg bg-white opacity-60 rounded-xl pointer-events-none" />
-                  <Image
-                    src="/logo.svg" 
-                    alt="Forum GENI Entreprises" 
-                    width={180} 
-                    height={50} 
-                    className="h-10 w-auto transition-all duration-500 filter drop-shadow-sm rounded-xl"
-                    priority
-                  />
-                  {/* Texte du logo avec effet blur blanche (optionnel, surtout si logo SVG contient texte) */}
-                  {/* 
-                  <span className="absolute left-0 top-0 w-full h-full flex items-center justify-center pointer-events-none">
-                    <span className="text-2xl font-bold text-white/90 backdrop-blur-lg opacity-80 px-4 rounded-xl">
-                      Forum GENI Entreprises
-                    </span>
-                  </span>
-                  */}
-                </div>
-                {/* Glow effect */}
-                <motion.div 
-                  className={`absolute inset-0 blur-xl transition-opacity duration-500 -z-10 ${scrolled ? 'bg-white/0' : 'bg-gradient-to-br from-emerald-700/20 to-emerald-500/20 opacity-80'}`}
-                  animate={scrolled ? { scale: [1, 1.1, 1] } : {}}
-                  transition={{ duration: 2, repeat: Infinity }}
+                {/* Effet blur blanc derrière le logo */}
+                <div className="absolute inset-0 bg-white/80 blur-xl rounded-2xl -z-10" />
+                <Image
+                  src="/logo.svg"
+                  alt="Forum GENI"
+                  width={140}
+                  height={40}
+                  className="h-8 sm:h-9 w-auto relative z-10"
+                  priority
                 />
               </motion.div>
             </Link>
 
-            {/* Desktop Navigation améliorée */}
-            <nav className="hidden lg:flex items-center gap-1" ref={dropdownRef}>
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={index}
-                  className="relative"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1, ease: "easeOut" }}
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center gap-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  prefetch={true}
+                  className={`relative px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(item.path)
+                    ? scrolled || !isHomePage
+                      ? 'text-emerald-700 bg-emerald-50'
+                      : 'text-white bg-white/15'
+                    : scrolled || !isHomePage
+                      ? 'text-gray-600 hover:text-emerald-700 hover:bg-gray-50'
+                      : 'text-white/90 hover:text-white hover:bg-white/10'
+                    }`}
                 >
-                  {item.hasDropdown ? (
-                    <div className="relative">
-                      <button
-                        onClick={() => handleDropdownToggle(item.name)}
-                        onMouseEnter={() => setActiveDropdown(item.name)}
-                        className={`relative group px-4 py-3 font-medium transition-all duration-300 flex items-center gap-2 ${
-                          isActive(item.path)
-                            ? scrolled
-                              ? 'text-emerald-800 bg-emerald-50 border border-emerald-200'
-                              : isHomePage
-                                ? 'text-white bg-emerald-700/10 border border-emerald-600/30'
-                                : 'text-black bg-emerald-700/10 border border-emerald-600/30'
-                            : scrolled
-                              ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50/80'
-                              : isHomePage
-                                ? 'text-white hover:text-white hover:bg-white/10'
-                                : 'text-black hover:text-emerald-800 hover:bg-white/10'
-                        } text-shadow `}
-                        style={{
-                          textShadow:
-                            scrolled
-                              ? "0 1px 6px rgba(16,185,129,0.12)"
-                              : isHomePage
-                                ? "0 2px 8px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4)"
-                                : "0 2px 16px rgba(0,0,0,0.24), 0 1px 2px rgba(16,185,129,0.10)"
-                        }}
-                      >
-                        {item.icon && <item.icon className="w-4 h-4" />}
-                        <span
-                          className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.24)]"
-                          style={{
-                            textShadow:
-                              scrolled
-                                ? "0 1px 6px rgba(16,185,129,0.12)"
-                                : isHomePage
-                                  ? "0 2px 8px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4)"
-                                  : "0 2px 16px rgba(0,0,0,0.24), 0 1px 2px rgba(16,185,129,0.10)"
-                          }}
-                        >
-                          {item.name}
-                        </span>
-                        <motion.div
-                          animate={{ rotate: activeDropdown === item.name ? 180 : 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <ChevronDown className="w-4 h-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.24)]" />
-                        </motion.div>
-                        
-                        {/* Active indicator */}
-                        {isActive(item.path) && (
-                          <motion.div
-                            className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-700 "
-                            layoutId="activeTab"
-                            initial={false}
-                            style={{ x: '-50%' }}
-                          />
-                        )}
-                      </button>
-
-                      {/* Dropdown Menu */}
-                      <AnimatePresence>
-                        {activeDropdown === item.name && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="absolute top-full left-0 mt-2 w-72 bg-white/95 backdrop-blur-2xl shadow-2xl border border-gray-200/50 overflow-hidden"
-                            onMouseLeave={() => setActiveDropdown(null)}
-                          >
-                            <div className="p-2">
-                              {item.dropdownItems?.map((dropdownItem, dropdownIndex) => (
-                                <motion.div
-                                  key={dropdownIndex}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.2, delay: dropdownIndex * 0.05 }}
-                                >
-                                  <Link
-                                    href={dropdownItem.path}
-                                    className="group flex items-center justify-between p-3 hover:bg-emerald-50 transition-all duration-200"
-                                    onClick={() => setActiveDropdown(null)}
-                                  >
-                                    <div>
-                                      <div
-                                        className="font-medium text-gray-900 group-hover:text-emerald-800 transition-colors drop-shadow"
-                                        style={{
-                                          textShadow:
-                                            "0 1px 3px rgba(0,0,0,0.18),0 1px 2px rgba(16,185,129,0.10)"
-                                        }}
-                                      >
-                                        {dropdownItem.name}
-                                      </div>
-                                      <div
-                                        className="text-sm text-gray-500 mt-0.5 drop-shadow"
-                                        style={{
-                                          textShadow:
-                                            "0 1px 3px rgba(0,0,0,0.14)"
-                                        }}
-                                      >
-                                        {dropdownItem.description}
-                                      </div>
-                                    </div>
-                                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-700 transform group-hover:translate-x-1 transition-all duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.28)]" />
-                                  </Link>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ) : (
-                    <Link
-                      href={item.path}
-                      prefetch={true}
-                      className={`relative group px-4 py-3 font-medium transition-all duration-300 flex items-center gap-2 ${
-                        isActive(item.path)
-                          ? scrolled
-                            ? 'text-emerald-800 bg-emerald-50 border border-emerald-200'
-                            : isHomePage
-                              ? 'text-white bg-emerald-700/10 border border-emerald-600/30'
-                              : 'text-black bg-emerald-700/10 border border-emerald-600/30'
-                          : scrolled
-                            ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50/80'
-                            : isHomePage
-                              ? 'text-white hover:text-white hover:bg-white/10'
-                              : 'text-black hover:text-emerald-800 hover:bg-white/10'
-                      } text-shadow`}
-                      style={{
-                        textShadow:
-                          scrolled
-                            ? "0 1px 6px rgba(16,185,129,0.12)"
-                            : isHomePage
-                              ? "0 2px 8px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4)"
-                              : "0 2px 16px rgba(0,0,0,0.24), 0 1px 2px rgba(16,185,129,0.10)"
-                      }}
-                    >
-                      {item.icon && <item.icon className="w-4 h-4" />}
-                      <span
-                        className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.24)]"
-                        style={{
-                          textShadow:
-                            scrolled
-                              ? "0 1px 6px rgba(16,185,129,0.12)"
-                              : isHomePage
-                                ? "0 2px 8px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4)"
-                                : "0 2px 16px rgba(0,0,0,0.24), 0 1px 2px rgba(16,185,129,0.10)"
-                        }}
-                      >
-                        {item.name}
-                      </span>
-
-                      {/* Active indicator */}
-                      {isActive(item.path) && (
-                        <motion.div
-                          className="absolute bottom-0 left-1/2 w-6 h-0.5 bg-emerald-700 "
-                          layoutId="activeTab"
-                          initial={false}
-                          style={{ x: '-50%' }}
-                        />
-                      )}
-                    </Link>
+                  {item.name}
+                  {isActive(item.path) && (
+                    <motion.div
+                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${scrolled || !isHomePage ? 'bg-emerald-600' : 'bg-white'
+                        }`}
+                      layoutId="navIndicator"
+                    />
                   )}
-                </motion.div>
+                </Link>
               ))}
             </nav>
 
-            {/* CTA Button amélioré */}
-            <motion.div
-              className="hidden lg:block"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 1 }}
-            >
-              <Link href="/contact">
+            {/* CTA Button */}
+            <div className="hidden lg:block">
+              <Link href="/events">
                 <motion.button
-                  className="relative px-6 py-3 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold  overflow-hidden hover:shadow-emerald-700/30 group"
-                  whileHover={{ 
-                    scale: 1.05, 
-                    y: -2,
-                    boxShadow: "0 20px 25px -5px rgba(16, 185, 129, 0.3), 0 10px 10px -5px rgba(16, 185, 129, 0.1)"
-                  }}
+                  className={`px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 ${scrolled || !isHomePage
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'bg-white text-emerald-700 hover:bg-white/90'
+                    }`}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {/* Animated background */}
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-500 opacity-0 group-hover:opacity-100"
-                    initial={false}
-                    animate={{ x: ['-100%', '100%'] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                  />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 animate-shimmer" />
-                  <span className="relative flex items-center gap-2">
-                    Contact
-                    <motion.div
-                      animate={{ x: [0, 3, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      <ArrowRight className="w-4 h-4" />
-                    </motion.div>
-                  </span>
+                  <span>Forum 2025</span>
+                  <ArrowRight className="w-4 h-4" />
                 </motion.button>
               </Link>
-            </motion.div>
+            </div>
 
-            {/* Mobile Menu Button amélioré */}
+            {/* Mobile Menu Button */}
             <motion.button
-              onClick={toggleMenu}
-              className={`lg:hidden p-3 transition-all duration-300  relative overflow-hidden ${
-                scrolled
-                  ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50'
-                  : isHomePage
-                    ? 'text-white hover:text-white hover:bg-white/10'
-                    : 'text-black hover:text-emerald-800 hover:bg-slate-900/10'
-              }`}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`lg:hidden p-2 rounded-lg transition-colors ${scrolled || !isHomePage
+                ? 'text-gray-700 hover:bg-gray-100'
+                : 'text-white hover:bg-white/10'
+                }`}
               aria-label="Menu"
-              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <AnimatePresence mode="wait">
                 {isMenuOpen ? (
                   <motion.div
                     key="close"
-                    initial={{ rotate: -180, opacity: 0 }}
+                    initial={{ rotate: -90, opacity: 0 }}
                     animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 180, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <X size={24} className={!scrolled && isHomePage ? 'text-white' : 'text-black'} />
+                    <X size={24} />
                   </motion.div>
                 ) : (
                   <motion.div
                     key="menu"
-                    initial={{ rotate: 180, opacity: 0 }}
+                    initial={{ rotate: 90, opacity: 0 }}
                     animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -180, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Menu size={24} className={!scrolled && isHomePage ? 'text-white' : ''} />
+                    <Menu size={24} />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -465,166 +186,96 @@ const Header = () => {
         </div>
       </motion.header>
 
-      {/* Mobile Navigation Overlay amélioré */}
+      {/* Mobile Navigation */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 lg:hidden"
           >
-            {/* Backdrop avec blur effect */}
-            <motion.div 
-              className="absolute inset-0 bg-slate-900/95 backdrop-blur-2xl"
-              onClick={() => setIsMenuOpen(false)}
-              initial={{ backdropFilter: 'blur(0px)' }}
-              animate={{ backdropFilter: 'blur(20px)' }}
-              exit={{ backdropFilter: 'blur(0px)' }}
-            />
-            
-            {/* Menu Content */}
+            {/* Backdrop */}
             <motion.div
-              initial={{ x: '100%', opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: '100%', opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white/98 backdrop-blur-3xl border-l border-gray-200/30 shadow-3xl overflow-y-auto"
-            >
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsMenuOpen(false)}
+            />
 
-          <motion.button
-              onClick={toggleMenu}
-              className={`lg:hidden py-6 transition-all duration-300  relative overflow-hidden flex justify-end w-full px-8 ${
-                scrolled 
-                  ? 'text-gray-700 hover:text-emerald-800 hover:bg-emerald-50' 
-                  : 'text-black hover:text-emerald-800 hover:bg-slate-900/10'
-              }`}
-              aria-label="Menu"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            {/* Menu Panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl"
             >
-              <AnimatePresence mode="wait">
-                {isMenuOpen ? (
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                <Image
+                  src="/logo.svg"
+                  alt="Forum GENI"
+                  width={120}
+                  height={35}
+                  className="h-8 w-auto"
+                />
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <nav className="p-4 space-y-1">
+                {navItems.map((item, index) => (
                   <motion.div
-                    key="close"
-                    initial={{ rotate: -180, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 180, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    key={item.path}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
                   >
-                    <X size={24} className='text-black' />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="menu"
-                    initial={{ rotate: 180, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -180, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Menu size={24} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
-              <div className="p-6">
-                {/* Navigation Links avec animations staggered */}
-                <nav className="space-y-1">
-                  {navItems.map((item, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ 
-                        duration: 0.4, 
-                        delay: index * 0.1,
-                        ease: "easeOut"
-                      }}
-                    >
-                      <Link
-                        href={item.path}
-                        prefetch={true}
-                        className={`group flex items-center justify-between px-4 py-4 transition-all duration-300  ${
-                          isActive(item.path)
-                            ? 'text-emerald-800 bg-emerald-50 border border-emerald-200'
-                            : 'text-black hover:text-emerald-800 hover:bg-emerald-50/50'
+                    <Link
+                      href={item.path}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive(item.path)
+                        ? 'text-emerald-700 bg-emerald-50 font-medium'
+                        : 'text-gray-700 hover:bg-gray-50'
                         }`}
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <div className="flex items-center gap-3">
-                          {item.icon && (
-                            <item.icon className={`w-5 h-5 ${
-                              isActive(item.path) ? 'text-emerald-800' : 'text-gray-400 group-hover:text-emerald-700'
-                            }`} />
-                          )}
-                          <span className="font-medium">{item.name}</span>
-                        </div>
-                        
-                        {item.hasDropdown ? (
-                          <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-emerald-700 transition-colors" />
-                        ) : (
-                          <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-700 transform group-hover:translate-x-1 transition-all duration-200" />
-                        )}
-                      </Link>
-                    </motion.div>
-                  ))}
-                </nav>
-
-                {/* Mobile CTA amélioré */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.8 }}
-                  className="mt-8 pt-6 border-t border-gray-200/50"
-                >
-                  <Link href="/events" onClick={() => setIsMenuOpen(false)}>
-                    <motion.button
-                      className="w-full py-4 bg-gradient-to-r from-emerald-700 via-emerald-800 to-emerald-600 text-white font-semibold  shadow-lg hover:shadow-emerald-700/30 transition-all duration-300 relative overflow-hidden group"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <span className="relative flex items-center justify-center gap-2"> 
-                        Participer au Forum 2025
-                      </span>
-                    </motion.button>
-                  </Link>
-                </motion.div>
+                      {item.icon && (
+                        <item.icon className={`w-5 h-5 ${isActive(item.path) ? 'text-emerald-600' : 'text-gray-400'
+                          }`} />
+                      )}
+                      <span>{item.name}</span>
+                      {isActive(item.path) && (
+                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                      )}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
 
-                {/* Contact Info amélioré */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 1.2 }}
-                  className="mt-8 pt-6 border-t border-gray-200/50"
-                >
-                  <div className="text-center space-y-2">
-                    <p className="text-sm text-gray-500">
-                      Forum GENI × INSEA
-                    </p>
-                    <div className="flex items-center justify-center gap-2 text-sm font-medium text-emerald-800">
-                      <Award className="w-4 h-4" />
-                      <span>Excellence • Innovation • Leadership</span>
-                    </div>
-                  </div>
-                </motion.div>
+              {/* CTA */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-gray-50">
+                <Link href="/events" onClick={() => setIsMenuOpen(false)}>
+                  <motion.button
+                    className="w-full py-3.5 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Calendar className="w-5 h-5" />
+                    <span>Découvrir le Forum 2025</span>
+                  </motion.button>
+                </Link>
+                <p className="text-center text-xs text-gray-500 mt-3">
+                  Forum GENI × INSEA • Excellence & Innovation
+                </p>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Styles personnalisés */}
-      <style jsx>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%) skewX(-12deg); }
-          100% { transform: translateX(200%) skewX(-12deg); }
-        }
-        .animate-shimmer {
-          animation: shimmer 2s infinite;
-        }
-      `}</style>
     </>
   );
 };
