@@ -178,9 +178,10 @@ model BlogPost {
   publishedAt       DateTime?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
-  
+
   category          BlogCategory     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   tags              BlogPostTag[]
+  images            BlogPostImage[]
 
   @@index([slug])
   @@index([status])
@@ -282,7 +283,20 @@ model EventImage {
   @@map("event_images")
 }
 
+// BlogPostImage - Multiple images per blog post
+model BlogPostImage {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  url       String
+  caption   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
 
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("blog_post_images")
+}
 
 // =====================================
 // JOB OFFERS
@@ -324,6 +338,8 @@ model JobOffer {
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
+  images              JobOfferImage[]
+
   @@index([slug])
   @@index([jobType])
   @@index([location])
@@ -331,6 +347,21 @@ model JobOffer {
   @@index([companyName])
   @@index([publishedAt])
   @@map("job_offers")
+}
+
+// JobOfferImage - Multiple images per job offer
+model JobOfferImage {
+  id        Int      @id @default(autoincrement())
+  jobId     Int
+  url       String
+  caption   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  job       JobOffer @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@map("job_offer_images")
 }
 
 // =====================================

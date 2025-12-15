@@ -5,6 +5,8 @@ import { createJobOfferSchema, updateJobOfferSchema } from "@/lib/validations/jo
 import { z } from "zod";
 import { revalidateTag } from "next/cache";
 import { enforceDraftStatusForEditor } from "@/lib/auth";
+import { imageService } from "@/lib/services/image.service";
+import { revalidatePath } from "next/cache";
 
 export const listJobs = actionClient
   .metadata({ actionName: "list-jobs" })
@@ -53,9 +55,42 @@ export const deleteJob = deleteAction
   .metadata({ actionName: "delete-job" })
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
-    await prisma.jobOffer.delete({ where: { id: parsedInput.id } });
-    revalidateTag('jobs');
-    return { ok: true };
+    try {
+      const { id } = parsedInput;
+
+      // Récupérer l'offre d'emploi avec ses images
+      const job = await prisma.jobOffer.findUnique({
+        where: { id },
+        include: {
+          images: true,
+        },
+      });
+
+      if (!job) {
+        throw new Error("Offre d'emploi introuvable.");
+      }
+
+      // Supprimer les fichiers d'images du système de fichiers
+      const imageUrls = job.images.map((img) => img.url);
+      if (imageUrls.length > 0) {
+        await imageService.deleteImages(imageUrls);
+      }
+
+      // Supprimer l'offre d'emploi (les relations en cascade seront supprimées automatiquement)
+      await prisma.jobOffer.delete({ where: { id } });
+
+      // Revalider les pages concernées
+      revalidateTag('jobs');
+      revalidatePath("/admin/jobs");
+      revalidatePath("/careers");
+
+      return { ok: true, message: "Offre d'emploi et images supprimées avec succès." };
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new Error("Offre d'emploi introuvable.");
+      }
+      throw error;
+    }
   });
 
 export const getJobsWithApplicationCount = actionClient

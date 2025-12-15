@@ -13,6 +13,13 @@ const stringToNumber = z.union([
   z.nan().transform(() => undefined),
 ]).optional();
 
+// Image item schema for multi-image upload
+const imageItemSchema = z.object({
+  id: z.string(),
+  url: z.string(),
+  caption: z.string().optional(),
+});
+
 const baseJobOfferSchema = z.object({
   title: z.string().min(2, "Le titre doit contenir au moins 2 caractères"),
   slug: z.string().min(2, "Le slug doit contenir au moins 2 caractères"),
@@ -42,6 +49,7 @@ const baseJobOfferSchema = z.object({
   languagesRequired: z.string().optional(),
   status: z.string().optional(),
   isFeatured: stringToBoolean,
+  images: z.array(imageItemSchema).optional().default([]),
 });
 
 export const createJobOfferSchema = baseJobOfferSchema.transform((data) => ({

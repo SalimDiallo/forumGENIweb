@@ -5,6 +5,7 @@ import { writeAction } from "@/lib/safe-action"
 import { revalidatePath, revalidateTag } from "next/cache";
 import { updateEventSchema } from "./event.edit.schema";
 import { enforceDraftStatusForEditor } from "@/lib/auth";
+import { imageService } from "@/lib/services/image.service";
 
 export const doEditEvent = writeAction
   .metadata({ actionName: "edit-event-admin" })
@@ -24,10 +25,23 @@ export const doEditEvent = writeAction
         : null,
     };
 
-    // Handle images: delete all existing and create new ones
+    // Handle images: delete old physical files and update database
     if (images !== undefined) {
+      // Récupérer les anciennes images pour les supprimer du système de fichiers
+      const existingEvent = await prisma.event.findUnique({
+        where: { id },
+        include: { images: true },
+      });
+
+      if (existingEvent && existingEvent.images.length > 0) {
+        // Supprimer les fichiers physiques des anciennes images
+        const oldImageUrls = existingEvent.images.map((img) => img.url);
+        await imageService.deleteImages(oldImageUrls);
+      }
+
+      // Mettre à jour les images dans la base de données
       updateData.images = {
-        deleteMany: {}, // Delete all existing images
+        deleteMany: {}, // Delete all existing image records
         create: images.map((img, index) => ({
           url: img.url,
           isCover: img.isCover,

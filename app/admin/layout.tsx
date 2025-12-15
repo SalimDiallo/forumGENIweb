@@ -508,17 +508,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <RoleProvider>
       {/* Session validity watcher - auto-logout if account deactivated or password reset */}
-      {/* Checks every 10 seconds for account status changes */}
-      <SessionWatcher checkInterval={10000} />
+      {/* Checks every 60 seconds for account status changes */}
+      <SessionWatcher checkInterval={60000} />
 
       <div className="min-h-screen bg-gray-50 relative overflow-hidden">
         {/* Background watermark logo - top left with animation */}
-        <div className="fixed top-20 left-0 pointer-events-none z-0 opacity-[0.02] animate-pulse">
+        <div className="fixed top-10 left-30 pointer-events-none z-0  animate-pulse">
           <NextImage
             src="/logo.svg"
             alt=""
-            width={500}
-            height={190}
+            width={100}
+            height={100}
             className="select-none -rotate-12"
           />
         </div>

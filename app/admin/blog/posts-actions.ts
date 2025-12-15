@@ -5,6 +5,8 @@ import { createBlogPostSchema, updateBlogPostSchema } from "@/lib/validations/bl
 import { z } from "zod";
 import { getCachedBlogPostsPaginated } from "@/lib/cache";
 import { enforceDraftStatusForEditor } from "@/lib/auth";
+import { imageService } from "@/lib/services/image.service";
+import { revalidatePath } from "next/cache";
 
 export const listBlogPosts = actionClient
   .metadata({ actionName: "list-blog-posts" })
@@ -53,26 +55,43 @@ export const createBlogPost = writeAction
         throw new Error("Ce slug existe déjà. Veuillez en choisir un autre.");
       }
 
-      const { tagIds, ...postData } = parsedInput;
+      const { tagIds, images, ...postData } = parsedInput;
 
       // Force le statut à "draft" si l'utilisateur est un editor
       const finalStatus = await enforceDraftStatusForEditor(parsedInput.status);
 
+      // Build the data object
+      const createData: any = {
+        ...postData,
+        status: finalStatus,
+        publishedAt: finalStatus === "published" ? new Date() : null,
+        // Créer les relations avec les tags
+        tags: tagIds && tagIds.length > 0 ? {
+          create: tagIds.map((tagId) => ({
+            tag: {
+              connect: { id: tagId },
+            },
+          })),
+        } : undefined,
+      };
+
+      // Add images as nested create if provided
+      if (images && images.length > 0) {
+        createData.images = {
+          create: images.map((img, index) => ({
+            url: img.url,
+            caption: img.caption,
+            sortOrder: index,
+          })),
+        };
+      }
+
       const created = await prisma.blogPost.create({
-        data: {
-          ...postData,
-          status: finalStatus,
-          publishedAt: finalStatus === "published" ? new Date() : null,
-          // Créer les relations avec les tags
-          tags: tagIds && tagIds.length > 0 ? {
-            create: tagIds.map((tagId) => ({
-              tag: {
-                connect: { id: tagId },
-              },
-            })),
-          } : undefined,
-        },
+        data: createData,
       });
+
+      revalidatePath("/admin/blog");
+      revalidatePath("/blog");
 
       return { id: created.id };
     } catch (error: any) {
@@ -91,7 +110,7 @@ export const updateBlogPost = writeAction
   .schema(updateBlogPostSchema)
   .action(async ({ parsedInput }) => {
     try {
-      const { id, tagIds, ...data } = parsedInput;
+      const { id, tagIds, images, ...data } = parsedInput;
 
       // Vérifier si le slug existe déjà pour un autre article
       if (data.slug) {
@@ -108,7 +127,10 @@ export const updateBlogPost = writeAction
       }
 
       // If status is being changed to published and wasn't published before, set publishedAt
-      const existing = await prisma.blogPost.findUnique({ where: { id } });
+      const existing = await prisma.blogPost.findUnique({
+        where: { id },
+        include: { images: true },
+      });
 
       if (!existing) {
         throw new Error("Article introuvable");
@@ -123,6 +145,25 @@ export const updateBlogPost = writeAction
 
       if (updateData.status === "published" && existing?.status !== "published" && !existing?.publishedAt) {
         updateData.publishedAt = new Date();
+      }
+
+      // Handle images: delete old physical files and update database
+      if (images !== undefined) {
+        if (existing.images.length > 0) {
+          // Supprimer les fichiers physiques des anciennes images
+          const oldImageUrls = existing.images.map((img) => img.url);
+          await imageService.deleteImages(oldImageUrls);
+        }
+
+        // Mettre à jour les images dans la base de données
+        updateData.images = {
+          deleteMany: {}, // Delete all existing image records
+          create: images.map((img, index) => ({
+            url: img.url,
+            caption: img.caption,
+            sortOrder: index,
+          })),
+        };
       }
 
       // Mettre à jour l'article dans une transaction
@@ -152,6 +193,9 @@ export const updateBlogPost = writeAction
         });
       });
 
+      revalidatePath("/admin/blog");
+      revalidatePath("/blog");
+
       return { id: updated.id };
     } catch (error: any) {
       if (error.code === "P2002") {
@@ -168,8 +212,41 @@ export const deleteBlogPost = deleteAction
   .metadata({ actionName: "delete-blog-post" })
   .schema(z.object({ id: z.number().int().positive() }))
   .action(async ({ parsedInput }) => {
-    await prisma.blogPost.delete({ where: { id: parsedInput.id } });
-    return { ok: true };
+    try {
+      const { id } = parsedInput;
+
+      // Récupérer l'article avec ses images
+      const post = await prisma.blogPost.findUnique({
+        where: { id },
+        include: {
+          images: true,
+        },
+      });
+
+      if (!post) {
+        throw new Error("Article introuvable.");
+      }
+
+      // Supprimer les fichiers d'images du système de fichiers
+      const imageUrls = post.images.map((img) => img.url);
+      if (imageUrls.length > 0) {
+        await imageService.deleteImages(imageUrls);
+      }
+
+      // Supprimer l'article (les relations en cascade seront supprimées automatiquement)
+      await prisma.blogPost.delete({ where: { id } });
+
+      // Revalider les pages concernées
+      revalidatePath("/admin/blog");
+      revalidatePath("/blog");
+
+      return { ok: true, message: "Article et images supprimés avec succès." };
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new Error("Article introuvable.");
+      }
+      throw error;
+    }
   });
 
 export const toggleFeatured = writeAction

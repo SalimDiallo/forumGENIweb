@@ -4,6 +4,7 @@ import { deleteAction } from "@/lib/safe-action";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { imageService } from "@/lib/services/image.service";
 
 const deleteEventSchema = z.object({
   id: z.number().int().positive(),
@@ -11,21 +12,28 @@ const deleteEventSchema = z.object({
 
 export const deleteEvent = deleteAction
   .metadata({ actionName: "delete-event" })
-  .schema(deleteEventSchema)
+  .inputSchema(deleteEventSchema)
   .action(async ({ parsedInput }) => {
     try {
       const { id } = parsedInput;
 
-      // Vérifier si l'événement existe
+      // Vérifier si l'événement existe et récupérer ses images
       const event = await prisma.event.findUnique({
         where: { id },
-         
+        include: {
+          images: true,
+        },
       });
 
       if (!event) {
         throw new Error("Événement introuvable.");
       }
 
+      // Supprimer les fichiers d'images du système de fichiers
+      const imageUrls = event.images.map((img) => img.url);
+      if (imageUrls.length > 0) {
+        await imageService.deleteImages(imageUrls);
+      }
 
       // Supprimer l'événement (les relations en cascade seront supprimées automatiquement)
       await prisma.event.delete({
@@ -36,7 +44,7 @@ export const deleteEvent = deleteAction
       revalidatePath("/admin/events");
       revalidatePath("/events");
 
-      return { ok: true, message: "Événement supprimé avec succès." };
+      return { ok: true, message: "Événement et images supprimés avec succès." };
     } catch (error: any) {
       if (error.code === "P2025") {
         throw new Error("Événement introuvable.");
@@ -57,6 +65,24 @@ export const deleteEventForce = deleteAction
     try {
       const { id } = parsedInput;
 
+      // Récupérer l'événement avec ses images
+      const event = await prisma.event.findUnique({
+        where: { id },
+        include: {
+          images: true,
+        },
+      });
+
+      if (!event) {
+        throw new Error("Événement introuvable.");
+      }
+
+      // Supprimer les fichiers d'images du système de fichiers
+      const imageUrls = event.images.map((img) => img.url);
+      if (imageUrls.length > 0) {
+        await imageService.deleteImages(imageUrls);
+      }
+
       // Supprimer l'événement avec toutes ses relations
       await prisma.$transaction(async (tx) => {
         // Supprimer les inscriptions
@@ -71,7 +97,7 @@ export const deleteEventForce = deleteAction
       revalidatePath("/admin/events");
       revalidatePath("/events");
 
-      return { ok: true, message: "Événement et toutes ses données supprimés avec succès." };
+      return { ok: true, message: "Événement, images et toutes ses données supprimés avec succès." };
     } catch (error: any) {
       if (error.code === "P2025") {
         throw new Error("Événement introuvable.");

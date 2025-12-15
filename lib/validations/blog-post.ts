@@ -1,11 +1,19 @@
 import { z } from "zod";
 
+// Image item schema for multi-image upload
+const imageItemSchema = z.object({
+  id: z.string(),
+  url: z.string(),
+  caption: z.string().optional(),
+});
+
 export const createBlogPostSchema = z.object({
   title: z.string().min(2),
   slug: z.string().min(2),
   excerpt: z.string().optional(),
   content: z.string().min(1),
   featuredImage: z.string().optional(),
+  images: z.array(imageItemSchema).optional().default([]),
   authorName: z.string().min(2),
   authorPosition: z.string().optional(),
   categoryId: z.number().int().positive(),
