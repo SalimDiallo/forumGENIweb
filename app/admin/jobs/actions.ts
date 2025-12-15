@@ -21,14 +21,27 @@ export const createJob = writeAction
   .metadata({ actionName: "create-job" })
   .schema(createJobOfferSchema)
   .action(async ({ parsedInput }) => {
+    // Extraire les images du reste des données
+    const { images, ...jobData } = parsedInput;
+
     // Force le statut à "draft" si l'utilisateur est un editor
-    const finalStatus = parsedInput.status ? await enforceDraftStatusForEditor(parsedInput.status) : undefined;
+    const finalStatus = jobData.status ? await enforceDraftStatusForEditor(jobData.status) : undefined;
 
     const created = await prisma.jobOffer.create({
       data: {
-        ...parsedInput,
-        status: finalStatus
-      }
+        ...jobData,
+        status: finalStatus,
+        // Créer les images avec la syntaxe Prisma nested create
+        ...(images && images.length > 0 && {
+          images: {
+            create: images.map((img, index) => ({
+              url: img.url,
+              caption: img.caption || null,
+              sortOrder: index,
+            })),
+          },
+        }),
+      },
     });
     revalidateTag('jobs');
     return { id: created.id };
@@ -38,7 +51,7 @@ export const updateJob = writeAction
   .metadata({ actionName: "update-job" })
   .schema(updateJobOfferSchema)
   .action(async ({ parsedInput }) => {
-    const { id, ...data } = parsedInput;
+    const { id, images, ...data } = parsedInput;
 
     // Force le statut à "draft" si l'utilisateur est un editor
     const finalData = { ...data };
@@ -46,7 +59,27 @@ export const updateJob = writeAction
       finalData.status = await enforceDraftStatusForEditor(data.status);
     }
 
-    const updated = await prisma.jobOffer.update({ where: { id }, data: finalData });
+    // Si des images sont fournies, supprimer les anciennes et créer les nouvelles
+    if (images !== undefined) {
+      await prisma.jobOfferImage.deleteMany({ where: { jobId: id } });
+    }
+
+    const updated = await prisma.jobOffer.update({
+      where: { id },
+      data: {
+        ...finalData,
+        // Créer les nouvelles images si fournies
+        ...(images && images.length > 0 && {
+          images: {
+            create: images.map((img, index) => ({
+              url: img.url,
+              caption: img.caption || null,
+              sortOrder: index,
+            })),
+          },
+        }),
+      },
+    });
     revalidateTag('jobs');
     return { id: updated.id };
   });
