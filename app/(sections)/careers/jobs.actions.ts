@@ -22,94 +22,103 @@ export const getPublicJobs = actionClient
       // car il nécessite le contexte Next.js. Nous faisons donc la requête directement.
 
       // Direct query - works for both cached and filtered cases
+      // Accepter les jobs publiés (ou sans statut pour la rétrocompatibilité) avec deadline null OU deadline dans le futur
       const where = {
-        status: "published" as const,
-        applicationDeadline: {
-          gte: new Date()
-        },
-        ...(search && {
-          OR: [
-            { title: { contains: search, mode: "insensitive" as const } },
-            { companyName: { contains: search, mode: "insensitive" as const } },
-            { location: { contains: search, mode: "insensitive" as const } },
-            { description: { contains: search, mode: "insensitive" as const } },
-          ],
-        }),
+        OR: [
+          { status: "published" as const },
+          { status: null }
+        ],
+        AND: [
+          {
+            OR: [
+              { applicationDeadline: null },
+              { applicationDeadline: { gte: new Date() } }
+            ]
+          },
+          ...(search ? [{
+            OR: [
+              { title: { contains: search, mode: "insensitive" as const } },
+              { companyName: { contains: search, mode: "insensitive" as const } },
+              { location: { contains: search, mode: "insensitive" as const } },
+              { description: { contains: search, mode: "insensitive" as const } },
+            ],
+          }] : []),
+        ],
         ...(jobType && jobType !== "" && jobType !== "all" && { jobType }),
       };
 
-    const [jobs, totalCount] = await Promise.all([
-      prisma.jobOffer.findMany({
-        where,
-        orderBy: [
-          { isFeatured: "desc" },
-          { publishedAt: "desc" },
-          { createdAt: "desc" },
-        ],
-        take: limit,
-        skip: offset,
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          companyName: true,
-          companyLogo: true,
-          companyWebsite: true,
-          industry: true,
-          jobType: true,
-          location: true,
-          isRemote: true,
-          salaryMin: true,
-          salaryMax: true,
-          salaryCurrency: true,
-          salaryPeriod: true,
-          description: true,
-          requirements: true,
-          benefits: true,
-          applicationEmail: true,
-          applicationUrl: true,
-          applicationPhone: true,
-          applicationDeadline: true,
-          experienceRequired: true,
-          educationLevel: true,
-          contractDuration: true,
-          startDate: true,
-          skillsRequired: true,
-          languagesRequired: true,
-          isFeatured: true,
-          viewsCount: true,
-          publishedAt: true,
-          createdAt: true,
-        },
-      }),
-      prisma.jobOffer.count({ where }),
-    ]);
+      const [jobs, totalCount] = await Promise.all([
+        prisma.jobOffer.findMany({
+          where,
+          orderBy: [
+            { isFeatured: "desc" },
+            { publishedAt: "desc" },
+            { createdAt: "desc" },
+          ],
+          take: limit,
+          skip: offset,
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            companyName: true,
+            companyLogo: true,
+            companyWebsite: true,
+            industry: true,
+            jobType: true,
+            location: true,
+            isRemote: true,
+            salaryMin: true,
+            salaryMax: true,
+            salaryCurrency: true,
+            salaryPeriod: true,
+            description: true,
+            requirements: true,
+            benefits: true,
+            applicationEmail: true,
+            applicationUrl: true,
+            applicationPhone: true,
+            applicationDeadline: true,
+            experienceRequired: true,
+            educationLevel: true,
+            contractDuration: true,
+            startDate: true,
+            skillsRequired: true,
+            languagesRequired: true,
+            isFeatured: true,
+            viewsCount: true,
+            publishedAt: true,
+            createdAt: true,
+          },
+        }),
+        prisma.jobOffer.count({ where }),
+      ]);
 
-    // Transform the data for frontend
-    const transformedJobs = jobs.map(job => ({
-      id: job.id,
-      title: job.title,
-      slug: job.slug,
-      company: job.companyName,
-      location: job.location || "Non spécifié",
-      type: job.jobType || "autre",
-      salary: formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryPeriod),
-      postedDate: job.publishedAt?.toISOString().split('T')[0] || job.createdAt.toISOString().split('T')[0],
-      description: job.description || "Aucune description disponible.",
-      requirements: parseCommaSeparated(job.requirements),
-      benefits: parseCommaSeparated(job.benefits),
-      skills: parseCommaSeparated(job.skillsRequired),
-      logo: job.companyLogo || "/partners/default-logo.png",
-      featured: job.isFeatured || false,
-      urgent: isUrgent(job.applicationDeadline),
-      remote: job.isRemote || false,
-      rating: 4.5, // Default rating for now
-      applicants: Math.floor(Math.random() * 50) + 10, // Mock data for now
-      applicationEmail: job.applicationEmail,
-      applicationUrl: job.applicationUrl,
-      applicationPhone: job.applicationPhone,
-      applicationDeadline: job.applicationDeadline?.toISOString().split('T')[0],
-    }));
+      // Transform the data for frontend
+      const transformedJobs = jobs.map(job => ({
+        id: job.id,
+        title: job.title,
+        slug: job.slug,
+        company: job.companyName,
+        location: job.location || "Non spécifié",
+        type: job.jobType || "autre",
+        salary: formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryPeriod),
+        postedDate: job.publishedAt?.toISOString().split('T')[0] || job.createdAt.toISOString().split('T')[0],
+        description: job.description || "Aucune description disponible.",
+        requirements: parseCommaSeparated(job.requirements),
+        benefits: parseCommaSeparated(job.benefits),
+        skills: parseCommaSeparated(job.skillsRequired),
+        logo: job.companyLogo || "/partners/default-logo.png",
+        featured: job.isFeatured || false,
+        urgent: isUrgent(job.applicationDeadline),
+        remote: job.isRemote || false,
+        rating: 4.5, // Default rating for now
+        applicants: Math.floor(Math.random() * 50) + 10, // Mock data for now
+        applicationEmail: job.applicationEmail,
+        applicationUrl: job.applicationUrl,
+        applicationPhone: job.applicationPhone,
+        applicationDeadline: job.applicationDeadline?.toISOString().split('T')[0],
+      }));
 
       return {
         jobs: transformedJobs,
@@ -125,10 +134,10 @@ export const getPublicJobs = actionClient
 // Helper function to format salary
 function formatSalary(min?: number | null, max?: number | null, currency?: string | null, period?: string | null): string {
   if (!min && !max) return "À négocier";
-  
+
   const currencySymbol = currency === "MAD" ? "DH" : currency === "EUR" ? "€" : currency === "USD" ? "$" : currency || "DH";
   const periodText = period === "month" ? "/mois" : period === "year" ? "/an" : period === "day" ? "/jour" : period === "hour" ? "/h" : "";
-  
+
   if (min && max) {
     return `${min.toLocaleString()}-${max.toLocaleString()} ${currencySymbol}${periodText}`;
   } else if (min) {
@@ -136,7 +145,7 @@ function formatSalary(min?: number | null, max?: number | null, currency?: strin
   } else if (max) {
     return `Jusqu'à ${max.toLocaleString()} ${currencySymbol}${periodText}`;
   }
-  
+
   return "À négocier";
 }
 

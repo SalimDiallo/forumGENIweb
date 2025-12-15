@@ -43,6 +43,12 @@ export const tagIdSchema = z.object({
 export type CreateTagInput = z.infer<typeof createTagSchema>;
 export type UpdateTagInput = z.infer<typeof updateTagSchema>;
 
+// Schema for blog post images
+const blogPostImageSchema = z.object({
+  url: z.string().min(1, "L'URL de l'image est requise"),
+  caption: z.string().optional(),
+});
+
 // Blog Post Schemas
 export const createBlogPostSchema = z.object({
   title: z.string().min(3, "Le titre doit contenir au moins 3 caractères"),
@@ -57,6 +63,7 @@ export const createBlogPostSchema = z.object({
   authorPosition: z.string().optional(),
   categoryId: z.number().int().positive("Sélectionnez une catégorie"),
   tagIds: z.array(z.number().int().positive()).optional().default([]),
+  images: z.array(blogPostImageSchema).optional().default([]),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
   isFeatured: z.boolean().default(false),
   readTimeMinutes: z.number().int().positive().default(5),
