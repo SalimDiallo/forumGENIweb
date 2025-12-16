@@ -110,7 +110,7 @@ export default async function GalleryPage({ searchParams }: PageProps) {
   ).sort();
 
   return (
-    <>
+    <main className="min-h-screen">
       <PageHero
         title="Galerie"
         subtitle="Revivez les moments marquants de nos événements à travers photos et vidéos"
@@ -127,6 +127,6 @@ export default async function GalleryPage({ searchParams }: PageProps) {
         selectedType={selectedType}
       />
       <VideoTestimonialsWrapper />
-    </>
+    </main>
   );
 }

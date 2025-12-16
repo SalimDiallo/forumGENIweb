@@ -2,6 +2,7 @@ import BookHistory from '@/components/BookHistory';
 import TeamsMembres from '@/components/TeamsMembres';
 import Stats from '@/components/Stats';
 import PageHero from '@/components/PageHero';
+import ParallaxHistory from '@/components/ParallaxHistory';
 
 export default function AboutPage() {
   return (
@@ -10,9 +11,11 @@ export default function AboutPage() {
         title="À Propos"
         subtitle="Découvrez l'histoire et la mission du Forum Génie Entreprise"
         image="/insea-building.jpg"
+        withBlur={false}
       />
 
-      <BookHistory />
+      {/* <BookHistory /> */}
+      <ParallaxHistory />
       <TeamsMembres />
       <Stats />
     </main>

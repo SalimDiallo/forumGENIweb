@@ -109,171 +109,213 @@ const EventsList = ({ events }: { events: EventsType }) => {
     return filtered;
   }, [upcomingEvents, activeCategory, search]);
 
-  // Composant carte en mode grille
+  // Composant carte en mode grille - Design Premium
   const GridEventCard = ({ event, index }: { event: typeof upcomingEvents[0], index: number }) => {
     const isPast = event.isPast;
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: index * 0.05 }}
+        transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
+        className="h-full"
       >
-        <Link href={`/events/${event.slug}`} className="block group">
-          <div className="bg-white  overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-            {/* Image */}
-            <div className="relative h-48 overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
+        <Link href={`/events/${event.slug}`} className="block group h-full">
+          <div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col border border-neutral-100">
+            {/* Image Section - Plus grande */}
+            <div className="relative h-64 md:h-72 overflow-hidden">
               {event.image ? (
-                <img
-                  src={event.image}
-                  alt={event.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+                <>
+                  <img
+                    src={event.image}
+                    alt={event.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Calendar className="w-16 h-16 text-emerald-600 opacity-50" />
+                <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                  <Calendar className="w-20 h-20 text-white/30" />
                 </div>
               )}
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              {/* Decorative elements */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              {/* Badges */}
-              <div className="absolute top-3 left-3 flex flex-col gap-2">
-                <div className="bg-emerald-700 text-white px-3 py-1  text-xs font-semibold">
-                  {event.category}
+              {/* Top badges row */}
+              <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
+                <div className="flex flex-col gap-2">
+                  <span className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg">
+                    {event.category}
+                  </span>
+                  {isPast && (
+                    <span className="px-3 py-1.5 bg-neutral-800/80 backdrop-blur-sm text-white text-xs font-semibold rounded-full">
+                      Événement passé
+                    </span>
+                  )}
                 </div>
-                {isPast && (
-                  <div className="bg-gray-600 text-white px-3 py-1  text-xs font-semibold">
-                    Passé
-                  </div>
-                )}
+                <span className="px-4 py-2 bg-white/95 backdrop-blur-sm text-emerald-700 text-sm font-bold rounded-full shadow-lg">
+                  {event.price}
+                </span>
               </div>
 
-              {/* Badge prix */}
-              <div className="absolute top-3 right-3 bg-white/95 text-emerald-800 px-3 py-1  text-xs font-bold">
-                {event.price}
+              {/* Bottom info on image */}
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 line-clamp-2 drop-shadow-lg">
+                  {event.name}
+                </h3>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 text-white/90 text-sm">
+                    <Calendar size={14} className="flex-shrink-0" />
+                    <span>{event.date}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/90 text-sm">
+                    <MapPin size={14} className="flex-shrink-0" />
+                    <span className="line-clamp-1">{event.location}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Contenu */}
-            <div className="p-5 flex-1 flex flex-col">
-              <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-emerald-700 transition-colors">
-                {event.name}
-              </h3>
-
+            {/* Content Section */}
+            <div className="p-5 md:p-6 flex-1 flex flex-col">
               {event.shortDescription && (
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                <p className="text-neutral-600 text-sm md:text-base leading-relaxed mb-4 line-clamp-2 flex-1">
                   {event.shortDescription}
                 </p>
               )}
 
-              <div className="space-y-2 mt-auto">
-                <div className="flex items-center gap-2 text-gray-700 text-sm">
-                  <Calendar size={16} className="text-emerald-600 flex-shrink-0" />
-                  <span className="line-clamp-1">{event.date}</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-gray-700 text-sm">
-                  <MapPin size={16} className="text-emerald-600 flex-shrink-0" />
-                  <span className="line-clamp-1">{event.location}</span>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                 
-                  <span className="text-emerald-700 font-semibold text-sm hover:text-emerald-800 transition-colors">
-                    {isPast ? 'Voir détails →' : 'S\'inscrire →'}
+              {/* CTA Button */}
+              <div className="pt-4 border-t border-neutral-100">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {event.isVirtual && (
+                      <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-md">
+                        En ligne
+                      </span>
+                    )}
+                  </div>
+                  <span className="inline-flex items-center gap-2 text-emerald-600 font-semibold text-sm group-hover:text-emerald-700 transition-colors">
+                    {isPast ? 'Voir les détails' : "S'inscrire"}
+                    <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
                   </span>
                 </div>
               </div>
             </div>
+
+            {/* Hover accent line */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
           </div>
         </Link>
       </motion.div>
     );
   };
 
-  // Composant carte en mode liste
+  // Composant carte en mode liste - Design Premium
   const ListEventCard = ({ event, index }: { event: typeof upcomingEvents[0], index: number }) => {
     const isPast = event.isPast;
     return (
       <motion.div
-        initial={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.3, delay: index * 0.05 }}
+        transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
       >
         <Link href={`/events/${event.slug}`} className="block group">
-          <div className="bg-white  overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
-            <div className="flex flex-col sm:flex-row">
-              {/* Image */}
-              <div className="relative w-full sm:w-64 h-40 sm:h-auto flex-shrink-0 overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
+          <div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-neutral-100">
+            <div className="flex flex-col md:flex-row">
+              {/* Image Section */}
+              <div className="relative w-full md:w-80 lg:w-96 h-56 md:h-64 flex-shrink-0 overflow-hidden">
                 {event.image ? (
-                  <img
-                    src={event.image}
-                    alt={event.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                  <>
+                    <img
+                      src={event.image}
+                      alt={event.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent md:bg-gradient-to-t" />
+                  </>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Calendar className="w-12 h-12 text-emerald-600 opacity-50" />
+                  <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                    <Calendar className="w-16 h-16 text-white/30" />
                   </div>
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
                 {/* Badges */}
-                <div className="absolute top-2 left-2 flex flex-col gap-2">
-                  <div className="bg-emerald-700 text-white px-2 py-1  text-xs font-semibold">
+                <div className="absolute top-4 left-4 flex flex-col gap-2">
+                  <span className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg">
                     {event.category}
-                  </div>
+                  </span>
                   {isPast && (
-                    <div className="bg-gray-600 text-white px-2 py-1  text-xs font-semibold">
-                      Passé
-                    </div>
+                    <span className="px-3 py-1.5 bg-neutral-800/80 backdrop-blur-sm text-white text-xs font-semibold rounded-full">
+                      Événement passé
+                    </span>
                   )}
                 </div>
               </div>
 
-              {/* Contenu */}
-              <div className="flex-1 p-5">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
+              {/* Content Section */}
+              <div className="flex-1 p-6 md:p-8 flex flex-col justify-center">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
+                  <div className="flex-1">
+                    <h3 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-3 group-hover:text-emerald-600 transition-colors">
                       {event.name}
                     </h3>
 
                     {event.shortDescription && (
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      <p className="text-neutral-600 leading-relaxed mb-4 line-clamp-2">
                         {event.shortDescription}
                       </p>
                     )}
                   </div>
 
                   <div className="flex-shrink-0">
-                    <div className="bg-emerald-50 text-emerald-800 px-4 py-2 rounded-lg text-center">
-                      <div className="text-lg font-bold">{event.price}</div>
+                    <div className="px-6 py-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
+                      <div className="text-xl font-bold text-emerald-700">{event.price}</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
-                  <div className="flex items-center gap-2 text-gray-700 text-sm">
-                    <Calendar size={16} className="text-emerald-600 flex-shrink-0" />
-                    <span>{event.date}</span>
+                <div className="flex flex-wrap gap-4 mb-6">
+                  <div className="flex items-center gap-2 text-neutral-600">
+                    <div className="p-2 bg-emerald-50 rounded-lg">
+                      <Calendar size={16} className="text-emerald-600" />
+                    </div>
+                    <span className="font-medium">{event.date}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-gray-700 text-sm">
-                    <MapPin size={16} className="text-emerald-600 flex-shrink-0" />
-                    <span className="line-clamp-1">{event.location}</span>
+                  <div className="flex items-center gap-2 text-neutral-600">
+                    <div className="p-2 bg-emerald-50 rounded-lg">
+                      <MapPin size={16} className="text-emerald-600" />
+                    </div>
+                    <span className="font-medium line-clamp-1">{event.location}</span>
                   </div>
+
+                  {event.isVirtual && (
+                    <span className="px-3 py-1.5 bg-blue-50 text-blue-600 text-sm font-medium rounded-full">
+                      En ligne
+                    </span>
+                  )}
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                 
-                  <span className="px-4 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors font-semibold text-sm">
-                    {isPast ? 'Voir détails' : 'S\'inscrire'}
+                <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
+                  <div className="flex items-center gap-3">
+                    <Users size={18} className="text-neutral-400" />
+                    <span className="text-sm text-neutral-500">Places disponibles</span>
+                  </div>
+                  <span className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20">
+                    {isPast ? 'Voir les détails' : "S'inscrire maintenant"}
+                    <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
                   </span>
                 </div>
               </div>
             </div>
+
+            {/* Hover accent line */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
           </div>
         </Link>
       </motion.div>
@@ -283,19 +325,6 @@ const EventsList = ({ events }: { events: EventsType }) => {
   return (
     <section className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 sm:py-16">
-        {/* En-tête */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Nos Événements
-          </h1>
-          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-            Découvrez nos événements passés et à venir, réservez votre place en quelques clics
-          </p>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white  shadow-sm border border-gray-200 text-gray-700 text-sm font-medium mt-4">
-            <Calendar className="w-4 h-4 text-emerald-600" />
-            {upcomingEvents.length} événement(s) • {upcomingEvents.filter(e => !e.isPast).length} à venir • {upcomingEvents.filter(e => e.isPast).length} passé(s)
-          </div>
-        </div>
 
         {/* Barre de recherche et contrôles */}
         <div className="mb-6 sm:mb-8">
@@ -384,13 +413,13 @@ const EventsList = ({ events }: { events: EventsType }) => {
         ) : (
           <>
             {viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
                 {filteredEvents.map((event, index) => (
                   <GridEventCard key={event.id} event={event} index={index} />
                 ))}
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {filteredEvents.map((event, index) => (
                   <ListEventCard key={event.id} event={event} index={index} />
                 ))}

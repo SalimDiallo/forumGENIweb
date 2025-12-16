@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 
 interface PageHeroProps {
   title: string;
+  withBlur?: boolean;
   subtitle?: string;
   image?: string;
   badge?: string;
@@ -13,6 +14,7 @@ interface PageHeroProps {
 
 const PageHero = ({
   title,
+  withBlur = true,
   subtitle,
   image = '/insea-building.jpg',
   badge
@@ -128,8 +130,12 @@ const PageHero = ({
       </div>
 
       {/* Effet de lumière subtil en bas */}
+    {withBlur && (
+      <>
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
+      </>
+    )}
 
     </section>
   );

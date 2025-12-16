@@ -79,7 +79,7 @@ const Hero = () => {
   const currentHero = heroSlides[currentSlide];
 
   return (
-    <section className="relative min-h-screen flex items-start justify-center overflow-hidden bg-neutral-950 pt-28 sm:pt-40">
+    <section className="relative min-h-screen flex items-start justify-center overflow-hidden bg-neutral-950 pt-32 sm:pt-32">
       {/* Background avec vidéo/image */}
       <motion.div
         className="absolute inset-0 w-full h-full"
