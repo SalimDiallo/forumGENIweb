@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Calendar, Sparkles, ArrowRight, Star } from 'lucide-react';
+import { Calendar, Sparkles, ArrowRight, Star, BookOpen } from 'lucide-react';
 
 const ParallaxHistory = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -16,7 +16,7 @@ const ParallaxHistory = () => {
       subtitle: "Le Commencement",
       content: "Tout a commencé avec une vision audacieuse : créer un pont entre l'excellence académique de l'INSEA et le monde professionnel. Des étudiants passionnés ont osé rêver grand.",
       highlight: "50 participants",
-      image: "https://media.licdn.com/dms/image/v2/D4E0BAQGEHMHyq4BVTA/company-logo_200_200/B4EZlXBs1KIkAI-/0/1758101688171/forumgenientreprises_logo?e=2147483647&v=beta&t=MpKlm0bOboORrRodJxsxK5h-vGfI2yFy3wczxaGZlG4",
+      image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1920&q=80",
       gradient: "from-amber-500 via-orange-500 to-red-500",
       accentColor: "#f59e0b",
     },
@@ -146,6 +146,21 @@ const ParallaxHistory = () => {
       className="relative w-full"
       style={{ minHeight: `${(pages.length + 1) * 100}vh` }}
     >
+          {/* Header */}
+      <div className="text-center mb-12 md:mb-16 relative z-10">
+        <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-md border border-neutral-200 shadow-lg rounded-full mb-6">
+          <BookOpen className="w-5 h-5 text-neutral-700" />
+          <span className="text-neutral-800 font-bold text-sm tracking-wide">
+            NOTRE HISTOIRE • 2002-2025
+          </span>
+        </div>
+        <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold text-neutral-900 font-serif mb-4">
+          Notre Histoire
+        </h2>
+        <p className="text-lg md:text-xl text-neutral-600 italic max-w-2xl mx-auto px-4">
+          Un voyage à travers le temps, une histoire d'innovation et d'excellence
+        </p>
+      </div>
       {/* Fixed container for cards */}
       <div className="sticky top-0 h-screen overflow-hidden w-full">
         {/* Cards Stack - Full screen immersive */}
@@ -338,27 +353,44 @@ const ParallaxHistory = () => {
         </div>
       </div>
 
-      {/* End section */}
-      <div className="absolute bottom-0 left-0 right-0 h-screen flex items-center justify-center pointer-events-none">
+      {/* End section - positioned after last card */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-screen flex items-center justify-center"
+        style={{ zIndex: 100 }}
+      >
+        {/* Background gradient for visibility */}
         <div 
-          className="text-center transition-opacity duration-500"
-          style={{ opacity: scrollProgress > 0.95 ? 1 : 0 }}
+          className="absolute inset-0 bg-gradient-to-t from-neutral-100 via-neutral-50 to-transparent transition-opacity duration-700"
+          style={{ opacity: scrollProgress > 0.9 ? 1 : 0 }}
+        />
+        
+        <div 
+          className="relative text-center px-6 transition-all duration-700"
+          style={{ 
+            opacity: scrollProgress > 0.92 ? 1 : 0,
+            transform: `translateY(${scrollProgress > 0.92 ? 0 : 50}px)`,
+          }}
         >
           <div className="flex justify-center gap-2 mb-6">
             {[...Array(5)].map((_, i) => (
               <Star 
                 key={i} 
-                className="w-6 h-6 text-amber-400 fill-amber-400 animate-pulse"
-                style={{ animationDelay: `${i * 0.2}s` }}
+                className="w-8 h-8 text-amber-400 fill-amber-400 animate-pulse"
+                style={{ animationDelay: `${i * 0.15}s` }}
               />
             ))}
           </div>
-          <h3 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
+          <h3 className="text-4xl md:text-6xl lg:text-7xl font-bold text-neutral-900 mb-6">
             L'histoire continue...
           </h3>
-          <p className="text-xl text-neutral-500">
+          <p className="text-xl md:text-2xl text-neutral-600 max-w-xl mx-auto mb-8">
             Rejoignez-nous pour écrire le prochain chapitre
           </p>
+          <div className="inline-flex items-center gap-3 px-8 py-4 bg-neutral-900 text-white rounded-full font-semibold hover:bg-neutral-800 transition-colors cursor-pointer shadow-xl">
+            <Sparkles className="w-5 h-5" />
+            Découvrir nos événements
+            <ArrowRight className="w-5 h-5" />
+          </div>
         </div>
       </div>
     </section>
