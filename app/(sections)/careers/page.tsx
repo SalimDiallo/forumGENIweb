@@ -38,7 +38,7 @@ export default function CareersPage() {
       <PageHero
         title="Carrières"
         subtitle="Découvrez les meilleures opportunités de stages et d'emplois"
-        image="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1920&q=80"
+        image="https://images.unsplash.com/photo-1565688534245-05d6b5be184a?w=1920&q=80"
         badge="Emplois & Stages"
       />
       <Suspense fallback={<JobOffersSkeleton />}>
