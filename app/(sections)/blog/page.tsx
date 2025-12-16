@@ -15,7 +15,7 @@ export default async function BlogPage() {
       <PageHero
         title="Blog"
         subtitle="Actualités, conseils carrière et insights du marché de l'emploi"
-        image="/insea-building.jpg"
+        image="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920&q=80"
         badge="Actualités & Insights"
       />
       <BlogListClient posts={posts} categories={categories} />

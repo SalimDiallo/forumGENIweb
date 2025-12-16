@@ -20,7 +20,7 @@ const PageHero = ({
   badge
 }: PageHeroProps) => {
   return (
-    <section className="relative h-[calc(65vh+5rem)] min-h-[530px] max-h-[730px] flex items-center justify-center -mt-20 pt-20">
+    <section className="relative h-[calc(65vh+5rem)] min-h-[630px] max-h-[930px] flex items-center justify-center -mt-20 pt-20">
       {/* Image de fond qui couvre toute la section y compris la zone du header */}
       <motion.div
         className="absolute inset-0 w-full h-full overflow-hidden"

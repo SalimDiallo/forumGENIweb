@@ -11,7 +11,7 @@ export default async function EventsPage() {
       <PageHero
         title="Événements"
         subtitle="Découvrez nos forums, conférences et événements de networking"
-        image="/event.jpg"
+        image="https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1920&q=80"
         badge="Forum & Événements"
       />
       <EventsList events={events} />

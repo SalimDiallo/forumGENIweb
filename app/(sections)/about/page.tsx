@@ -10,7 +10,7 @@ export default function AboutPage() {
       <PageHero
         title="À Propos"
         subtitle="Découvrez l'histoire et la mission du Forum Génie Entreprise"
-        image="/insea-building.jpg"
+        image="/about.JPG"
         withBlur={false}
       />
 

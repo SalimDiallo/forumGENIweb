@@ -9,7 +9,7 @@ export default function ContactPage() {
       <PageHero
         title="Contact"
         subtitle="Nous sommes à votre écoute pour toute question ou demande de partenariat"
-        image="/insea-building.jpg"
+        image="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1920&q=80"
         badge="Contactez-nous"
       />
       <Contact />

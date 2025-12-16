@@ -114,7 +114,7 @@ export default async function GalleryPage({ searchParams }: PageProps) {
       <PageHero
         title="Galerie"
         subtitle="Revivez les moments marquants de nos événements à travers photos et vidéos"
-        image="/insea-building.jpg"
+        image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=80"
         badge="Photos & Vidéos"
       />
       <GalleryClient
