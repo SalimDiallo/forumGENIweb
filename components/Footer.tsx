@@ -68,7 +68,7 @@ const Footer = () => {
             ))}
           </div>
           <p className="text-gray-400 text-xs flex items-center gap-1 mt-2">
-            © {currentYear} Forum GENI × INSEA. Fait avec <Heart className="w-4 h-4 text-red-500" /> au Maroc
+            © {currentYear} Forum GENI × INSEA. Fait avec <Heart className="w-4 h-4 text-red-500" /> au Maroc par <Link href="https://www.salimdiallo.com" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline">Salim Diallo</Link>
           </p>
         </div>
       </div>
