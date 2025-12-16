@@ -95,40 +95,41 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
 
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
             Ce que disent nos
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600"> Membres</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600"> Membres & Partenaires</span>
           </h2>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Découvrez les témoignages de ceux qui ont vécu l'expérience GENI
           </p>
         </div>
+      </div>
 
-        {/* Carousel Container - Full Width */}
-        <div className="relative w-full">
-          {/* Blur Overlay Left */}
-          <div className="absolute left-0 top-0 bottom-0 w-24 md:w-48 lg:w-64 xl:w-80 bg-gradient-to-r from-gray-900 via-gray-900/90 to-transparent z-20 pointer-events-none" />
-          
-          {/* Blur Overlay Right */}
-          <div className="absolute right-0 top-0 bottom-0 w-24 md:w-48 lg:w-64 xl:w-80 bg-gradient-to-l from-gray-900 via-gray-900/90 to-transparent z-20 pointer-events-none" />
+      {/* Carousel Container - Full Width (outside container) */}
+      <div className="relative w-full">
+        {/* Blur Overlay Left */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 lg:w-48 bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent z-20 pointer-events-none" />
+        
+        {/* Blur Overlay Right */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 lg:w-48 bg-gradient-to-l from-gray-900 via-gray-900/80 to-transparent z-20 pointer-events-none" />
 
-          {/* Navigation Arrow Left */}
-          <motion.button
-            onClick={prevTestimonial}
-            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-30 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-full p-3 md:p-4 transition-all duration-300 group"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ChevronLeft className="text-white w-5 h-5 md:w-6 md:h-6 group-hover:text-emerald-400 transition-colors" />
-          </motion.button>
+        {/* Navigation Arrow Left */}
+        <motion.button
+          onClick={prevTestimonial}
+          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-full p-3 md:p-4 transition-all duration-300 group"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <ChevronLeft className="text-white w-5 h-5 md:w-6 md:h-6 group-hover:text-emerald-400 transition-colors" />
+        </motion.button>
 
-          {/* Navigation Arrow Right */}
-          <motion.button
-            onClick={nextTestimonial}
-            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-30 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-full p-3 md:p-4 transition-all duration-300 group"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ChevronRight className="text-white w-5 h-5 md:w-6 md:h-6 group-hover:text-emerald-400 transition-colors" />
-          </motion.button>
+        {/* Navigation Arrow Right */}
+        <motion.button
+          onClick={nextTestimonial}
+          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-full p-3 md:p-4 transition-all duration-300 group"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <ChevronRight className="text-white w-5 h-5 md:w-6 md:h-6 group-hover:text-emerald-400 transition-colors" />
+        </motion.button>
 
           {/* Carousel Track */}
           <div 
@@ -156,11 +157,11 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                     }`}
                     onClick={() => isCenter && setPlayingVideo(testimonial.id)}
                   >
-                    <div className={`bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border transition-all duration-300 ${
-                      isCenter 
-                        ? 'border-emerald-500/50 shadow-2xl shadow-emerald-500/10' 
-                        : 'border-white/10'
-                    }`}>
+                  <div className={`bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border transition-all duration-300 ${
+                    isCenter 
+                      ? 'border-emerald-500/30 shadow-lg' 
+                      : 'border-white/5'
+                  }`}>
                       {/* Video Thumbnail */}
                       <div className="relative overflow-hidden">
                         <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-800 relative">
@@ -238,7 +239,6 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
             ))}
           </div>
         </div>
-      </div>
 
       {/* Video Modal */}
       <AnimatePresence>

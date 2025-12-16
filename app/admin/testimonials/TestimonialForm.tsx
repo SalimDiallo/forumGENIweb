@@ -237,7 +237,7 @@ export function TestimonialForm({ testimonial }: TestimonialFormProps) {
                 value={form.values.videoUrl}
                 onChange={(e) => form.setFieldValue("videoUrl", e.target.value)}
                 onBlur={() => form.setFieldTouched("videoUrl")}
-                placeholder="Collez le lien YouTube ici... (ex: https://youtu.be/xxxxx)"
+                placeholder="Collez le lien YouTube ici... (ex: youtu.be/xxx ou youtube.com/shorts/xxx)"
                 className="text-center text-lg"
               />
               {form.hasError("videoUrl") && (

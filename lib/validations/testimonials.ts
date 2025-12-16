@@ -20,7 +20,7 @@ export const videoTestimonialSchema = z.object({
     .min(1, 'Le lien YouTube est requis')
     .refine(
       (url) => isValidYouTubeUrl(url),
-      'Le lien doit être une URL YouTube valide (youtube.com/watch?v=..., youtu.be/..., etc.)'
+      'Le lien doit être une URL YouTube valide (youtube.com/watch?v=..., youtu.be/..., youtube.com/shorts/...)'
     ),
   thumbnailUrl: z.string().url('URL invalide').optional().nullable().or(z.literal('')),
   quote: z.string().optional().nullable(),

@@ -265,7 +265,7 @@ export function GalleryForm({ type, item, events = [] }: GalleryFormProps) {
                 onBlur={() => form.setFieldTouched(type === "video" ? "videoUrl" : "imageUrl")}
                 placeholder={
                   type === "video"
-                    ? "Collez le lien YouTube ici... (ex: https://youtu.be/xxxxx)"
+                    ? "Collez le lien YouTube ici... (ex: youtu.be/xxx ou youtube.com/shorts/xxx)"
                     : "Collez le lien Google Drive ici... (ex: https://drive.google.com/file/d/xxxxx)"
                 }
                 className="text-center text-lg"

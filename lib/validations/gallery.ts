@@ -17,7 +17,7 @@ export const videoGallerySchema = z.object({
     .min(1, 'Le lien YouTube est requis')
     .refine(
       (url) => isValidYouTubeUrl(url),
-      'Le lien doit être une URL YouTube valide'
+      'Le lien doit être une URL YouTube valide (youtube.com/watch?v=..., youtu.be/..., youtube.com/shorts/...)'
     ),
   thumbnailUrl: z.string().url('URL invalide').optional().nullable().or(z.literal('')),
   eventId: z.preprocess(
@@ -67,10 +67,16 @@ export const photoGallerySchema = z.object({
   imageUrl: z
     .string()
     .min(1, 'Le lien de l\'image est requis')
-    .url('Le lien doit être une URL valide')
     .refine(
-      (url) => url.includes('drive.google.com') || url.includes('googleusercontent.com'),
-      'Le lien doit être une URL Google Drive valide'
+      (url) => {
+        try {
+          new URL(url);
+          return url.includes('drive.google.com') || url.includes('googleusercontent.com');
+        } catch {
+          return false;
+        }
+      },
+      'Le lien doit être une URL Google Drive valide (drive.google.com/file/d/... ou drive.google.com/uc?id=...)'
     ),
   thumbnailUrl: z.string().url('URL invalide').optional().nullable().or(z.literal('')),
   eventId: z.preprocess(
@@ -143,20 +149,34 @@ export function extractDriveFileId(url: string): string | null {
 
 /**
  * Get direct Google Drive image URL from file ID or URL
+ * Uses lh3.googleusercontent.com format which works with shared links
  */
-export function getDriveImageUrl(fileIdOrUrl: string): string | null {
+export function getDriveImageUrl(fileIdOrUrl: string, size: number = 1600): string | null {
   const fileId = extractDriveFileId(fileIdOrUrl);
   if (!fileId) return null;
 
-  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  // Use lh3.googleusercontent.com - works reliably with shared links
+  return `https://lh3.googleusercontent.com/d/${fileId}=w${size}`;
 }
 
 /**
  * Get Google Drive thumbnail URL
+ * Uses lh3.googleusercontent.com format for reliable loading
  */
 export function getDriveThumbnailUrl(fileIdOrUrl: string, size: number = 800): string | null {
   const fileId = extractDriveFileId(fileIdOrUrl);
   if (!fileId) return null;
 
-  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`;
+  return `https://lh3.googleusercontent.com/d/${fileId}=w${size}`;
+}
+
+/**
+ * Get Google Drive direct embed URL (works in most cases)
+ */
+export function getDriveEmbedUrl(fileIdOrUrl: string): string | null {
+  const fileId = extractDriveFileId(fileIdOrUrl);
+  if (!fileId) return null;
+
+  // Use the export view format
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }

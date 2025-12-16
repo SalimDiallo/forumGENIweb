@@ -17,6 +17,7 @@ import type { GalleryMedia } from '@/lib/types/gallery';
  * - https://youtu.be/VIDEO_ID
  * - https://www.youtube.com/embed/VIDEO_ID
  * - https://www.youtube.com/v/VIDEO_ID
+ * - https://www.youtube.com/shorts/VIDEO_ID (YouTube Shorts)
  */
 export function extractYouTubeVideoId(url: string): string | null {
   if (!url) return null;
@@ -43,6 +44,11 @@ export function extractYouTubeVideoId(url: string): string | null {
   const vPattern = /(?:youtube\.com\/v\/)([a-zA-Z0-9_-]{11})/;
   const vMatch = url.match(vPattern);
   if (vMatch) return vMatch[1];
+
+  // Pattern 5: youtube.com/shorts/VIDEO_ID (YouTube Shorts)
+  const shortsPattern = /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
+  const shortsMatch = url.match(shortsPattern);
+  if (shortsMatch) return shortsMatch[1];
 
   // If the string is already just an ID (11 characters)
   if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
