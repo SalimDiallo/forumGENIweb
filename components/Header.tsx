@@ -64,8 +64,6 @@ const Header = () => {
     return pathname.startsWith(path);
   };
 
-  const isHomePage = pathname === '/';
-
   return (
     <>
       <motion.header
@@ -83,7 +81,7 @@ const Header = () => {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
               <motion.div
-                className={`relative transition-all duration-300 ${scrolled || !isHomePage
+                className={`relative transition-all duration-300 ${scrolled
                   ? 'bg-white rounded-lg p-1.5 shadow-sm'
                   : ''
                   }`}
@@ -111,10 +109,10 @@ const Header = () => {
                   href={item.path}
                   prefetch={true}
                   className={`relative px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(item.path)
-                    ? scrolled || !isHomePage
+                    ? scrolled
                       ? 'text-emerald-700 bg-emerald-50'
                       : 'text-white bg-white/15'
-                    : scrolled || !isHomePage
+                    : scrolled
                       ? 'text-gray-600 hover:text-emerald-700 hover:bg-gray-50'
                       : 'text-white/90 hover:text-white hover:bg-white/10'
                     }`}
@@ -122,7 +120,7 @@ const Header = () => {
                   {item.name}
                   {isActive(item.path) && (
                     <motion.div
-                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${scrolled || !isHomePage ? 'bg-emerald-600' : 'bg-white'
+                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${scrolled ? 'bg-emerald-600' : 'bg-white'
                         }`}
                       layoutId="navIndicator"
                     />
@@ -135,7 +133,7 @@ const Header = () => {
             <div className="hidden lg:block">
               <Link href="/events">
                 <motion.button
-                  className={`px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 ${scrolled || !isHomePage
+                  className={`px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 ${scrolled
                     ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                     : 'bg-white text-emerald-700 hover:bg-white/90'
                     }`}
@@ -151,7 +149,7 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <motion.button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`lg:hidden p-2 rounded-lg transition-colors ${scrolled || !isHomePage
+              className={`lg:hidden p-2 rounded-lg transition-colors ${scrolled
                 ? 'text-gray-700 hover:bg-gray-100'
                 : 'text-white hover:bg-white/10'
                 }`}

@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
+import PageHero from '@/components/PageHero';
 import {
   GraduationCap,
   Users,
@@ -105,94 +107,71 @@ export default function InseaPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-green-800 pt-20 pb-24">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img
-            src="/insea-building.jpg"
-            alt="Campus INSEA"
-            className="w-full h-full object-cover opacity-50"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/60 via-emerald-700/60 to-green-800/70" />
-        </div>
+      {/* Hero Section avec PageHero */}
+      <PageHero
+        title="INSEA"
+        subtitle="Institut National de Statistique et d'Économie Appliquée — École d'ingénieurs de référence au Maroc"
+        image="/insea-building.jpg"
+        badge="Grande École d'Ingénieurs"
+      />
 
-        {/* Decorative overlays */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* Section Logo et présentation rapide */}
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
             className="text-center"
           >
-            {/* Logo INSEA */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex justify-center mb-8"
-            >
-              <div className="relative bg-white/20 rounded-3xl p-6">
-                <div className="absolute inset-0 bg-white/40 blur-xl  -z-10" />
-                <img
+            {/* Logo INSEA avec effet glow */}
+            <div className="flex justify-center mb-8">
+              <div className="relative p-8 bg-gradient-to-br from-slate-50 to-white rounded-3xl border border-slate-200 shadow-lg">
+                <div className="absolute inset-0 bg-emerald-500/5 rounded-3xl blur-2xl" />
+                <Image
                   src="/INSEA_logo.png"
                   alt="Logo INSEA"
-                  className="h-32 md:h-40 w-auto drop-shadow-2xl"
-                  style={{
-                    filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.6))'
-                  }}
+                  width={200}
+                  height={200}
+                  className="h-28 md:h-36 w-auto relative z-10"
+                  priority
                 />
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, type: 'spring', delay: 0.4 }}
-              className="inline-flex items-center gap-3 px-6 py-3 bg-white/20 backdrop-blur-md rounded-full mb-8 border border-white/30"
-            >
-              <GraduationCap className="w-6 h-6 text-white" />
-              <span className="text-white font-bold text-sm tracking-wider">GRANDE ECOLE D'INGENIEURS</span>
-            </motion.div>
+            {/* Badge */}
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-emerald-50 border border-emerald-200 rounded-full mb-6">
+              <GraduationCap className="w-5 h-5 text-emerald-600" />
+              <span className="text-emerald-800 font-semibold text-sm tracking-wide">DEPUIS 1961</span>
+            </div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
-              Institut National de Statistique
-              <br />
-              et d'Economie Appliquee
-            </h1>
+            {/* Titre section */}
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Excellence en Statistique, Data Science & IA
+            </h2>
 
-            <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto mb-8 leading-relaxed">
-              Ecole d'ingenieurs de reference au Maroc en statistique, data science,
-              actuariat, intelligence artificielle et economie appliquee
+            <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-8 leading-relaxed">
+              Premier établissement supérieur au Maroc à former des cadres en informatique et statistique,
+              l'INSEA forme des ingénieurs d'État dans les domaines de la data science, de l'actuariat,
+              de l'intelligence artificielle et de l'économie appliquée.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                href="https://insea.ac.ma"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-emerald-700 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
-              >
-                <span>Site Officiel</span>
-                <ExternalLink className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
+            {/* CTA */}
+            <Link
+              href="https://insea.ac.ma"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 text-white font-semibold rounded-lg shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-300 group"
+            >
+              <span>Visiter le site officiel</span>
+              <ExternalLink className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </motion.div>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z" fill="rgb(248, 250, 252)"/>
-          </svg>
         </div>
       </section>
 
-  
+   
 
       {/* Presentation */}
       <section className="py-20">

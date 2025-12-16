@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { GalleryClient } from "./GalleryClient";
 import VideoTestimonialsWrapper from "@/components/home/VideoTestimonialsWrapper";
+import PageHero from "@/components/PageHero";
 
 // Configuration ISR : revalide toutes les heures
 export const revalidate = 3600;
@@ -110,6 +111,12 @@ export default async function GalleryPage({ searchParams }: PageProps) {
 
   return (
     <>
+      <PageHero
+        title="Galerie"
+        subtitle="Revivez les moments marquants de nos événements à travers photos et vidéos"
+        image="/insea-building.jpg"
+        badge="Photos & Vidéos"
+      />
       <GalleryClient
         videos={videos}
         photos={photos}

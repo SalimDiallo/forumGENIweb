@@ -1,6 +1,7 @@
 import Blog from '@/components/Blog';
 import { getCachedBlogPosts, getCachedBlogCategories } from '@/lib/cache';
 import BlogListClient from './BlogListClient';
+import PageHero from '@/components/PageHero';
 
 export default async function BlogPage() {
   // Récupérer les articles publiés depuis le cache
@@ -11,7 +12,12 @@ export default async function BlogPage() {
 
   return (
     <main>
-      {/* <Blog /> */}
+      <PageHero
+        title="Blog"
+        subtitle="Actualités, conseils carrière et insights du marché de l'emploi"
+        image="/insea-building.jpg"
+        badge="Actualités & Insights"
+      />
       <BlogListClient posts={posts} categories={categories} />
     </main>
   );

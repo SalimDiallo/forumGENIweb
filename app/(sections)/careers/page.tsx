@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import Careers from '@/components/Careers';
 import JobOffers from '@/components/JobOffers';
 import CareerAdvice from '@/components/CareerAdvice';
+import PageHero from '@/components/PageHero';
 
 // Composant de chargement pour JobOffers
 function JobOffersSkeleton() {
@@ -34,7 +35,12 @@ function JobOffersSkeleton() {
 export default function CareersPage() {
   return (
     <main>
-      <Careers />
+      <PageHero
+        title="Carrières"
+        subtitle="Découvrez les meilleures opportunités de stages et d'emplois"
+        image="/event.jpg"
+        badge="Emplois & Stages"
+      />
       <Suspense fallback={<JobOffersSkeleton />}>
         <JobOffers />
       </Suspense>

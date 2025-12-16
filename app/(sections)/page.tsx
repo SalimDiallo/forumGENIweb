@@ -55,9 +55,6 @@ export default function Home() {
         <UpcomingEventsWrapper />
       </Suspense>
 
-      <Suspense fallback={<SimpleLoader />}>
-        <TeamsMembres />
-      </Suspense>
 
       <Stats />
 
