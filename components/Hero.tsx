@@ -27,7 +27,7 @@ const heroSlides = [
     tagline: "Votre avenir commence ici",
     description: "Accédez aux meilleures opportunités professionnelles. Stages, CDI et offres exclusives de nos entreprises partenaires.",
     cta: { text: "Explorer les offres", href: "/careers" },
-    backgroundImage: "/event.jpg",
+    backgroundImage: "/insea-building.jpg",
   },
   {
     id: 3,
@@ -48,6 +48,7 @@ const Hero = () => {
   const scale = useTransform(scrollY, [0, 400], [1, 1.1]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
@@ -91,11 +92,22 @@ const Hero = () => {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isVideoPlaying ? 'opacity-100' : 'opacity-0'}`}
           poster={currentHero.backgroundImage}
+          onPlay={() => setIsVideoPlaying(true)}
+          onError={() => setIsVideoPlaying(false)}
+          onStalled={() => setIsVideoPlaying(false)}
         >
           <source src="https://www.pexels.com/fr-fr/download/video/6774633/" />
         </video>
+
+        {/* Fallback image when video is not playing */}
+        {!isVideoPlaying && (
+          <div 
+            className="absolute inset-0 w-full h-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${currentHero.backgroundImage})` }}
+          />
+        )}
 
         {/* Overlays professionnels - tons neutres */}
         <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/80 via-neutral-950/60 to-neutral-950/90" />
