@@ -7,7 +7,8 @@ const ParallaxHistory = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeCard, setActiveCard] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+  const rafRef = useRef<number | null>(null);
 
   const pages = [
     {
@@ -112,33 +113,43 @@ const ParallaxHistory = () => {
     },
   ];
 
-  // Scroll tracking
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Scroll tracking with RAF for smoother performance
   useEffect(() => {
     const handleScroll = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const scrolled = -rect.top / (rect.height - window.innerHeight);
-      setScrollProgress(Math.max(0, Math.min(1, scrolled)));
+      if (rafRef.current) return; // Throttle with RAF
       
-      const newActiveCard = Math.floor(scrolled * pages.length);
-      setActiveCard(Math.max(0, Math.min(pages.length - 1, newActiveCard)));
+      rafRef.current = requestAnimationFrame(() => {
+        if (!containerRef.current) {
+          rafRef.current = null;
+          return;
+        }
+        const rect = containerRef.current.getBoundingClientRect();
+        const scrolled = -rect.top / (rect.height - window.innerHeight);
+        const clampedProgress = Math.max(0, Math.min(1, scrolled));
+        
+        setScrollProgress(clampedProgress);
+        
+        const newActiveCard = Math.floor(scrolled * pages.length);
+        setActiveCard(Math.max(0, Math.min(pages.length - 1, newActiveCard)));
+        
+        rafRef.current = null;
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [pages.length]);
-
-  // Mouse tracking for parallax
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      setMousePosition({ x, y });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   return (
     <section
@@ -195,20 +206,24 @@ const ParallaxHistory = () => {
             return (
               <div
                 key={idx}
-                className="absolute inset-0 w-full h-full transition-transform duration-500 ease-out"
+                className="absolute inset-0 w-full h-full"
                 style={{
-                  transform: `translateY(${translateY}%)`,
+                  transform: `translate3d(0, ${translateY}%, 0)`,
                   opacity,
                   zIndex,
+                  willChange: 'transform',
+                  transition: isMobile ? 'none' : 'transform 0.5s ease-out',
                 }}
               >
                 {/* Full screen card */}
                 <div className="relative w-full h-full overflow-hidden">
-                  {/* Background image with parallax */}
+                  {/* Background image - simplified for mobile */}
                   <div 
-                    className="absolute inset-0 transition-transform duration-700"
+                    className="absolute inset-0"
                     style={{
-                      transform: `scale(1.1) translateY(${isActive ? (cardProgress - 0.5) * 10 : 0}%)`,
+                      transform: isMobile ? 'scale(1.05)' : `scale(1.1) translate3d(0, ${isActive ? (cardProgress - 0.5) * 10 : 0}%, 0)`,
+                      willChange: isMobile ? 'auto' : 'transform',
+                      transition: isMobile ? 'none' : 'transform 0.7s ease-out',
                     }}
                   >
                     <img
@@ -234,12 +249,12 @@ const ParallaxHistory = () => {
                       <div 
                         className="mb-6 overflow-hidden"
                         style={{
-                          transform: `translateY(${isActive ? 0 : 50}px)`,
+                          transform: isMobile ? 'none' : `translateY(${isActive ? 0 : 50}px)`,
                           opacity: isActive || isPast ? 1 : 0,
-                          transition: 'all 0.6s ease-out 0.1s',
+                          transition: isMobile ? 'opacity 0.3s ease-out' : 'all 0.6s ease-out 0.1s',
                         }}
                       >
-                        <span className="text-8xl md:text-9xl lg:text-[12rem] font-black text-white/20 leading-none">
+                        <span className="text-7xl md:text-9xl lg:text-[12rem] font-black text-white/20 leading-none">
                           {page.year}
                         </span>
                       </div>
@@ -248,9 +263,9 @@ const ParallaxHistory = () => {
                       <div 
                         className="mb-4"
                         style={{
-                          transform: `translateY(${isActive ? 0 : 30}px)`,
+                          transform: isMobile ? 'none' : `translateY(${isActive ? 0 : 30}px)`,
                           opacity: isActive || isPast ? 1 : 0,
-                          transition: 'all 0.6s ease-out 0.2s',
+                          transition: isMobile ? 'opacity 0.3s ease-out' : 'all 0.6s ease-out 0.2s',
                         }}
                       >
                         <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium">
@@ -261,11 +276,11 @@ const ParallaxHistory = () => {
 
                       {/* Title */}
                       <h3 
-                        className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+                        className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
                         style={{
-                          transform: `translateY(${isActive ? 0 : 40}px)`,
+                          transform: isMobile ? 'none' : `translateY(${isActive ? 0 : 40}px)`,
                           opacity: isActive || isPast ? 1 : 0,
-                          transition: 'all 0.6s ease-out 0.3s',
+                          transition: isMobile ? 'opacity 0.3s ease-out' : 'all 0.6s ease-out 0.3s',
                         }}
                       >
                         {page.title}
@@ -273,11 +288,11 @@ const ParallaxHistory = () => {
 
                       {/* Description */}
                       <p 
-                        className="text-lg md:text-xl text-white/80 leading-relaxed mb-8 max-w-xl"
+                        className="text-base md:text-xl text-white/80 leading-relaxed mb-8 max-w-xl"
                         style={{
-                          transform: `translateY(${isActive ? 0 : 30}px)`,
+                          transform: isMobile ? 'none' : `translateY(${isActive ? 0 : 30}px)`,
                           opacity: isActive || isPast ? 1 : 0,
-                          transition: 'all 0.6s ease-out 0.4s',
+                          transition: isMobile ? 'opacity 0.3s ease-out' : 'all 0.6s ease-out 0.4s',
                         }}
                       >
                         {page.content}
@@ -286,15 +301,15 @@ const ParallaxHistory = () => {
                       {/* Highlight badge */}
                       <div
                         style={{
-                          transform: `translateY(${isActive ? 0 : 20}px)`,
+                          transform: isMobile ? 'none' : `translateY(${isActive ? 0 : 20}px)`,
                           opacity: isActive || isPast ? 1 : 0,
-                          transition: 'all 0.6s ease-out 0.5s',
+                          transition: isMobile ? 'opacity 0.3s ease-out' : 'all 0.6s ease-out 0.5s',
                         }}
                       >
-                        <span className="inline-flex items-center gap-3 px-6 py-3 bg-white text-neutral-900 rounded-full font-semibold shadow-xl">
-                          <Calendar className="w-5 h-5" />
+                        <span className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 bg-white text-neutral-900 rounded-full font-semibold shadow-xl text-sm md:text-base">
+                          <Calendar className="w-4 h-4 md:w-5 md:h-5" />
                           {page.highlight}
-                          <ArrowRight className="w-5 h-5" />
+                          <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                         </span>
                       </div>
                     </div>

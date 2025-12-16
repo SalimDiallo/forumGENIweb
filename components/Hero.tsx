@@ -194,29 +194,18 @@ const Hero = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-lg sm:text-xl text-white/50 font-light tracking-wide mb-8"
+                className="text-lg sm:text-xl text-white/50 font-light tracking-wide mb-4"
               >
                 {currentHero.tagline}
               </motion.p>
 
-              {/* Séparateur élégant */}
-              <motion.div
-                initial={{ opacity: 0, scaleX: 0 }}
-                animate={{ opacity: 1, scaleX: 1 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                className="flex items-center justify-center gap-4 mb-8"
-              >
-                <div className="h-px w-16 bg-gradient-to-r from-transparent to-white/30" />
-                <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                <div className="h-px w-16 bg-gradient-to-l from-transparent to-white/30" />
-              </motion.div>
 
               {/* Description */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="text-base sm:text-lg text-white/70 max-w-2xl mx-auto mb-12 leading-relaxed font-light"
+                className="text-base sm:text-lg text-white/70 max-w-2xl mx-auto mb-8 leading-relaxed font-light"
               >
                 {currentHero.description}
               </motion.p>
@@ -230,7 +219,7 @@ const Hero = () => {
               >
                 <Link href={currentHero.cta.href}>
                   <motion.button
-                    className="group px-8 py-4 bg-white text-neutral-900 font-semibold rounded-lg hover:bg-neutral-100 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg"
+                    className="group px-6 py-3 bg-white text-neutral-900 font-semibold rounded-lg hover:bg-neutral-100 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg"
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -242,7 +231,7 @@ const Hero = () => {
 
                 <Link href="/about">
                   <motion.button
-                    className="group px-8 py-4 bg-transparent border border-white/30 text-white font-medium rounded-lg hover:bg-white/10 hover:border-white/50 transition-all duration-300 flex items-center justify-center gap-2"
+                    className="group px-6 py-3 bg-transparent border border-white/30 text-white font-medium rounded-lg hover:bg-white/10 hover:border-white/50 transition-all duration-300 flex items-center justify-center gap-2"
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
