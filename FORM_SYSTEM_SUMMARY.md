@@ -338,7 +338,7 @@ Pour chaque formulaire :
 // form-utils.test.ts
 describe("slugify", () => {
   it("should convert text to slug", () => {
-    expect(slugify("Forum Génie 2025")).toBe("forum-genie-2025");
+    expect(slugify("Forum GENI2025")).toBe("forum-genie-2025");
   });
 });
 

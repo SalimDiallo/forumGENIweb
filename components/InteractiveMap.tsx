@@ -78,7 +78,7 @@ const InteractiveMap = () => {
         <Popup className="custom-popup">
           <div className="p-2 min-w-[200px]">
             <h3 className="text-lg font-bold text-emerald-800 mb-2">
-              Forum Génie Entreprise
+              Forum GENIEntreprise
             </h3>
             <div className="space-y-1 text-sm text-gray-700">
               <p className="font-semibold">INSEA</p>

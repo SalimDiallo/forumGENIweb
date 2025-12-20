@@ -72,7 +72,7 @@ Convertit du texte en slug URL-friendly.
 ```typescript
 import { slugify } from "@/lib/form-utils";
 
-slugify("Forum Génie Entreprise 2025")
+slugify("Forum GENIEntreprise 2025")
 // => "forum-genie-entreprise-2025"
 ```
 

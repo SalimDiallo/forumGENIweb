@@ -9,7 +9,7 @@ export default function AboutPage() {
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <PageHero
         title="À Propos"
-        subtitle="Découvrez l'histoire et la mission du Forum Génie Entreprise"
+        subtitle="Découvrez l'histoire et la mission du Forum GENI Entreprise"
         image="/about.jpg"
         withBlur={false}
       />

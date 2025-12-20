@@ -138,7 +138,7 @@ export default function AdminLoginPage() {
           <div className="mb-8">
             <Image
               src="/logo.svg"
-              alt="Forum Génie Entreprise"
+              alt="Forum GENIEntreprise"
               width={280}
               height={100}
               className="opacity-90"
@@ -320,7 +320,7 @@ export default function AdminLoginPage() {
 
           {/* Footer */}
           <p className="text-center text-sm text-slate-500 mt-6">
-            Forum Génie Entreprise © {new Date().getFullYear()}
+            Forum GENIEntreprise © {new Date().getFullYear()}
           </p>
         </div>
       </div>

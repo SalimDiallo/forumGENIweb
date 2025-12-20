@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 15 application for "Forum Génie Entreprise" - an engineering forum website with event management, blog, job postings, and CRM functionality. Built with the App Router, React 19, TypeScript, Prisma ORM with SQLite, and styled with Tailwind CSS 4.
+This is a Next.js 15 application for "Forum GENIEntreprise" - an engineering forum website with event management, blog, job postings, and CRM functionality. Built with the App Router, React 19, TypeScript, Prisma ORM with SQLite, and styled with Tailwind CSS 4.
 
 ## Development Commands
 

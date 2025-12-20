@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: JobPageProps) {
   }
 
   return {
-    title: `${job.title} - ${job.companyName} | Forum Génie Entreprise`,
+    title: `${job.title} - ${job.companyName} | Forum GENIEntreprise`,
     description: job.description ? job.description.substring(0, 160) : `Offre d'emploi ${job.title} chez ${job.companyName} à ${job.location}`,
   };
 }

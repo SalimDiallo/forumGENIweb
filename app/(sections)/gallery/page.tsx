@@ -8,7 +8,7 @@ export const revalidate = 3600;
 
 // Métadonnées de la page
 export const metadata = {
-  title: 'Galerie Photo & Vidéo - Forum Génie Entreprise',
+  title: 'Galerie Photo & Vidéo - Forum GENIEntreprise',
   description: 'Revivez les moments marquants de nos événements à travers notre galerie photo et vidéo',
 };
 

@@ -22,7 +22,7 @@ export default async function AdminDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-          <p className="text-gray-500 text-sm">Bienvenue sur Forum Génie Entreprise</p>
+          <p className="text-gray-500 text-sm">Bienvenue sur Forum GENIEntreprise</p>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <TrendingUp className="w-4 h-4 text-emerald-500" />
@@ -40,7 +40,7 @@ export default async function AdminDashboard() {
       <div className="flex items-center justify-center py-12 opacity-10">
         <Image
           src="/logo.svg"
-          alt="Forum Génie Entreprise"
+          alt="Forum GENIEntreprise"
           width={400}
           height={150}
           className="grayscale"

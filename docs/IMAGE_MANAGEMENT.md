@@ -1,6 +1,6 @@
 # Système de Gestion d'Images
 
-Ce document décrit le système de gestion d'images mis en place pour l'application Forum Génie Entreprise.
+Ce document décrit le système de gestion d'images mis en place pour l'application Forum GENIEntreprise.
 
 ## Vue d'ensemble
 

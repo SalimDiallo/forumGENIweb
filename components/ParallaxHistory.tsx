@@ -33,7 +33,7 @@ const ParallaxHistory = () => {
     },
     {
       year: "2022",
-      title: "Forum Geni Entreprise 18e Edition",
+      title: "Forum GENI Entreprise 18e Edition",
       subtitle: "Forum annuel étudiant",
       content: "Forum GENI Entreprises est un événement annuel majeur organisé conjointement par l'INSEA, l'ENSIAS et l'INPT. Ce forum crée un pont direct entre le monde académique et professionnel.",
       highlight: "ENSIAS • 23-24/03/2022",
@@ -43,7 +43,7 @@ const ParallaxHistory = () => {
     },
     {
       year: "2023",
-      title: "Forum Geni Entreprise 19e Edition",
+      title: "Forum GENI Entreprise 19e Edition",
       subtitle: "Forum annuel étudiant",
       content: "La 19e édition a rassemblé étudiants, lauréats et entreprises. Au programme : conférences, networking, recrutement. L'un des plus grands forums étudiants au Maroc.",
       highlight: "INSEA • 18-19/10/2023",
@@ -73,7 +73,7 @@ const ParallaxHistory = () => {
     },
     {
       year: "2024",
-      title: "Forum Geni Entreprise 20e Edition",
+      title: "Forum GENI Entreprise 20e Edition",
       subtitle: "Forum annuel étudiant",
       content: "L'édition 2024 s'est déroulée à l'INPT, rassemblant entreprises nationales et internationales, étudiants et lauréats.",
       highlight: "INPT • 16-17/10/2024",
@@ -103,7 +103,7 @@ const ParallaxHistory = () => {
     },
     {
       year: "2025",
-      title: "Forum Geni Entreprise 21e Edition",
+      title: "Forum GENI Entreprise 21e Edition",
       subtitle: "Forum annuel étudiant",
       content: "La 21e édition à l'ENSIAS. La plus grande plateforme de rencontre entre étudiants ingénieurs et professionnels au Maroc.",
       highlight: "ENSIAS • 15-16/10/2025",

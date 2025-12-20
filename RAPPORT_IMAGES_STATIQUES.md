@@ -1,6 +1,6 @@
 # 📸 Rapport d'Analyse des Images Statiques
 **Généré le :** 16 Décembre 2025  
-**Projet :** SitewebFORUM - Forum Génie Entreprise
+**Projet :** SitewebFORUM - Forum GENIEntreprise
 
 ---
 
@@ -33,7 +33,7 @@
 
 > **Source :** `components/BookHistory.tsx`
 
-Ces images représentent l'historique du Forum Génie Entreprise de 2002 à 2025.
+Ces images représentent l'historique du Forum GENIEntreprise de 2002 à 2025.
 
 ### Liste Complète des Images
 
@@ -41,14 +41,14 @@ Ces images représentent l'historique du Forum Génie Entreprise de 2002 à 2025
 |---|-------|---------------------|----------------|-----------|
 | 1 | **2002** | L'Étincelle (Le Commencement) | `https://media.licdn.com/dms/image/v2/D4E0BAQGEHMHyq4BVTA/company-logo_200_200/B4EZlXBs1KIkAI-/0/1758101688171/forumgenientreprises_logo?e=2147483647&v=beta&t=MpKlm0bOboORrRodJxsxK5h-vGfI2yFy3wczxaGZlG4` | LinkedIn (dynamique) |
 | 2 | **2022** | La Conférence sur la Loi de Finances | `https://maroc-ingenierie.ma/wp-content/uploads/2022/01/INSEA-LDF2022.jpg` | `.jpg` |
-| 3 | **2022** | Forum Geni Entreprise 18e Edition | `https://ensias.um5.ac.ma/sites/ensias.um5.ac.ma/files/images/news/Forum%20GENI-%20Entreprises2022.jpg` | `.jpg` |
-| 4 | **2023** | Forum Geni Entreprise 19e Edition | `https://insea.ac.ma/images/affiche_forum_2023.png` | `.png` |
+| 3 | **2022** | Forum GENI Entreprise 18e Edition | `https://ensias.um5.ac.ma/sites/ensias.um5.ac.ma/files/images/news/Forum%20GENI-%20Entreprises2022.jpg` | `.jpg` |
+| 4 | **2023** | Forum GENI Entreprise 19e Edition | `https://insea.ac.ma/images/affiche_forum_2023.png` | `.png` |
 | 5 | **2023** | Conférence sur le PLF2023 | `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9QwKFR-edFAh6QHLZ-GnIZCS-Tg1fg1zpJll_jpZOe_yY-G0On6U-XCwCGwNJ3MA6QuM&usqp=CAU` | Google Cache |
 | 6 | **2023** | Speed JOB dating | `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwr3k7cM46alRukcGl4RfHmv7cRQagQfE6bA&s` | Google Cache |
-| 7 | **2024** | Forum Geni Entreprise 20e Edition | `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXTAjROsS32n61SUwTYB_IU--L67DDzYeSfw&s` | Google Cache |
+| 7 | **2024** | Forum GENI Entreprise 20e Edition | `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXTAjROsS32n61SUwTYB_IU--L67DDzYeSfw&s` | Google Cache |
 | 8 | **2024** | Visa D'embauche | `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV-94k-YxTYaVm3yDXP38hAreNUVbTsVpJ9OIGAUO82v0qaSWa1hjxy8XpVKOUDTzjZkg&usqp=CAU` | Google Cache |
 | 9 | **2025** | Oracle CAMPUS TOUR | `https://www.atalayar.com/media/atalayar/images/2022/05/19/20220519103922068626.jpg` | `.jpg` |
-| 10 | **2025** | Forum Geni Entreprise 21e Edition | `https://drh-ma.s3.amazonaws.com/wp-content/uploads/2025/10/09120824/Forum-GENI-Entreprises-2025.jpg` | `.jpg` |
+| 10 | **2025** | Forum GENI Entreprise 21e Edition | `https://drh-ma.s3.amazonaws.com/wp-content/uploads/2025/10/09120824/Forum-GENI-Entreprises-2025.jpg` | `.jpg` |
 
 ### ⚠️ URLs à Risque (BookHistory)
 

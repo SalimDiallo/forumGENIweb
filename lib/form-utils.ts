@@ -172,7 +172,7 @@ export function markAllTouched<T extends Record<string, any>>(
  *
  * @example
  * ```typescript
- * slugify("Forum Génie Entreprise 2025")
+ * slugify("Forum GENIEntreprise 2025")
  * // => "forum-genie-entreprise-2025"
  * ```
  */
