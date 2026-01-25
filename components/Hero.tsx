@@ -336,8 +336,7 @@ const Hero = () => {
       </motion.div>
 
       {/* Effet de lumière subtil en bas */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
+
     </section>
   );
 };
