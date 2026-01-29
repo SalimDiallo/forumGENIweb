@@ -1,72 +1,56 @@
-import { Users, Building, Calendar, Award, TrendingUp, Sparkles } from 'lucide-react';
+import { Users, Building, Calendar, Award } from 'lucide-react';
+
+const stats = [
+  {
+    icon: Users,
+    number: 5000,
+    label: "Participants",
+    suffix: "+"
+  },
+  {
+    icon: Building,
+    number: 85,
+    label: "Partenaires"
+  },
+  {
+    icon: Calendar,
+    number: 127,
+    label: "Événements"
+  },
+  {
+    icon: Award,
+    number: 23,
+    label: "Années d'Excellence"
+  }
+];
 
 const Stats = () => {
-  const stats = [
-    {
-      icon: <Users size={28} />,
-      number: 5000,
-      label: "Participants",
-      suffix: "+"
-    },
-    {
-      icon: <Building size={28} />,
-      number: 85,
-      label: "Partenaires"
-    },
-    {
-      icon: <Calendar size={28} />,
-      number: 127,
-      label: "Événements"
-    },
-    {
-      icon: <Award size={28} />,
-      number: 23,
-      label: "Années d'Excellence"
-    }
-  ];
-
-  const additionalStats = [
-    { value: "95%", label: "Taux de satisfaction", icon: <Sparkles size={20} /> },
-    { value: "78%", label: "Trouvent un emploi en 6 mois", icon: <TrendingUp size={20} /> },
-    { value: "42", label: "Start-ups créées", icon: <Award size={20} /> }
-  ];
-
   return (
-    <section className="py-20 bg-slate-50">
+    <section className="py-20 bg-white border-y border-slate-100">
       <div className="container mx-auto px-4">
-        {/* En-tête */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-900 px-4 py-2 rounded-lg mb-6">
-            <Sparkles size={18} />
-            <span className="font-medium">Notre Impact</span>
-          </div>
-
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Des Résultats qui Parlent
+        {/* En-tête épuré */}
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900 mb-4 tracking-tight">
+           Des résultats qui parlent
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            23 années d'engagement pour connecter l'académique et le professionnel
+          <p className="text-md text-slate-500 max-w-xl mx-auto font-normal">
+            L’impact concret de l’engagement associatif pour amplifier les opportunités et la réussite professionnelle.
           </p>
         </div>
-
-        {/* Statistiques principales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat, index) => (
+        {/* Statistiques sobres */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {stats.map((stat, idx) => (
             <div
-              key={index}
-              className="bg-white p-8 rounded-lg shadow-sm border border-slate-200 text-center hover:shadow-md transition-shadow"
+              key={idx}
+              className="flex flex-col items-center gap-3"
             >
-              <div className="flex justify-center mb-4">
-                <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-800">
-                  {stat.icon}
-                </div>
+              <div className="mb-2 flex items-center justify-center w-12 h-12 rounded-full bg-slate-50 border border-slate-200">
+                <stat.icon size={28} className="text-emerald-700" />
               </div>
-
-              <div className="text-4xl font-bold text-slate-900 mb-2">
-                {stat.number.toLocaleString()}{stat.suffix}
+              <div className="text-3xl font-bold text-slate-900 tabular-nums">
+                {stat.number.toLocaleString()}<span className="text-emerald-600 font-semibold">{stat.suffix}</span>
               </div>
-
-              <div className="text-slate-900 font-semibold">
+              <div className="text-slate-700 text-sm font-medium text-center tracking-tight">
                 {stat.label}
               </div>
             </div>

@@ -82,20 +82,32 @@ const Header = () => {
             <Link href="/" className="flex items-center gap-2 group">
               <motion.div
                 className={`relative transition-all duration-300 ${scrolled
-                  ? 'bg-white rounded-lg p-1.5 shadow-sm'
+                  ? 'p-2.5'
                   : ''
                   }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {/* Effet blur blanc derrière le logo */}
-                <div className="absolute inset-0 bg-white/80 blur-xl rounded-2xl -z-10" />
+                {/* Glow / lumière background behind the logo */}
+                {/* <div
+                  className={`absolute inset-0 pointer-events-none -z-10 rounded-2xl`}
+                  style={{
+                    background: "radial-gradient(ellipse at 60% 40%, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 70%, transparent 100%)",
+                    filter: "blur(14px)",
+                  }}
+                /> */}
                 <Image
-                  src="/logo.svg"
+                  src={
+                    scrolled ? "/logo.svg" : "/logo-white.svg"
+                  }
                   alt="Forum GENI"
-                  width={140}
-                  height={40}
-                  className="h-8 sm:h-9 w-auto relative z-10"
+                  width={210}
+                  height={60}
+                  className={`h-16 sm:h-14 w-auto relative z-10 filter transition-all duration-300 ${
+                    scrolled
+                      ? 'grayscale-0 font-sans'
+                      : 'grayscale font-mono'
+                  }`}
                   priority
                 />
               </motion.div>

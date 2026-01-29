@@ -176,7 +176,9 @@ const ParallaxHistory = () => {
       <div className="sticky top-0 h-screen overflow-hidden w-full">
         {/* Cards Stack - Full screen immersive */}
         <div className="absolute inset-0">
-          {pages.map((page, idx) => {
+          {[...pages]
+            .sort((a, b) => Number(b.year) - Number(a.year))
+            .map((page, idx) => {
             // Calculate how much this card should be visible based on scroll
             const cardProgress = scrollProgress * pages.length - idx;
             const isActive = cardProgress >= -1 && cardProgress < 1;
@@ -215,9 +217,7 @@ const ParallaxHistory = () => {
                   transition: isMobile ? 'none' : 'transform 0.5s ease-out',
                 }}
               >
-                {/* Full screen card */}
                 <div className="relative w-full h-full overflow-hidden">
-                  {/* Background image - simplified for mobile */}
                   <div 
                     className="absolute inset-0"
                     style={{

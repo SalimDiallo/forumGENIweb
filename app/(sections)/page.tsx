@@ -69,46 +69,36 @@ export default function Home() {
       </Suspense>
       
      
-      {/* Blog CTA Section */}
-      <section className="py-24 md:py-32 bg-neutral-50 relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-100 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-100 rounded-full blur-3xl opacity-40 translate-x-1/2 translate-y-1/2" />
-        
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            {/* Card with gradient border */}
-            <div className="relative p-px rounded-3xl bg-gradient-to-br from-emerald-400 via-teal-400 to-emerald-600">
-              <div className="bg-white rounded-3xl p-8 md:p-12 lg:p-16">
-                <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                  {/* Icon */}
-                  <div className="flex-shrink-0">
-                    <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-200">
-                      <svg className="w-10 h-10 md:w-12 md:h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
-                      </svg>
-                    </div>
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1 text-center md:text-left">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 mb-4">
-                      Restez informé
-                    </h2>
-                    <p className="text-lg text-neutral-600 mb-6 max-w-xl">
-                      Conseils carrière, tendances du marché, success stories et actualités du Forum GENI.
-                    </p>
-                    <Link 
-                      href="/blog"
-                      className="inline-flex items-center gap-3 px-8 py-4 bg-neutral-900 text-white rounded-xl font-semibold hover:bg-neutral-800 transition-all hover:shadow-xl hover:-translate-y-0.5 group"
-                    >
-                      Explorer le Blog
-                      <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
-                      </svg>
-                    </Link>
-                  </div>
+      {/* Blog CTA Section - Très sobre */}
+      <section className="py-14 md:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-2xl mx-auto">
+            <div className="rounded-xl border border-neutral-200 bg-white p-8 md:p-10 flex flex-col md:flex-row items-center gap-5 shadow-sm">
+              {/* Simple Neutral Icon */}
+              <div className="flex-shrink-0 hidden md:flex">
+                <div className="w-12 h-12 flex items-center justify-center bg-neutral-100 rounded-lg">
+                  <svg className="w-6 h-6 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+                  </svg>
                 </div>
+              </div>
+              {/* Content */}
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-xl md:text-2xl font-semibold text-neutral-900 mb-1">
+                  Restez informé
+                </h2>
+                <p className="text-neutral-700 mb-4 text-base">
+                  Conseils carrière, actualités et histoires du Forum GENI.
+                </p>
+                <Link 
+                  href="/blog"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white rounded hover:bg-neutral-800 transition"
+                >
+                  Explorer le Blog
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                  </svg>
+                </Link>
               </div>
             </div>
           </div>

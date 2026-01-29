@@ -257,11 +257,9 @@ const Hero = () => {
         </div>
       </motion.div>
 
-      {/* Navigation slides - style discret */}
-      <div className="absolute bottom-8 left-0 right-0 z-20">
+      {/* <div className="absolute bottom-8 left-0 right-0 z-20">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-8">
-            {/* Bouton précédent */}
             <motion.button
               onClick={() => { prevSlide(); setIsAutoPlaying(false); }}
               className="p-2 text-white/40 hover:text-white transition-colors"
@@ -271,7 +269,6 @@ const Hero = () => {
               <ChevronLeft className="w-6 h-6" />
             </motion.button>
 
-            {/* Indicateurs */}
             <div className="flex items-center gap-3">
               {heroSlides.map((_, index) => (
                 <button
@@ -286,7 +283,6 @@ const Hero = () => {
                         : 'w-6 bg-white/30 hover:bg-white/50'
                     }`}
                   />
-                  {/* Progress bar pour le slide actif */}
                   {currentSlide === index && isAutoPlaying && (
                     <motion.div
                       className="absolute top-0 left-0 h-1 bg-white/50 rounded-full"
@@ -300,7 +296,6 @@ const Hero = () => {
               ))}
             </div>
 
-            {/* Bouton suivant */}
             <motion.button
               onClick={() => { nextSlide(); setIsAutoPlaying(false); }}
               className="p-2 text-white/40 hover:text-white transition-colors"
@@ -311,7 +306,6 @@ const Hero = () => {
             </motion.button>
           </div>
 
-          {/* Numéro du slide */}
           <div className="flex justify-center mt-4">
             <span className="text-sm text-white/30 font-light tracking-widest">
               <span className="text-white/60">{String(currentSlide + 1).padStart(2, '0')}</span>
@@ -320,7 +314,7 @@ const Hero = () => {
             </span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Indicateur de scroll minimaliste */}
       <motion.div
@@ -334,8 +328,6 @@ const Hero = () => {
           <div className="w-px h-8 bg-gradient-to-b from-white/40 to-transparent" />
         </div>
       </motion.div>
-
-      {/* Effet de lumière subtil en bas */}
 
     </section>
   );

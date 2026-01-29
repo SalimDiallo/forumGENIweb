@@ -76,10 +76,8 @@ const PageHero = ({
           >
             <div className="relative group">
               <div className="inline-flex items-center gap-2 bg-emerald-500/10 backdrop-blur-md border border-emerald-500/30 text-emerald-300 px-5 py-2.5 rounded-full mb-6 shadow-lg hover:bg-emerald-500/15 transition-all duration-300">
-                <Sparkles className="w-4 h-4 animate-pulse" />
                 <span className="font-semibold text-sm tracking-wide">{badge}</span>
               </div>
-              <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
             </div>
           </motion.div>
         )}

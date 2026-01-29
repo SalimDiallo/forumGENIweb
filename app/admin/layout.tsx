@@ -141,6 +141,10 @@ function AdminNav() {
     }
   }, [session, handleSignOut]);
 
+  if (! session?.user.id) {
+    return null;
+  }
+
   // Filtrer les éléments de navigation en fonction du rôle
   const userRole = (session?.user as any)?.role as string | undefined;
   const isSuperAdmin = userRole === "super_admin";
@@ -496,50 +500,19 @@ import { SpecializedRouteGuard } from "@/components/admin/SpecializedRouteGuard"
 import { SessionWatcher } from "@/components/admin/SessionWatcher";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  /**
-   * Layout admin avec authentification Better Auth
-   * - Protection des routes via middleware (voir /middleware.ts)
-   * - RoleProvider pour l'accès au rôle dans toute l'application
-   * - SpecializedRouteGuard pour rediriger les rôles spécialisés
-   * - SessionWatcher pour déconnexion automatique si compte désactivé ou mot de passe changé
-   * - Affichage des infos utilisateur et déconnexion
-   * - Navigation responsive avec menu mobile
-   */
   return (
     <RoleProvider>
-      {/* Session validity watcher - auto-logout if account deactivated or password reset */}
-      {/* Checks every 60 seconds for account status changes */}
       <SessionWatcher checkInterval={60000} />
 
       <div className="min-h-screen bg-gray-50 relative overflow-hidden">
-        {/* Background watermark logo - top left with animation */}
-        <div className="fixed top-10 left-30 pointer-events-none z-0  animate-pulse">
-          <NextImage
-            src="/logo.svg"
-            alt=""
-            width={100}
-            height={100}
-            className="select-none -rotate-12"
-          />
-        </div>
-
-        {/* Background watermark logo - bottom right */}
-        <div className="fixed bottom-0 right-0 pointer-events-none z-0 opacity-[0.03]">
-          <NextImage
-            src="/logo.svg"
-            alt=""
-            width={600}
-            height={225}
-            className="select-none"
-          />
-        </div>
-
-        <AdminNav />
-        <main className="p-6 relative z-10">
-          <SpecializedRouteGuard>
-            {children}
-          </SpecializedRouteGuard>
-        </main>
+      <SpecializedRouteGuard>
+            <>
+            <AdminNav />
+                    <main className="p-6 relative z-10">
+                        {children}
+                    </main>
+            </>
+      </SpecializedRouteGuard>
       </div>
     </RoleProvider>
   );

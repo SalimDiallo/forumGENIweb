@@ -137,7 +137,7 @@ export default function AdminLoginPage() {
         <div className="relative z-10 flex flex-col justify-center p-16 text-white">
           <div className="mb-8">
             <Image
-              src="/logo.svg"
+              src="/logo-white.svg"
               alt="Forum GENIEntreprise"
               width={280}
               height={100}
