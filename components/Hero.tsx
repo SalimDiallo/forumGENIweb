@@ -98,7 +98,7 @@ const Hero = () => {
           onError={() => setIsVideoPlaying(false)}
           onStalled={() => setIsVideoPlaying(false)}
         >
-          <source src="https://www.pexels.com/fr-fr/download/video/6774633/" />
+          <source src="/hero.mp4" />
         </video>
 
         {/* Fallback image when video is not playing */}

@@ -15,8 +15,8 @@ export default function AboutPage() {
       />
 
       {/* <BookHistory /> */}
-      <ParallaxHistory />
       <TeamsMembres />
+      <ParallaxHistory />
       <Stats />
     </main>
   );
