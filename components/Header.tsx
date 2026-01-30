@@ -142,21 +142,18 @@ const Header = () => {
             </nav>
 
             {/* CTA Button */}
-            <div className="hidden lg:block">
-              <Link href="/events">
-                <motion.button
-                  className={`px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 ${scrolled
+            <Link href="/events" className="hidden lg:block">
+              <button
+                className={`px-5 py-2.5 text-sm font-semibold rounded-lg flex items-center gap-2 transition-all duration-200 ${
+                  scrolled
                     ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                     : 'bg-white text-emerald-700 hover:bg-white/90'
-                    }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span>Forum 2025</span>
-                  <ArrowRight className="w-4 h-4" />
-                </motion.button>
-              </Link>
-            </div>
+                }`}
+              >
+                Nos Events
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
 
             {/* Mobile Menu Button */}
             <motion.button
@@ -175,8 +172,7 @@ const Header = () => {
                     initial={{ rotate: -90, opacity: 0 }}
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
+                    transition={{ duration: 0.2 }}>
                     <X size={24} />
                   </motion.div>
                 ) : (
@@ -275,7 +271,7 @@ const Header = () => {
                     whileTap={{ scale: 0.98 }}
                   >
                     <Calendar className="w-5 h-5" />
-                    <span>Découvrir le Forum 2025</span>
+                    <span>Nos évènements</span>
                   </motion.button>
                 </Link>
                 <p className="text-center text-xs text-gray-500 mt-3">
