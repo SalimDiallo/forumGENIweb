@@ -1,21 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import {
   Video,
   Image as ImageIcon,
   X,
   ChevronLeft,
   ChevronRight,
-  Filter,
   Play,
-  Calendar,
-  Tag,
   Search,
-  ChevronDown,
-  Compass,
-  Grid,
 } from "lucide-react";
 import { getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from "@/lib/services/youtube";
 import { getDriveImageUrl, getDriveThumbnailUrl } from "@/lib/validations/gallery";
@@ -56,10 +51,6 @@ type GalleryClientProps = {
   selectedType: string;
 };
 
-import { Marquee } from "@/components/ui/marquee";
-
-// ... existing imports
-
 export function GalleryClient({
   videos,
   photos,
@@ -74,9 +65,8 @@ export function GalleryClient({
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoItem | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
   const [photoIndex, setPhotoIndex] = useState(0);
-  const [isExploreOpen, setIsExploreOpen] = useState(false);
 
-  const handleFilterChange = (key: string, value: string) => {
+  const handleFilterChange = useCallback((key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value) {
       params.set(key, value);
@@ -84,69 +74,50 @@ export function GalleryClient({
       params.delete(key);
     }
     router.push(`/gallery?${params.toString()}`);
-  };
+  }, [searchParams, router]);
 
-  const openPhoto = (photo: PhotoItem, index: number) => {
+  const openPhoto = useCallback((photo: PhotoItem, index: number) => {
     setSelectedPhoto(photo);
     setPhotoIndex(index);
-  };
+  }, []);
 
-  const nextPhoto = () => {
+  const nextPhoto = useCallback(() => {
     if (photoIndex < photos.length - 1) {
       setPhotoIndex(photoIndex + 1);
       setSelectedPhoto(photos[photoIndex + 1]);
     }
-  };
+  }, [photoIndex, photos]);
 
-  const prevPhoto = () => {
+  const prevPhoto = useCallback(() => {
     if (photoIndex > 0) {
       setPhotoIndex(photoIndex - 1);
       setSelectedPhoto(photos[photoIndex - 1]);
     }
-  };
+  }, [photoIndex, photos]);
 
   const totalItems = videos.length + photos.length;
 
-  // Prepare items for Marquee (mix of photos and videos, limited to 30 items for performance)
-  const allMarqueeItems = [
-    ...photos.map(p => ({ type: 'photo' as const, ...p, thumb: p.thumbnailUrl || getDriveThumbnailUrl(p.imageUrl, 400) })),
-    ...videos.map(v => ({ type: 'video' as const, ...v, thumb: v.thumbnailUrl || getYouTubeThumbnailUrl(v.videoUrl, "hqdefault") }))
-  ].sort(() => 0.5 - Math.random()).slice(0, 30);
+  // Precompute thumbnail URLs
+  const photoThumbs = useMemo(() =>
+    photos.map(p => p.thumbnailUrl ?? getDriveThumbnailUrl(p.imageUrl, 600) ?? ""),
+    [photos]
+  );
 
-  // Prepare all items for Explore Grid (randomized)
-  const allExploreItems = [
-    ...photos.map(p => ({ type: 'photo' as const, ...p, thumb: p.thumbnailUrl || getDriveThumbnailUrl(p.imageUrl, 400) })),
-    ...videos.map(v => ({ type: 'video' as const, ...v, thumb: v.thumbnailUrl || getYouTubeThumbnailUrl(v.videoUrl, "hqdefault") }))
-  ].sort(() => 0.5 - Math.random());
-
-  const firstRow = allMarqueeItems.slice(0, allMarqueeItems.length / 2);
-  const secondRow = allMarqueeItems.slice(allMarqueeItems.length / 2);
+  const videoThumbs = useMemo(() =>
+    videos.map(v => v.thumbnailUrl || getYouTubeThumbnailUrl(v.videoUrl, "hqdefault") || ""),
+    [videos]
+  );
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Simplified Header */}
-      <div className="bg-white border-b border-neutral-100">
-        <div className="container mx-auto px-6 py-12">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-              Galerie
-            </h1>
-            <p className="text-lg text-neutral-500">
-              Revivez les moments forts de nos événements à travers {totalItems} photos et vidéos.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Sticky Filters */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-neutral-100">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            
+    <div className="min-h-screen bg-white">
+      {/* Sticky Filter Bar */}
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+        <div className="container mx-auto px-4 sm:px-6 max-w-6xl py-3">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
             {/* Type Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
+            <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
               {[
-                { id: 'all', label: 'Tout', count: totalItems },
+                { id: 'all', label: 'Tout', count: totalItems, icon: null },
                 { id: 'photos', label: 'Photos', icon: ImageIcon, count: photos.length },
                 { id: 'videos', label: 'Vidéos', icon: Video, count: videos.length },
               ].map((type) => (
@@ -154,15 +125,15 @@ export function GalleryClient({
                   key={type.id}
                   onClick={() => handleFilterChange("type", type.id)}
                   className={`
-                    flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap
+                    flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border
                     ${selectedType === type.id
-                      ? "bg-neutral-900 text-white"
-                      : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"}
+                      ? "bg-gray-900 text-white border-gray-900"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"}
                   `}
                 >
-                  {type.icon && <type.icon className="w-4 h-4" />}
+                  {type.icon && <type.icon className="w-3.5 h-3.5" />}
                   {type.label}
-                  <span className={`text-xs ${selectedType === type.id ? 'text-neutral-400' : 'text-neutral-400'}`}>
+                  <span className={`text-xs ${selectedType === type.id ? 'text-gray-400' : 'text-gray-400'}`}>
                     {type.count}
                   </span>
                 </button>
@@ -170,13 +141,12 @@ export function GalleryClient({
             </div>
 
             {/* Filters */}
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              {/* Year Filter */}
+            <div className="flex items-center gap-2 w-full md:w-auto">
               {years.length > 0 && (
                 <select
                   value={selectedYear || ""}
                   onChange={(e) => handleFilterChange("year", e.target.value)}
-                  className="appearance-none bg-neutral-100 hover:bg-neutral-200 text-neutral-700 py-2 px-4 pr-8 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-neutral-300 transition-all cursor-pointer"
+                  className="appearance-none bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-4 pr-8 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer border border-gray-200"
                 >
                   <option value="">Toutes les années</option>
                   {years.map((year) => (
@@ -185,12 +155,11 @@ export function GalleryClient({
                 </select>
               )}
 
-              {/* Category Filter */}
               {categories.length > 0 && (
                 <select
                   value={selectedCategory || ""}
                   onChange={(e) => handleFilterChange("category", e.target.value)}
-                  className="appearance-none bg-neutral-100 hover:bg-neutral-200 text-neutral-700 py-2 px-4 pr-8 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-neutral-300 transition-all cursor-pointer"
+                  className="appearance-none bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-4 pr-8 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer border border-gray-200"
                 >
                   <option value="">Toutes catégories</option>
                   {categories.map((category) => (
@@ -199,14 +168,13 @@ export function GalleryClient({
                 </select>
               )}
 
-              {/* Clear Filters */}
               {(selectedYear || selectedCategory || selectedType !== "all") && (
                 <button
                   onClick={() => router.push("/gallery")}
-                  className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
                   title="Effacer les filtres"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -214,13 +182,15 @@ export function GalleryClient({
         </div>
       </div>
 
-      {/* Main Gallery Grid */}
-      <div className="container mx-auto px-6 py-8">
+      {/* Main Content */}
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl py-8">
         {totalItems === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-neutral-400">
-            <ImageIcon className="w-16 h-16 mb-4" />
-            <p className="text-xl font-medium text-neutral-600 mb-2">Aucun média trouvé</p>
-            <p className="text-neutral-500">Essayez de modifier vos filtres</p>
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
+              <Search className="w-7 h-7 text-gray-400" />
+            </div>
+            <p className="text-lg font-semibold text-gray-700 mb-1">Aucun média trouvé</p>
+            <p className="text-sm text-gray-500">Essayez de modifier vos filtres</p>
           </div>
         ) : (
           <div className="space-y-12">
@@ -228,11 +198,15 @@ export function GalleryClient({
             {(selectedType === 'all' || selectedType === 'photos') && photos.length > 0 && (
               <div>
                 {selectedType === 'all' && (
-                  <h2 className="text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
-                    <ImageIcon className="w-6 h-6 text-neutral-600" />
-                    Photos
-                    <span className="text-sm font-normal text-neutral-400">({photos.length})</span>
-                  </h2>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <ImageIcon className="w-4 h-4 text-gray-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      Photos
+                    </h2>
+                    <span className="text-sm text-gray-400 font-normal">{photos.length}</span>
+                  </div>
                 )}
                 <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4">
                   {photos.map((photo, index) => (
@@ -241,20 +215,22 @@ export function GalleryClient({
                       className="break-inside-avoid mb-4 group cursor-pointer"
                       onClick={() => openPhoto(photo, index)}
                     >
-                      <div className="relative rounded-2xl overflow-hidden bg-neutral-200 shadow-sm hover:shadow-xl transition-all duration-500">
+                      <div className="relative rounded-xl overflow-hidden bg-gray-100 hover:shadow-lg transition-all duration-300">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={photo.thumbnailUrl ?? getDriveThumbnailUrl(photo.imageUrl, 600) ?? ""}
+                          src={photoThumbs[index]}
                           alt={photo.title}
-                          className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                          className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                           loading="lazy"
+                          decoding="async"
                         />
-                        
+
                         {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
                         {/* Content */}
-                        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <h3 className="text-white font-semibold text-sm line-clamp-2 mb-1">
+                        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <h3 className="text-white font-semibold text-sm line-clamp-2 mb-0.5">
                             {photo.title}
                           </h3>
                           {photo.eventName && (
@@ -262,12 +238,14 @@ export function GalleryClient({
                           )}
                         </div>
 
-                        {/* Photo Icon */}
-                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="p-2 bg-white/90 backdrop-blur-sm rounded-full">
-                            <ImageIcon className="w-4 h-4 text-neutral-700" />
+                        {/* Featured badge */}
+                        {photo.isFeatured && (
+                          <div className="absolute top-3 left-3">
+                            <span className="px-2 py-0.5 bg-amber-500 text-white text-[10px] font-semibold rounded-full uppercase tracking-wide">
+                              À la une
+                            </span>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -275,44 +253,50 @@ export function GalleryClient({
               </div>
             )}
 
-            {/* Videos Section - Max 3 per row */}
+            {/* Videos Section */}
             {(selectedType === 'all' || selectedType === 'videos') && videos.length > 0 && (
               <div>
                 {selectedType === 'all' && (
-                  <h2 className="text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
-                    <Video className="w-6 h-6 text-red-500" />
-                    Vidéos
-                    <span className="text-sm font-normal text-neutral-400">({videos.length})</span>
-                  </h2>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+                      <Video className="w-4 h-4 text-red-500" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      Vidéos
+                    </h2>
+                    <span className="text-sm text-gray-400 font-normal">{videos.length}</span>
+                  </div>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
-                  {videos.map((video) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {videos.map((video, index) => (
                     <div
                       key={`video-${video.id}`}
                       className="group cursor-pointer"
                       onClick={() => setSelectedVideo(video)}
                     >
-                      <div className="relative overflow-hidden bg-white hover:shadow-xl transition-all duration-500 aspect-video">
+                      <div className="relative overflow-hidden rounded-xl bg-gray-100 hover:shadow-lg transition-all duration-300 aspect-video">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={video.thumbnailUrl || getYouTubeThumbnailUrl(video.videoUrl, "hqdefault") || ""}
+                          src={videoThumbs[index]}
                           alt={video.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                           loading="lazy"
+                          decoding="async"
                         />
-                        
-                        {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300" />
-                        
+
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
+
                         {/* Play Button */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-8 h-8 bg-white/95 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <Play className="w-6 h-6 text-neutral-900 ml-1" fill="currentColor" />
+                          <div className="w-14 h-14 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Play className="w-6 h-6 text-gray-900 ml-0.5" fill="currentColor" />
                           </div>
                         </div>
-                        
+
                         {/* Content */}
-                        <div className="absolute inset-x-0 bottom-0 p-4">
-                          <h3 className="text-white font-semibold text-sm line-clamp-2 mb-1">
+                        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+                          <h3 className="text-white font-semibold text-sm line-clamp-2 mb-0.5">
                             {video.title}
                           </h3>
                           {video.eventName && (
@@ -320,6 +304,14 @@ export function GalleryClient({
                           )}
                         </div>
 
+                        {/* Featured badge */}
+                        {video.isFeatured && (
+                          <div className="absolute top-3 left-3">
+                            <span className="px-2 py-0.5 bg-amber-500 text-white text-[10px] font-semibold rounded-full uppercase tracking-wide">
+                              À la une
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -330,7 +322,7 @@ export function GalleryClient({
         )}
       </div>
 
-      {/* Photo Modal */}
+      {/* Photo Lightbox Modal */}
       {selectedPhoto && (
         <div
           className="fixed inset-0 bg-black/95 z-[70] flex items-center justify-center"
@@ -338,12 +330,12 @@ export function GalleryClient({
         >
           {/* Top Bar */}
           <div className="absolute top-0 left-0 right-0 p-4 md:p-6 flex justify-between items-center z-10">
-            <span className="text-white/60 text-sm font-medium">
+            <span className="text-white/60 text-sm font-medium bg-black/30 px-3 py-1 rounded-full">
               {photoIndex + 1} / {photos.length}
             </span>
             <button
               onClick={() => setSelectedPhoto(null)}
-              className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              className="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
             >
               <X className="w-5 h-5 text-white" />
             </button>
@@ -371,6 +363,7 @@ export function GalleryClient({
             className="w-full h-full max-w-7xl mx-auto p-4 md:p-16 flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={getDriveImageUrl(selectedPhoto.imageUrl) || selectedPhoto.imageUrl}
               alt={selectedPhoto.title}
@@ -382,10 +375,12 @@ export function GalleryClient({
                 }
               }}
             />
-            <div className="mt-6 text-center">
-              <h3 className="text-xl font-semibold text-white">{selectedPhoto.title}</h3>
+            <div className="mt-5 text-center">
+              <h3 className="text-lg font-semibold text-white">{selectedPhoto.title}</h3>
               {selectedPhoto.eventName && (
-                <p className="text-white/60 mt-1">{selectedPhoto.eventName} {selectedPhoto.eventYear && `• ${selectedPhoto.eventYear}`}</p>
+                <p className="text-white/60 mt-1 text-sm">
+                  {selectedPhoto.eventName} {selectedPhoto.eventYear && `• ${selectedPhoto.eventYear}`}
+                </p>
               )}
             </div>
           </div>
@@ -400,10 +395,10 @@ export function GalleryClient({
         >
           <div className="w-full max-w-5xl">
             {/* Close Button */}
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-end mb-3">
               <button
                 onClick={() => setSelectedVideo(null)}
-                className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+                className="p-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-white" />
               </button>
@@ -411,7 +406,7 @@ export function GalleryClient({
 
             {/* Video Player */}
             <div
-              className="relative aspect-video bg-black rounded-2xl overflow-hidden"
+              className="relative aspect-video bg-black rounded-xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {getYouTubeEmbedUrl(selectedVideo.videoUrl) && (
@@ -425,13 +420,15 @@ export function GalleryClient({
             </div>
 
             {/* Video Info */}
-            <div className="mt-6 text-center">
-              <h3 className="text-2xl font-bold text-white">{selectedVideo.title}</h3>
+            <div className="mt-5 text-center">
+              <h3 className="text-xl font-bold text-white">{selectedVideo.title}</h3>
               {selectedVideo.description && (
-                <p className="text-white/60 mt-2 max-w-2xl mx-auto">{selectedVideo.description}</p>
+                <p className="text-white/60 mt-2 max-w-2xl mx-auto text-sm">{selectedVideo.description}</p>
               )}
               {selectedVideo.eventName && (
-                <p className="text-white/40 mt-3 text-sm">{selectedVideo.eventName} {selectedVideo.eventYear && `• ${selectedVideo.eventYear}`}</p>
+                <p className="text-white/40 mt-2 text-xs">
+                  {selectedVideo.eventName} {selectedVideo.eventYear && `• ${selectedVideo.eventYear}`}
+                </p>
               )}
             </div>
           </div>

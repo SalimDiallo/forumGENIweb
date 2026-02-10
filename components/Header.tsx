@@ -120,7 +120,7 @@ const Header = () => {
                   key={item.path}
                   href={item.path}
                   prefetch={true}
-                  className={`relative px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(item.path)
+                  className={`relative px-3 py-2 text-lg font-extrabold transition-all duration-200 rounded-lg ${isActive(item.path)
                     ? scrolled
                       ? 'text-emerald-700 bg-emerald-50'
                       : 'text-white bg-white/15'

@@ -58,6 +58,9 @@ interface BlogDetailClientProps {
   relatedPosts: RelatedPost[];
 }
 
+const fallbackImage =
+  "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=800&q=80";
+
 export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClientProps) {
   return (
     <div className="min-h-screen bg-white">
@@ -72,7 +75,6 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
               <ArrowLeft className="w-5 h-5" />
               <span className="hidden sm:inline">Retour aux articles</span>
             </Link>
-
             <ShareButton
               title={post.title}
               description={post.excerpt || ''}
@@ -149,20 +151,18 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
       </header>
 
       {/* Featured Image */}
-      {post.featuredImage && (
-        <div className="container mx-auto px-4 mb-12 max-w-5xl">
-          <div className="rounded-2xl overflow-hidden">
-            <Image
-              src={post.featuredImage}
-              alt={post.title}
-              width={1200}
-              height={600}
-              className="w-full h-auto object-cover"
-              unoptimized
-            />
-          </div>
+      <div className="container mx-auto px-4 mb-12 max-w-5xl">
+        <div className="rounded-2xl overflow-hidden">
+          <Image
+            src={post.featuredImage || fallbackImage}
+            alt={post.title}
+            width={1200}
+            height={600}
+            className="w-full h-auto object-cover"
+            unoptimized
+          />
         </div>
-      )}
+      </div>
 
       {/* Article Content */}
       <article className="container mx-auto px-4 pb-16 max-w-4xl">
@@ -219,7 +219,7 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
                   <article className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md">
                     <div className="relative h-48 overflow-hidden">
                       <Image
-                        src={related.featuredImage || "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=800&q=80"}
+                        src={related.featuredImage || fallbackImage}
                         alt={related.title}
                         width={400}
                         height={200}
@@ -239,9 +239,9 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
                       <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-700 transition-colors">
                         {related.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-3 text-sm text-gray-500">
                         <Clock className="w-4 h-4" />
-                        {related.readTimeMinutes} min
+                        <span>{related.readTimeMinutes} min</span>
                       </div>
                     </div>
                   </article>

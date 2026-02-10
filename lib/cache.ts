@@ -76,6 +76,24 @@ export const getCachedEvents = unstable_cache(
       },
       orderBy: {
         startDate: 'asc'
+      },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        shortDescription: true,
+        featuredImage: true,
+        eventType: true,
+        location: true,
+        isVirtual: true,
+        startDate: true,
+        endDate: true,
+        isFree: true,
+        price: true,
+        currency: true,
+        isFeatured: true,
+        maxParticipants: true,
+        currentParticipants: true,
       }
     });
     return events;
@@ -180,11 +198,37 @@ export const getCachedBlogPosts = unstable_cache(
         publishedAt: 'desc'
       },
       take: limit,
-      include: {
-        category: true,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        featuredImage: true,
+        authorName: true,
+        authorPosition: true,
+        readTimeMinutes: true,
+        isFeatured: true,
+        publishedAt: true,
+        viewsCount: true,
+        categoryId: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            color: true,
+          }
+        },
         tags: {
-          include: {
-            tag: true
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true,
+              }
+            }
           }
         }
       }
