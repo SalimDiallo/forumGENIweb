@@ -69,16 +69,14 @@ const PageHero = ({
       <div className="container mx-auto px-4 z-10 text-center">
         {badge && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="inline-flex"
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="flex justify-center"
           >
-            <div className="relative group">
-              <div className="inline-flex items-center gap-2 bg-emerald-500/10 backdrop-blur-md border border-emerald-500/30 text-emerald-300 px-5 py-2.5 rounded-full mb-6 shadow-lg hover:bg-emerald-500/15 transition-all duration-300">
-                <span className="font-semibold text-sm tracking-wide">{badge}</span>
-              </div>
-            </div>
+            <span className="inline-flex items-center gap-2 bg-white/75 border border-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full mb-6 shadow-sm font-medium text-sm tracking-wide select-none backdrop-blur-[2px]">
+              {badge}
+            </span>
           </motion.div>
         )}
         <motion.h1
@@ -93,27 +91,7 @@ const PageHero = ({
         </motion.h1>
 
         {/* Ligne décorative avec animation */}
-        {subtitle && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex items-center justify-center gap-3 mb-6"
-          >
-            <motion.div
-              className="h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent w-16 md:w-24"
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse" />
-            <motion.div
-              className="h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent w-16 md:w-24"
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </motion.div>
-        )}
-
+     
         {/* Sous-titre avec animation */}
         {subtitle && (
           <motion.p
@@ -127,13 +105,6 @@ const PageHero = ({
         )}
       </div>
 
-      {/* Effet de lumière subtil en bas */}
-    {withBlur && (
-      <>
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
-      </>
-    )}
 
     </section>
   );
