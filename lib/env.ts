@@ -12,12 +12,14 @@ export const env = createEnv({
     YOUTUBE_CHANNEL_ID: z.string().min(1),
     // Cache Revalidation Token
     REVALIDATE_TOKEN: z.string().min(1).optional(),
+    RESEND_KEY: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),
   },
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
   runtimeEnv: {
+    RESEND_KEY: process.env.RESEND_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
     GOOGLE_SERVICE_ACCOUNT_KEY: process.env.GOOGLE_SERVICE_ACCOUNT_KEY,

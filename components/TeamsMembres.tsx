@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
 import { Users, Crown, Shield, Briefcase, Mail, Linkedin, Calendar, Award } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface BureauMember {
   id: number;
@@ -190,7 +191,7 @@ const bureauMembers2026: BureauMember[] = [
   {
     id: 1001,
     name: "Walid Kilani",
-    role: "Présidente",
+    role: "Président",
     description: "Coordonne, assiste, supervise, motive, représente.",
     image: "/team/2026/walid.jpg",
     level: 1,
@@ -404,11 +405,42 @@ const TeamsMembres = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<keyof typeof bureauByYear>("2026");
 
-  const teamMembers = bureauByYear[selectedYear];
+  // Memoize to avoid recomputations
+  const teamMembers = useMemo(() => bureauByYear[selectedYear], [selectedYear]);
 
+  // Images de groupe : lazy avec priority pour la plus visible (année sélectionnée)
+  const TeamGroupImage: React.FC<{ year: keyof typeof teamGroupImages; selected: boolean }> = ({ year, selected }) => (
+    <Image
+      alt={`Équipe ${year}`}
+      className="w-full h-full object-cover"
+      src={teamGroupImages[year]}
+      fill={false}
+      width={2000}
+      height={1200}
+      loading={selected ? "eager" : "lazy"}
+      priority={!!selected}
+      sizes="100vw"
+      style={{ width: "100%", height: "auto" }}
+    />
+  );
+
+  // Card optim: Image Next
   const MemberCard: React.FC<MemberCardProps> = ({ member, variant }) => {
     const IconComponent = member.icon;
     const isHovered = hoveredCard === member.id;
+
+    const Img = (
+      <Image
+        src={member.image}
+        alt={member.name}
+        className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+        width={600}
+        height={320}
+        loading="lazy"
+        sizes="(max-width: 640px) 100vw, 600px"
+        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+      />
+    );
 
     if (variant === 'hero') {
       return (
@@ -419,31 +451,24 @@ const TeamsMembres = () => {
         >
           <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 p-1 rounded-3xl shadow-sm">
             <div className="bg-white rounded-3xl overflow-hidden h-full">
-              {/* Image principale - beaucoup plus grande */}
+              {/* Image principale */}
               <div className="relative h-80 w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-full h-full object-cover object-top transform group-hover:scale-105 transition-transform duration-500"
-                />
+                {/* Next Image for hero */}
+                {Img}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none"></div>
-
-                {/* Badge icon sur l'image */}
+                {/* Badge icon */}
                 <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center">
                   <IconComponent className="w-6 h-6 text-gray-700" />
                 </div>
-
-                {/* Nom et rôle en bas de l'image */}
+                {/* Nom et rôle */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                   <h3 className="text-3xl font-bold mb-1 drop-shadow-lg">{member.name}</h3>
                   <p className="text-xl font-semibold text-white/90 drop-shadow-md">{member.role}</p>
                 </div>
               </div>
-
-              {/* Contenu en dessous */}
+              {/* Contenu */}
               <div className="p-8">
                 <p className="text-gray-600 mb-4 leading-relaxed whitespace-pre-line text-center">{member.description}</p>
-
                 {member.specialty && (
                   <div className="flex justify-center mb-4">
                     <div className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
@@ -452,13 +477,9 @@ const TeamsMembres = () => {
                     </div>
                   </div>
                 )}
-
                 <div className="flex justify-center gap-3">
                   {member.email && (
-                  <a
-                    href={`mailto:${member.email}`}
-                    className="w-11 h-11 bg-gray-100 hover:bg-gray-700 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
-                  >
+                  <a href={`mailto:${member.email}`} className="w-11 h-11 bg-gray-100 hover:bg-gray-700 hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110">
                     <Mail className="w-5 h-5" />
                   </a>
                   )}
@@ -490,15 +511,10 @@ const TeamsMembres = () => {
           <div className={`relative bg-white rounded-2xl transition-all duration-300 overflow-hidden ${
             isHovered ? 'transform -translate-y-2' : ''
           }`}>
-            {/* Image large en haut */}
+            {/* Image en haut */}
             <div className="relative h-64 w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-              <img
-                src={member.image}
-                alt={member.name}
-                className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
-              />
+              {Img}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none"></div>
-
               {/* Badge role */}
               <div className="absolute bottom-4 left-4 right-4">
                 <h3 className="text-2xl font-bold text-white mb-1 drop-shadow-lg">{member.name}</h3>
@@ -508,13 +524,11 @@ const TeamsMembres = () => {
 
             <div className="p-6">
               <p className="text-sm text-gray-600 mb-3 text-center whitespace-pre-line">{member.description}</p>
-
               {member.specialty && (
                 <div className="text-xs text-gray-700 font-medium mb-3 text-center">
                   {member.specialty}
                 </div>
               )}
-
               <div className="flex justify-center gap-2">
                 {member.email && (
                 <a
@@ -551,26 +565,18 @@ const TeamsMembres = () => {
         <div className={`bg-white rounded-xl transition-all duration-300 overflow-hidden ${
           isHovered ? 'transform -translate-y-1' : ''
         }`}>
-          {/* Image rectangulaire en haut */}
           <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-            <img
-              src={member.image}
-              alt={member.name}
-              className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
-            />
+            {Img}
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
-
             {/* Icon badge */}
             <div className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center">
               <IconComponent className="w-4 h-4 text-gray-700" />
             </div>
           </div>
-
           <div className="p-4">
             <h3 className="text-base font-bold text-gray-900 mb-1 text-center">{member.name}</h3>
             <p className="text-xs font-semibold text-gray-600 mb-2 text-center">{member.role}</p>
             <p className="text-xs text-gray-500 mb-3 line-clamp-2 whitespace-pre-line text-center">{member.description}</p>
-
             <div className="flex justify-center gap-2">
               {member.email && (
               <a
@@ -655,11 +661,11 @@ const TeamsMembres = () => {
 
       {/* Photo de groupe de l'équipe */}
       <section className="relative w-full overflow-hidden">
-        <img
-          src={teamGroupImages[selectedYear]}
-          alt={`Équipe ${selectedYear}`}
-          className="w-full h-full object-cover"
-        />
+        <Suspense fallback={
+          <div className="w-full h-[280px] bg-gray-200 flex items-center justify-center animate-pulse">Chargement de la photo de l'équipe...</div>
+        }>
+          <TeamGroupImage year={selectedYear} selected={true} />
+        </Suspense>
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
 
         {/* Texte superposé */}
@@ -758,8 +764,8 @@ const TeamsMembres = () => {
           })()}
         </div>
       </section>
-        {/* Navigation par année - En bas */}
-        <YearNavigation />
+      {/* Navigation par année - En bas */}
+      <YearNavigation />
 
       {/* Stats Section */}
       <section className="py-12 bg-white">
@@ -784,8 +790,6 @@ const TeamsMembres = () => {
           </div>
         </div>
       </section>
-
-    
 
       {/* CTA Section */}
       <section className="py-16 bg-gray-200">

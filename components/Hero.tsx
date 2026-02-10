@@ -186,16 +186,12 @@ const Hero = () => {
                 transition={{ delay: 0.35 }}
                 className="mb-6"
               >
-                <span className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-wide">
-                  <span 
-                    className="text-emerald-400 drop-shadow-[0_0_20px_rgba(52,211,153,0.8)] [text-shadow:_0_0_30px_rgb(52_211_153_/_60%),_0_0_60px_rgb(52_211_153_/_40%)]"
-                  >
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide">
+                  <span className="text-emerald-400">
                     GENI
                   </span>
-                  <span className="text-white/50 mx-2">×</span>
-                  <span 
-                    className="text-emerald-400 drop-shadow-[0_0_20px_rgba(52,211,153,0.8)] [text-shadow:_0_0_30px_rgb(52_211_153_/_60%),_0_0_60px_rgb(52_211_153_/_40%)]"
-                  >
+                  <span className="text-white/60 mx-3">×</span>
+                  <span className="text-emerald-400">
                     INSEA
                   </span>
                 </span>
@@ -206,7 +202,7 @@ const Hero = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-lg sm:text-xl text-white/50 font-light tracking-wide mb-4"
+                className="text-lg sm:text-xl text-white font-bold tracking-wide mb-4"
               >
                 {currentHero.tagline}
               </motion.p>
@@ -217,7 +213,7 @@ const Hero = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="text-base sm:text-lg text-white/70 max-w-2xl mx-auto mb-8 leading-relaxed font-light"
+                className="text-base sm:text-lg text-white max-w-2xl mx-auto mb-8 leading-relaxed font-light"
               >
                 {currentHero.description}
               </motion.p>
@@ -235,7 +231,7 @@ const Hero = () => {
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Calendar className="w-5 h-5" />
+                    {/* <Calendar className="w-5 h-5" /> */}
                     <span>{currentHero.cta.text}</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
@@ -257,77 +253,8 @@ const Hero = () => {
         </div>
       </motion.div>
 
-      {/* <div className="absolute bottom-8 left-0 right-0 z-20">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-8">
-            <motion.button
-              onClick={() => { prevSlide(); setIsAutoPlaying(false); }}
-              className="p-2 text-white/40 hover:text-white transition-colors"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </motion.button>
-
-            <div className="flex items-center gap-3">
-              {heroSlides.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className="relative group"
-                >
-                  <div
-                    className={`h-1 rounded-full transition-all duration-500 ${
-                      currentSlide === index
-                        ? 'w-12 bg-white'
-                        : 'w-6 bg-white/30 hover:bg-white/50'
-                    }`}
-                  />
-                  {currentSlide === index && isAutoPlaying && (
-                    <motion.div
-                      className="absolute top-0 left-0 h-1 bg-white/50 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: 7, ease: 'linear' }}
-                      key={`progress-${currentSlide}`}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-
-            <motion.button
-              onClick={() => { nextSlide(); setIsAutoPlaying(false); }}
-              className="p-2 text-white/40 hover:text-white transition-colors"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </motion.button>
-          </div>
-
-          <div className="flex justify-center mt-4">
-            <span className="text-sm text-white/30 font-light tracking-widest">
-              <span className="text-white/60">{String(currentSlide + 1).padStart(2, '0')}</span>
-              <span className="mx-2">/</span>
-              <span>{String(heroSlides.length).padStart(2, '0')}</span>
-            </span>
-          </div>
-        </div>
-      </div> */}
-
-      {/* Indicateur de scroll minimaliste */}
-      <motion.div
-        className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10"
-        style={{ opacity }}
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-white/30 text-xs font-light tracking-widest uppercase">Scroll</span>
-          <div className="w-px h-8 bg-gradient-to-b from-white/40 to-transparent" />
-        </div>
-      </motion.div>
+      
+   
 
     </section>
   );

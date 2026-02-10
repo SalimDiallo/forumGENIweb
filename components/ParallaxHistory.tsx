@@ -57,7 +57,7 @@ const ParallaxHistory = () => {
       subtitle: "Analyse du Projet de Loi de Finances",
       content: "La Conférence PLF réunit experts, institutionnels et étudiants autour des défis actuels et futurs de l'économie nationale.",
       highlight: "INSEA • 07/12/2023",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9QwKFR-edFAh6QHLZ-GnIZCS-Tg1fg1zpJll_jpZOe_yY-G0On6U-XCwCGwNJ3MA6QuM&usqp=CAU",
+      image: "/history/plf23.jpg",
       gradient: "from-yellow-500 via-amber-500 to-orange-500",
       accentColor: "#eab308",
     },
@@ -87,7 +87,7 @@ const ParallaxHistory = () => {
       subtitle: "Insertion professionnelle",
       content: "Visa d'Embauche propose des ateliers pour optimiser son profil professionnel, améliorer CV et préparer les entretiens.",
       highlight: "INSEA • 20/12/2024",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV-94k-YxTYaVm3yDXP38hAreNUVbTsVpJ9OIGAUO82v0qaSWa1hjxy8XpVKOUDTzjZkg&usqp=CAU",
+      image: "/history/visaembauche2024.png",
       gradient: "from-violet-500 via-purple-500 to-fuchsia-500",
       accentColor: "#8b5cf6",
     },
@@ -97,7 +97,7 @@ const ParallaxHistory = () => {
       subtitle: "Découverte carrière",
       content: "Oracle Campus Tour permet aux étudiants de découvrir les opportunités offertes par Oracle, leader mondial des technologies cloud et data.",
       highlight: "INSEA • 17/04/2025",
-      image: "https://www.atalayar.com/media/atalayar/images/2022/05/19/20220519103922068626.jpg",
+      image: "/history/oracle.jpg",
       gradient: "from-red-500 via-rose-500 to-pink-500",
       accentColor: "#ef4444",
     },
@@ -221,7 +221,12 @@ const ParallaxHistory = () => {
                   <div 
                     className="absolute inset-0"
                     style={{
-                      transform: isMobile ? 'scale(1.05)' : `scale(1.1) translate3d(0, ${isActive ? (cardProgress - 0.5) * 10 : 0}%, 0)`,
+                      // Further lower zoom for desktop and mobile for better adaptation
+                      // Previous: desktop: 1.02, mobile: 1.01
+                      // Now: desktop: 1.005, mobile: 1.002
+                      transform: isMobile
+                        ? 'scale(1.002)'
+                        : `scale(1.005) translate3d(0, ${isActive ? (cardProgress - 0.5) * 10 : 0}%, 0)`,
                       willChange: isMobile ? 'auto' : 'transform',
                       transition: isMobile ? 'none' : 'transform 0.7s ease-out',
                     }}

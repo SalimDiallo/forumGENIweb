@@ -4,6 +4,8 @@ import { contactFormSchema } from "./contact.schema";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { actionClient } from "@/lib/safe-action";
+// import { Resend } from "resend";
+// import  { renderContactAdminEmail } from "@/components/EmailTemplate";
 
 export const submitContactForm = actionClient
   .metadata({ actionName: "submit-contact-form" })
@@ -22,6 +24,20 @@ export const submitContactForm = actionClient
         priority: "normal",
       },
     });
+
+    // const resend = new Resend("re_jYAeT3Mj_7kAkEcumeh6FD2H9kiLpdNUz");
+
+    // const { data, error } = await resend.emails.send({
+    //   from: 'forum@gmail.com',
+    //   to: ['sidymamadousalim@gmail.com'],
+    //   subject: 'Nouveau message de contact',
+    //   react: renderContactAdminEmail({nom: parsedInput.name, email: parsedInput.email}),
+    // });
+
+    // console.log(data, error);
+    
+
+
 
     // Revalider la page admin des messages de contact si elle existe
     revalidatePath("/admin/contact-messages");

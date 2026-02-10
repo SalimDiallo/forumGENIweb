@@ -5,6 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Twitter, Linkedin, Instagram, Youtube, Heart, Mail, Phone, MapPin } from 'lucide-react';
+import { TextHoverEffect } from './ui/text-hover-effect';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -18,6 +19,11 @@ const Footer = () => {
   ];
 
   return (
+
+ <>
+   {/* <div className="h-[40rem] flex items-center justify-center">
+      <TextHoverEffect text="FGE INSEA" />
+    </div> */}
     <footer
       className="bg-slate-900 text-white py-10 w-full mt-auto"
       style={{ marginTop: 'auto' }} // For layouts that use flex-col, min-h-screen
@@ -66,6 +72,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+ </>
   );
 };
 
