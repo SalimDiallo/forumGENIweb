@@ -67,36 +67,36 @@ const CareerAdvice = () => {
     }
   ];
 
-  const resources = [
-    {
-      title: "Guide CV 2025",
-      description: "Modèles et conseils pour un CV qui se démarque",
-      link: "/resources/cv-guide.pdf",
-      type: "PDF",
-      icon: Download,
-    },
-    {
-      title: "Préparer son entretien",
-      description: "Questions fréquentes et techniques de réponse",
-      link: "/resources/interview-prep",
-      type: "Article",
-      icon: FileText,
-    },
-    {
-      title: "Négocier son salaire",
-      description: "Stratégies pour négocier efficacement",
-      link: "/resources/salary-negotiation",
-      type: "Vidéo",
-      icon: Video,
-    },
-    {
-      title: "Personal Branding",
-      description: "Construire sa marque personnelle professionnelle",
-      link: "/resources/personal-branding",
-      type: "Webinar",
-      icon: Headphones,
-    }
-  ];
+  // const resources = [
+  //   {
+  //     title: "Guide CV 2025",
+  //     description: "Modèles et conseils pour un CV qui se démarque",
+  //     link: "/resources/cv-guide.pdf",
+  //     type: "PDF",
+  //     icon: Download,
+  //   },
+  //   {
+  //     title: "Préparer son entretien",
+  //     description: "Questions fréquentes et techniques de réponse",
+  //     link: "/resources/interview-prep",
+  //     type: "Article",
+  //     icon: FileText,
+  //   },
+  //   {
+  //     title: "Négocier son salaire",
+  //     description: "Stratégies pour négocier efficacement",
+  //     link: "/resources/salary-negotiation",
+  //     type: "Vidéo",
+  //     icon: Video,
+  //   },
+  //   {
+  //     title: "Personal Branding",
+  //     description: "Construire sa marque personnelle professionnelle",
+  //     link: "/resources/personal-branding",
+  //     type: "Webinar",
+  //     icon: Headphones,
+  //   }
+  // ];
 
   return (
     <section className="py-16 sm:py-20 bg-white">
@@ -166,7 +166,7 @@ const CareerAdvice = () => {
             Ressources gratuites
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {resources.map((resource, index) => {
               const ResIcon = resource.icon;
               return (
@@ -192,7 +192,7 @@ const CareerAdvice = () => {
                 </Link>
               );
             })}
-          </div>
+          </div> */}
         </motion.div>
       </div>
     </section>

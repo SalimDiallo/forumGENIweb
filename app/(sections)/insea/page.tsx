@@ -88,14 +88,14 @@ export default function InseaPage() {
       ficheUrl: "https://insea.ac.ma/files/SDRO_fiche_description_2022.pdf",
       color: "from-emerald-500 to-emerald-600"
     },
-    {
-      title: "Statistique - Demographie",
-      icon: <BarChart3 className="w-8 h-8" />,
-      description: "Formation specialisee en statistique appliquee et analyse demographique.",
-      niveau: "Acces en 2eme annee",
-      ficheUrl: "https://insea.ac.ma/files/Filire_SD_19_24.pdf",
-      color: "from-emerald-500 to-emerald-600"
-    }
+    // {
+    //   title: "Statistique - Demographie",
+    //   icon: <BarChart3 className="w-8 h-8" />,
+    //   description: "Formation specialisee en statistique appliquee et analyse demographique.",
+    //   niveau: "Acces en 2eme annee",
+    //   ficheUrl: "https://insea.ac.ma/files/Filire_SD_19_24.pdf",
+    //   color: "from-emerald-500 to-emerald-600"
+    // }
   ];
 
   const chiffresClés = [

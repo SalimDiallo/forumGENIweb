@@ -22,13 +22,7 @@ export async function POST(req: Request) {
 
     const { nom, email } = result.data;
 
-   
-
-    if (error) {
-      return Response.json({ error }, { status: 500 });
-    }
-
-    return Response.json(data);
+    return Response.json(nom);
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }
