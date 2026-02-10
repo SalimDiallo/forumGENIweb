@@ -20,7 +20,7 @@ const Contact = () => {
     {
       icon: <Mail className="text-black" size={24} />,
       title: "Email",
-      details: "contact@forumgenieentreprises.ma",
+      details: "forum.ge@insea.ac.ma",
       description: "Écrivez-nous pour toute question"
     },
     {

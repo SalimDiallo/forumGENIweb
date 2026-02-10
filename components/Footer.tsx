@@ -45,8 +45,8 @@ const Footer = () => {
           </p>
           <div className="flex flex-col gap-1  text-sm">
             <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-emerald-800" /> INSEA, Rabat</span>
-            <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-emerald-800" /> contact@forum-geni.ma</span>
-            <a href="tel:+212679414877" className="flex items-center gap-2"><Phone className="w-4 h-4 text-emerald-800" /> +212 6 79 41 48 77</a>
+            <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-emerald-800" /> forum.ge@insea.ac.ma</span>
+            <a href="tel:+212679414877" className="flex items-center gap-2"><Phone className="w-4 h-4 text-emerald-800" /> +212 6 79 41 48 78</a>
           </div>
         </div>
 
