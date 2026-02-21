@@ -64,6 +64,42 @@ const bureauMembers2025: BureauMember[] = [
     bureauYear: "2025"
   },
   {
+    id: 8,
+    name: "BELAHCEN Rizki",
+    role: "Chef Cellule Prospection",
+    description: "Prospection, sponsors, partenariats, visibilité, négociation.",
+    image: "/team/2025/rizki.png",
+    level: 3,
+    icon: Award,
+    email: "",
+    linkedin: "https://www.linkedin.com/in/rizkibelahcen/",
+    bureauYear: "2025"
+  },
+  {
+    id: 9,
+    name: "EL ALAMI Salma",
+    role: "Chef Cellule Prospection",
+    description: "Prospection, relations, partenariats, négociation, visibilité.",
+    image: "/team/2025/salma.png",
+    level: 3,
+    icon: Award,
+    email: "",
+    linkedin: "https://www.linkedin.com/in/elalamisalma/",
+    bureauYear: "2025"
+  },
+  {
+    id: 10,
+    name: "AOUIDIDDEN Younes",
+    role: "Chef Cellule Prospection",
+    description: "Prospection, sponsors, relations, visibilité, négociation.",
+    image: "/team/2025/youness.png",
+    level: 3,
+    icon: Award,
+    email: "",
+    linkedin: "",
+    bureauYear: "2025"
+  },
+  {
     id: 4,
     name: "EL-BIYAALI Jabir",
     role: "Chef Cellule Revue",
@@ -109,42 +145,6 @@ const bureauMembers2025: BureauMember[] = [
     icon: Users,
     email: "graneyousra@gmail.com",
     linkedin: "https://www.linkedin.com/in/yousra-grane-63a3702a2/",
-    bureauYear: "2025"
-  },
-  {
-    id: 8,
-    name: "BELAHCEN Rizki",
-    role: "Chef Cellule Prospection",
-    description: "Prospection, sponsors, partenariats, visibilité, négociation.",
-    image: "/team/2025/rizki.png",
-    level: 3,
-    icon: Award,
-    email: "",
-    linkedin: "https://www.linkedin.com/in/rizkibelahcen/",
-    bureauYear: "2025"
-  },
-  {
-    id: 9,
-    name: "EL ALAMI Salma",
-    role: "Chef Cellule Prospection",
-    description: "Prospection, relations, partenariats, négociation, visibilité.",
-    image: "/team/2025/salma.png",
-    level: 3,
-    icon: Award,
-    email: "",
-    linkedin: "https://www.linkedin.com/in/elalamisalma/",
-    bureauYear: "2025"
-  },
-  {
-    id: 10,
-    name: "AOUIDIDDEN Younes",
-    role: "Chef Cellule Prospection",
-    description: "Prospection, sponsors, relations, visibilité, négociation.",
-    image: "/team/2025/youness.png",
-    level: 3,
-    icon: Award,
-    email: "",
-    linkedin: "",
     bureauYear: "2025"
   },
   {
@@ -224,58 +224,8 @@ const bureauMembers2026: BureauMember[] = [
     linkedin: "https://www.linkedin.com/in/amal-l-142799279/",
     bureauYear: "2026"
   },
-  // Chefs Conférence
-  {
-    id: 1008,
-    name: "Hala Ben Chama",
-    role: "Chef Cellule Conférence",
-    description: "Biostatistique Démographie et Big Data",
-    image: "/team/2026/hala.jpg",
-    level: 3,
-    icon: Calendar,
-    email: "benchamahala@gmail.com",
-    linkedin: "https://www.linkedin.com/in/hala-ben-chama-070960320/",
-    bureauYear: "2026"
-  },
-  {
-    id: 1009,
-    name: "Bahan Karafa Ashley Kevin",
-    role: "Chef Cellule Conférence",
-    description: "Actuariat Finance",
-    image: "/team/2026/kevin.jpg",
-    level: 3,
-    icon: Calendar,
-    email: "Kvnbahan01@gmail.com",
-    linkedin: "https://www.linkedin.com/in/karafa-ashley-kevin-bahan-5302ab337?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
-    bureauYear: "2026"
-  },
-  // Chefs Communication
-  {
-    id: 1010,
-    name: "Ihssan Malki Lhlaybi",
-    role: "Chef Cellule Communication",
-    description: "Actuariat Finance",
-    image: "/team/2026/ihssan.jpg",
-    level: 3,
-    icon: Users,
-    email: "ihssanemalki61@gmail.com",
-    linkedin: "https://www.linkedin.com/in/ihssan-malki-lhlaybi-b63606264?utm_source=share_via&utm_content=profile&utm_medium=member_android",
-    bureauYear: "2026"
-  },
-  {
-    id: 1011,
-    name: "Diallo Sidy Mohamed Salim",
-    role: "Chef Cellule Communication",
-    description: "Data and Software Engineering",
-    image: "/team/2026/salim.jpg",
-    level: 3,
-    icon: Users,
-    email: "sidymamadousalim@gmail.com",
-    linkedin: "https://www.linkedin.com/in/sidy-mohamed-salim-diallo-855696264/",
-    bureauYear: "2026"
-  },
-  // Responsables Prospection
-  {
+   // Responsables Prospection
+   {
     id: 1004,
     name: "Salma Chkoubi",
     role: "Responsable Prospection",
@@ -321,6 +271,57 @@ const bureauMembers2026: BureauMember[] = [
     icon: Award,
     email: "",
     linkedin: "https://www.linkedin.com/in/saida-sessid-a6397b326?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
+    bureauYear: "2026"
+  },
+   // Chefs Communication
+   {
+    id: 1010,
+    name: "Ihssan Malki Lhlaybi",
+    role: "Chef Cellule Communication",
+    description: "Actuariat Finance",
+    image: "/team/2026/ihssan.jpg",
+    level: 3,
+    icon: Users,
+    email: "ihssanemalki61@gmail.com",
+    linkedin: "https://www.linkedin.com/in/ihssan-malki-lhlaybi-b63606264?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+    bureauYear: "2026"
+  },
+  {
+    id: 1011,
+    name: "Diallo Sidy Mohamed Salim",
+    role: "Chef Cellule Communication",
+    description: "Data and Software Engineering",
+    image: "/team/2026/salim.jpg",
+    level: 3,
+    icon: Users,
+    email: "sidymamadousalim@gmail.com",
+    linkedin: "https://www.linkedin.com/in/sidy-mohamed-salim-diallo-855696264/",
+    bureauYear: "2026"
+  },
+
+  // Chefs Conférence
+  {
+    id: 1008,
+    name: "Hala Ben Chama",
+    role: "Chef Cellule Conférence",
+    description: "Biostatistique Démographie et Big Data",
+    image: "/team/2026/hala.jpg",
+    level: 3,
+    icon: Calendar,
+    email: "benchamahala@gmail.com",
+    linkedin: "https://www.linkedin.com/in/hala-ben-chama-070960320/",
+    bureauYear: "2026"
+  },
+  {
+    id: 1009,
+    name: "Bahan Karafa Ashley Kevin",
+    role: "Chef Cellule Conférence",
+    description: "Actuariat Finance",
+    image: "/team/2026/kevin.jpg",
+    level: 3,
+    icon: Calendar,
+    email: "Kvnbahan01@gmail.com",
+    linkedin: "https://www.linkedin.com/in/karafa-ashley-kevin-bahan-5302ab337?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
     bureauYear: "2026"
   },
   // Chefs Revue

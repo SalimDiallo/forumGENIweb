@@ -16,7 +16,7 @@ const ParallaxHistory = () => {
       title: "L'Étincelle",
       subtitle: "Le Commencement",
       content: "Tout a commencé avec une vision audacieuse : créer un pont entre l'excellence académique de l'INSEA et le monde professionnel. Des étudiants passionnés ont osé rêver grand.",
-      highlight: "50 participants",
+      highlight: "VISION",
       image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1920&q=80",
       gradient: "from-amber-500 via-orange-500 to-red-500",
       accentColor: "#f59e0b",

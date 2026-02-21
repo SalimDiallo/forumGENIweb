@@ -1,4 +1,7 @@
+'use client';
+
 import { Users, Building, Calendar, Award } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 const stats = [
   {
@@ -24,33 +27,109 @@ const stats = [
   }
 ];
 
+// Composant pour animer le compteur avec easing
+const AnimatedCounter = ({ end, suffix = '' }: { end: number; suffix?: string }) => {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const counterRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<number | undefined>(undefined);
+  const startTimeRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (counterRef.current) {
+      observer.observe(counterRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const duration = 2500; // 2.5 secondes pour plus de fluidité
+
+    // Fonction d'easing pour une animation plus naturelle (ease-out)
+    const easeOutQuart = (t: number): number => {
+      return 1 - Math.pow(1 - t, 4);
+    };
+
+    const animate = (currentTime: number) => {
+      if (!startTimeRef.current) {
+        startTimeRef.current = currentTime;
+      }
+
+      const elapsed = currentTime - startTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Applique l'easing pour un mouvement fluide
+      const easedProgress = easeOutQuart(progress);
+      const currentCount = Math.floor(easedProgress * end);
+
+      setCount(currentCount);
+
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(animate);
+      } else {
+        setCount(end); // S'assurer que la valeur finale est exacte
+      }
+    };
+
+    frameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, [isVisible, end]);
+
+  return (
+    <div ref={counterRef} className="text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-900 tabular-nums mb-2">
+      {count.toLocaleString()}<span className="text-emerald-600">{suffix}</span>
+    </div>
+  );
+};
+
 const Stats = () => {
   return (
-    <section className="py-20 bg-white border-y border-slate-100">
-      <div className="container mx-auto px-4">
-        {/* En-tête épuré */}
-        <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900 mb-4 tracking-tight">
-           Des résultats qui parlent
+    <section className="py-16 md:py-20 bg-white">
+      <div className="container mx-auto px-4 sm:px-6">
+        {/* En-tête minimal */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900 mb-3">
+            L'impact en chiffres
           </h2>
-          <p className="text-md text-slate-500 max-w-xl mx-auto font-normal">
-            L’impact concret de l’engagement associatif pour amplifier les opportunités et la réussite professionnelle.
+          <p className="text-sm md:text-base text-neutral-600 max-w-2xl mx-auto">
+            Des résultats concrets qui témoignent de notre engagement et de notre impact.
           </p>
         </div>
-        {/* Statistiques sobres */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+
+        {/* Statistiques - Grand format professionnel */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 lg:gap-12">
           {stats.map((stat, idx) => (
             <div
               key={idx}
-              className="flex flex-col items-center gap-3"
+              className="flex flex-col items-center text-center group"
             >
-              <div className="mb-2 flex items-center justify-center w-12 h-12 rounded-full bg-slate-50 border border-slate-200">
-                <stat.icon size={28} className="text-emerald-700" />
+              {/* Icône en noir */}
+              <div className="mb-4 flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 text-neutral-900 transition-colors group-hover:bg-neutral-900 group-hover:text-white">
+                <stat.icon size={20} strokeWidth={1.5} />
               </div>
-              <div className="text-3xl font-bold text-slate-900 tabular-nums">
-                {stat.number.toLocaleString()}<span className="text-emerald-600 font-semibold">{stat.suffix}</span>
-              </div>
-              <div className="text-slate-700 text-sm font-medium text-center tracking-tight">
+
+              {/* Grand nombre avec animation - Focus principal */}
+              <AnimatedCounter end={stat.number} suffix={stat.suffix} />
+
+              {/* Label sobre */}
+              <div className="text-sm md:text-base text-neutral-600 font-medium">
                 {stat.label}
               </div>
             </div>
