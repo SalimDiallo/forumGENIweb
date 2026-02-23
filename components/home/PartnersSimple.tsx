@@ -383,12 +383,12 @@ const partners: Partner[] = [
     website: "#",
   },
 
-  // {
-  //   id: 62,
-  //   name: "LMV",
-  //   logo: "/partners/lmv.png",
-  //   website: "#",
-  // },
+  {
+    id: 62,
+    name: "La Marocaine Vie",
+    logo: "/partners/mvc.png",
+    website: "#",
+  },
   {
     id: 63,
     name: "PwC",
