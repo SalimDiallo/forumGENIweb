@@ -49,9 +49,9 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
     if (videoRef.current) {
       // Si mobile ou connexion faible, augmentez peu la vitesse (préserve expérience)
       if (isMobile) {
-        videoRef.current.playbackRate = 2.0;
+        videoRef.current.playbackRate = 6.0;
       } else {
-        videoRef.current.playbackRate = 2.5; // Desktop : rapide
+        videoRef.current.playbackRate = 5.5; // Desktop : rapide
       }
     }
   }, [isMobile]);
