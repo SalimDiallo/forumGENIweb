@@ -322,12 +322,12 @@ const partners: Partner[] = [
     logo: "/partners/ulaval.png",
     website: "https://www.ulaval.ca/",
   },
-  {
-    id: 52,
-    name: "NextXP",
-    logo: "/partners/nextxp.png",
-    website: "https://www.nextxp.io/",
-  },
+  // {
+  //   id: 52,
+  //   name: "NextXP",
+  //   logo: "/partners/nextxp.png",
+  //   website: "https://www.nextxp.io/",
+  // },
   {
     id: 53,
     name: "OKADIA",
@@ -382,6 +382,32 @@ const partners: Partner[] = [
     logo: "/partners/ddm.png",
     website: "#",
   },
+
+  // {
+  //   id: 62,
+  //   name: "LMV",
+  //   logo: "/partners/lmv.png",
+  //   website: "#",
+  // },
+  {
+    id: 63,
+    name: "PwC",
+    logo: "/partners/pwc.png",
+    website: "https://www.pwc.com/ma/",
+  },
+  {
+    id: 64,
+    name: "Maroclear",
+    logo: "/partners/maroclear.png",
+    website: "https://www.maroclear.co.ma/",
+  },
+  {
+    id: 65,
+    name: "Atlantic Re",
+    logo: "/partners/atlanticre.png",
+    website: "https://www.atlanticre.ma/",
+  },
+  
 ];
 
 const containerVariants = {
