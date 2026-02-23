@@ -37,14 +37,16 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
     return {
       id: testimonial.id,
       name: testimonial.name,
-      role: testimonial.position || 'Membre',
+      // Remove membre
+      role: testimonial.position ? testimonial.position : '', // remove default "Membre"
       company: testimonial.company || '',
       video: testimonial.videoUrl,
       embedUrl: embedUrl,
       thumbnail: thumbnail || '/testimonials/default-thumb.jpg',
       quote: testimonial.quote || 'Une expérience formidable avec l\'association GENI.',
       year: testimonial.graduationYear ? `Promo ${testimonial.graduationYear}` : '',
-      achievement: testimonial.isFeatured ? 'Témoignage vedette' : 'Membre actif',
+      // remove achievement badge from card UI below
+      achievement: testimonial.isFeatured ? 'Témoignage vedette' : '',
     };
   });
 
@@ -134,7 +136,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
           {/* Carousel Track */}
           <div 
             ref={carouselRef}
-            className="flex items-center justify-center gap-4 md:gap-6 py-8 px-16 md:px-24"
+            className="flex items-center justify-center gap-6 md:gap-10 py-8 px-4 md:px-10"
           >
             <AnimatePresence mode="popLayout">
               {visibleTestimonials.map((testimonial, idx) => {
@@ -152,14 +154,15 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                     }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className={`flex-shrink-0 w-72 md:w-80 lg:w-96 ${
+                    // enlarged cards: much wider
+                    className={`flex-shrink-0 w-[23rem] md:w-[28rem] lg:w-[34rem] ${
                       isCenter ? 'cursor-pointer' : 'cursor-default pointer-events-none md:pointer-events-auto'
                     }`}
                     onClick={() => isCenter && setPlayingVideo(testimonial.id)}
                   >
                   <div className={`bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border transition-all duration-300 ${
                     isCenter 
-                      ? 'border-emerald-500/30 shadow-lg' 
+                      ? 'border-white/10 shadow-lg' 
                       : 'border-white/5'
                   }`}>
                       {/* Video Thumbnail */}
@@ -185,33 +188,29 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                           </div>
                         </div>
 
-                        {/* Achievement Badge */}
-                        {isCenter && (
-                          <div className="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                            {testimonial.achievement}
-                          </div>
-                        )}
+                        {/* Remove Achievement Badge on card */}
                       </div>
 
                       {/* Content */}
-                      <div className="p-5 md:p-6">
+                      <div className="p-5 md:p-7">
                         <div className="flex items-start gap-3 mb-4">
-                          <Quote className="text-emerald-500 flex-shrink-0 mt-1 w-4 h-4" />
-                          <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">
+                          <Quote className="text-gray-300 flex-shrink-0 mt-1 w-4 h-4" />
+                          <p className="text-gray-300 text-base leading-relaxed line-clamp-3">
                             "{testimonial.quote}"
                           </p>
                         </div>
 
                         <div className="border-t border-white/10 pt-4">
                           <h3 className="text-white font-bold text-lg">{testimonial.name}</h3>
-                          {testimonial.role && (
+                          {/* Enlever role affichage "Membre" et couleur verte */}
+                          {testimonial.role && testimonial.role.trim() && (
                             <p className="text-gray-400 text-sm">{testimonial.role}</p>
                           )}
                           {testimonial.company && (
-                            <p className="text-emerald-400 text-sm font-medium">{testimonial.company}</p>
+                            <p className="text-gray-300 text-sm font-medium">{testimonial.company}</p>
                           )}
                           {testimonial.year && (
-                            <span className="inline-block mt-2 text-emerald-500 text-xs font-semibold bg-emerald-500/10 px-3 py-1 rounded-full">
+                            <span className="inline-block mt-2 text-gray-400 text-xs font-semibold bg-white/5 px-3 py-1 rounded-full">
                               {testimonial.year}
                             </span>
                           )}
@@ -232,7 +231,7 @@ const VideoTestimonials = ({ testimonials }: VideoTestimonialsProps) => {
                 onClick={() => setCurrentIndex(index)}
                 className={`transition-all duration-300 rounded-full ${
                   index === currentIndex
-                    ? 'w-8 h-2 bg-emerald-500'
+                    ? 'w-8 h-2 bg-white'
                     : 'w-2 h-2 bg-white/30 hover:bg-white/50'
                 }`}
               />
