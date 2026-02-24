@@ -2,7 +2,6 @@
 import type { Metadata } from 'next';
 import { Raleway } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Providers from './Providers';
 import { Toaster } from 'sonner';
@@ -20,14 +19,12 @@ const raleway = Raleway({
 function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [videoSource, setVideoSource] = React.useState("/intro.mp4");
-  const [isMobile, setIsMobile] = React.useState(false);
 
   // Détecte mobile pour charger une version plus light
   React.useEffect(() => {
     const mobile = typeof window !== "undefined"
       ? /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       : false;
-    setIsMobile(mobile);
 
     if (mobile) {
       setVideoSource("/intro-low.mp4");
@@ -45,21 +42,17 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
   // Accélère la vidéo pour durer 5 secondes
   React.useEffect(() => {
     if (videoRef.current) {
-      // On utilise l'événement loadedmetadata pour régler le playbackRate selon la durée réelle
       const handleLoadedMeta = () => {
         if (videoRef.current) {
           const duration = videoRef.current.duration;
-          // Pour éviter les divisions par zéro ou durées inconnues, playbackRate = durée réelle / 5 (sec)
           if (duration && duration > 0) {
             videoRef.current.playbackRate = duration / 5;
           } else {
-            // fallback, on garde valeur très rapide
             videoRef.current.playbackRate = 5.0;
           }
         }
       };
       videoRef.current.addEventListener("loadedmetadata", handleLoadedMeta);
-      // Si metadata déjà chargé, appelez tout de suite
       if (videoRef.current.readyState >= 1) {
         handleLoadedMeta();
       }
@@ -70,15 +63,19 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
     }
   }, [videoSource]);
 
-  // Démarrage automatique de la vidéo si possible
+  // Force la vidéo à démarrer automatiquement, SANS aucun bouton "play"
   React.useEffect(() => {
     if (videoRef.current) {
-      const promise = videoRef.current.play();
-      if (promise && promise.catch) {
-        promise.catch(() => {
-          // Certains navigateurs peuvent refuser le play auto (muted uniquement donc ça va)
-        });
-      }
+      // Unmute strict laissé, autoplay natif HTML5, pas de boutons
+      videoRef.current.controls = false;
+      try {
+        const playPromise = videoRef.current.play();
+        if (playPromise && typeof playPromise.then === "function") {
+          playPromise.catch(() => {
+            // certains navigateurs très stricts: rien à faire, on garde muted autoplay
+          });
+        }
+      } catch {/* ignore */}
     }
   }, [videoSource]);
 
@@ -100,6 +97,7 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
         playsInline
         poster="/logo-symbol.png"
         onEnded={onEnd}
+        controls={false}
         style={{
           transition: 'filter 0.3s',
           filter: 'brightness(1.10) contrast(1.08)',
@@ -108,6 +106,7 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
           height: '100vh',
         }}
         preload="auto"
+        tabIndex={-1}
       >
         {/* Fallback image si vidéo ne charge pas sur vieux navigateur */}
         <img src="/logo-symbol.png" alt="Forum GENI Entreprises" />
