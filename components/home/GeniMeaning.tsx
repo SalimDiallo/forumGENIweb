@@ -129,8 +129,7 @@ const GeniMeaning = () => {
             transition={{ duration: 0.6, delay: 0.7 }}
           >
             <p className="text-neutral-300 text-base md:text-lg leading-relaxed">
-              Une institution d'excellence qui forme les ingénieurs de demain,
-              alliant rigueur académique, innovation technologique et ouverture sur le monde professionnel.
+              Un forum d’excellence qui fait le lien entre les étudiants ingénieurs et le monde professionnel, ouvrant la voie aux opportunités, à la collaboration et à l’innovation.
             </p>
           </motion.div>
         </div>
