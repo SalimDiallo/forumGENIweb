@@ -16,7 +16,7 @@ import { partners } from '@/lib/data/partners.data';
       className="group block relative flex-shrink-0"
       tabIndex={0}
     >
-      <div className="relative bg-white border border-neutral-200/60 rounded-lg p-5 md:p-7 h-28 md:h-32 w-[162px] md:w-[192px] flex items-center justify-center
+      <div className="relative bg-white border border-neutral-200/60 rounded-lg p-5 md:p-7 h-28 md:h-32  flex items-center justify-center
         transition-all duration-300 hover:border-neutral-300 hover:shadow-lg hover:shadow-neutral-900/5 hover:-translate-y-0.5"
       >
         <div className="relative w-full h-full flex items-center justify-center">
