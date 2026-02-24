@@ -16,7 +16,7 @@ const raleway = Raleway({
   weight: ['300', '400', '500', '600', '700'],
 });
 
-// Optimisation du splash pour mobiles et faibles connexions
+// Splash vidéo forcée à 5s max, quelle que soit la durée réelle de la vidéo
 function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [videoSource, setVideoSource] = React.useState("/intro.mp4");
@@ -24,15 +24,13 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
 
   // Détecte mobile pour charger une version plus light
   React.useEffect(() => {
-    // Option 1: User agent check (simple, non exhaustif)
     const mobile = typeof window !== "undefined"
       ? /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       : false;
     setIsMobile(mobile);
 
-    // Si besoin, version basse qualité dispo en /intro-low.mp4 sinon fallback
     if (mobile) {
-      setVideoSource("/intro-low.mp4"); // Doit être pré-générée (mp4 optimisé ~360p, low bitrate)
+      setVideoSource("/intro-low.mp4");
     }
   }, []);
 
@@ -44,30 +42,53 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
     };
   }, []);
 
-  // Rend la vidéo plus fluide et accélérée (mais respect du device et perf faible)
+  // Accélère la vidéo pour durer 5 secondes
   React.useEffect(() => {
     if (videoRef.current) {
-      // Si mobile ou connexion faible, augmentez peu la vitesse (préserve expérience)
-      if (isMobile) {
-        videoRef.current.playbackRate = 5.0;
-      } else {
-        videoRef.current.playbackRate = 5.0; // Desktop : rapide
+      // On utilise l'événement loadedmetadata pour régler le playbackRate selon la durée réelle
+      const handleLoadedMeta = () => {
+        if (videoRef.current) {
+          const duration = videoRef.current.duration;
+          // Pour éviter les divisions par zéro ou durées inconnues, playbackRate = durée réelle / 5 (sec)
+          if (duration && duration > 0) {
+            videoRef.current.playbackRate = duration / 5;
+          } else {
+            // fallback, on garde valeur très rapide
+            videoRef.current.playbackRate = 5.0;
+          }
+        }
+      };
+      videoRef.current.addEventListener("loadedmetadata", handleLoadedMeta);
+      // Si metadata déjà chargé, appelez tout de suite
+      if (videoRef.current.readyState >= 1) {
+        handleLoadedMeta();
       }
+      return () => {
+        if (videoRef.current)
+          videoRef.current.removeEventListener("loadedmetadata", handleLoadedMeta);
+      };
     }
-  }, [isMobile]);
+  }, [videoSource]);
 
-  // ==> CHARGEMENT AUTO dès le montage (dès que composant monté, lance la vidéo si possible)
+  // Démarrage automatique de la vidéo si possible
   React.useEffect(() => {
-    // Pour s'assurer que la vidéo démarre TOUT DE SUITE si possible
     if (videoRef.current) {
       const promise = videoRef.current.play();
       if (promise && promise.catch) {
         promise.catch(() => {
-          // Sur certains navigateurs le play auto peut échouer sans interaction; ce n'est pas grave ici (muted)
+          // Certains navigateurs peuvent refuser le play auto (muted uniquement donc ça va)
         });
       }
     }
   }, [videoSource]);
+
+  // Déclencher onEnd automatiquement au bout de 5 secondes au maximum (sûreté)
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (onEnd) onEnd();
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [onEnd]);
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black">
@@ -77,8 +98,7 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
         autoPlay
         muted
         playsInline
-        // Si possible, force un démarrage rapide/bas débit pour mobile+faible réseau
-        poster="/logo-symbol.png" // Affiche un fallback rapide en attendant le chargement vidéo
+        poster="/logo-symbol.png"
         onEnded={onEnd}
         style={{
           transition: 'filter 0.3s',
@@ -104,7 +124,6 @@ export default function RootLayout({
   const [splashDone, setSplashDone] = React.useState(false);
 
   React.useEffect(() => {
-    // Si déjà vu dans la session, ne pas remontrer le splash (optionnel)
     if (typeof window !== "undefined" && window.sessionStorage.getItem('splash-done')) {
       setSplashDone(true);
     }
