@@ -4,11 +4,9 @@ import Stats from '@/components/Stats';
 import Link from 'next/link';
 import UpcomingEventsWrapper from '@/components/home/UpcomingEventsWrapper';
 import VideoTestimonialsWrapper from '@/components/home/VideoTestimonialsWrapper';
-import PartnersSimple from '@/components/home/PartnersSimple';
 
 // Lazy loading des composants non critiques
 const Partners = lazy(() => import('@/components/home/Partners'));
-const TeamsMembres = lazy(() => import('@/components/TeamsMembres'));
 
 // Composant de loading simple
 const SimpleLoader = () => (
@@ -61,7 +59,7 @@ export default function Home() {
 
       
       <Suspense fallback={<SimpleLoader />}>
-        <PartnersSimple />
+        <Partners />
       </Suspense>
 
       <Suspense fallback={<SimpleLoader />}>
