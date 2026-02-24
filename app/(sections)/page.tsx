@@ -4,6 +4,9 @@ import Stats from '@/components/Stats';
 import Link from 'next/link';
 import UpcomingEventsWrapper from '@/components/home/UpcomingEventsWrapper';
 import VideoTestimonialsWrapper from '@/components/home/VideoTestimonialsWrapper';
+import PresidentMessage from '@/components/home/PresidentMessage';
+import AboutSection from '@/components/home/AboutSection';
+import GeniMeaning from '@/components/home/GeniMeaning';
 
 // Lazy loading des composants non critiques
 const Partners = lazy(() => import('@/components/home/Partners'));
@@ -57,10 +60,17 @@ export default function Home() {
 
       <Stats />
 
+      <PresidentMessage />
+
+
       
       <Suspense fallback={<SimpleLoader />}>
         <Partners />
       </Suspense>
+
+        <AboutSection />
+
+        <GeniMeaning />
 
       <Suspense fallback={<SimpleLoader />}>
         <VideoTestimonialsWrapper />
