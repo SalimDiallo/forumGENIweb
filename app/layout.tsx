@@ -1,6 +1,8 @@
 "use client"
+import type { Metadata } from 'next';
 import { Raleway } from 'next/font/google';
 import './globals.css';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Providers from './Providers';
 import { Toaster } from 'sonner';
@@ -14,19 +16,23 @@ const raleway = Raleway({
   weight: ['300', '400', '500', '600', '700'],
 });
 
-// Splash vidéo avec vitesse accélérée
+// Optimisation du splash pour mobiles et faibles connexions
 function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [videoSource, setVideoSource] = React.useState("/intro-low.mp4");
+  const [isMobile, setIsMobile] = React.useState(false);
 
   // Détecte mobile pour charger une version plus light
   React.useEffect(() => {
+    // Option 1: User agent check (simple, non exhaustif)
     const mobile = typeof window !== "undefined"
       ? /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       : false;
+    setIsMobile(mobile);
 
+    // Si besoin, version basse qualité dispo en /intro-low.mp4 sinon fallback
     if (mobile) {
-      setVideoSource("/intro-low.mp4");
+      setVideoSource("/intro-low.mp4"); // Doit être pré-générée (mp4 optimisé ~360p, low bitrate)
     }
   }, []);
 
@@ -38,46 +44,28 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
     };
   }, []);
 
-  // Accélère la vitesse de lecture de la vidéo (2x plus rapide)
+  // Rend la vidéo plus fluide et accélérée (mais respect du device et perf faible)
   React.useEffect(() => {
     if (videoRef.current) {
-      const handleLoadedMeta = () => {
-        if (videoRef.current) {
-          // Vitesse 2x pour accélérer la vidéo (ajustable selon vos besoins)
-          videoRef.current.playbackRate = 2.0;
-        }
-      };
-      videoRef.current.addEventListener("loadedmetadata", handleLoadedMeta);
-      if (videoRef.current.readyState >= 1) {
-        handleLoadedMeta();
+      // Si mobile ou connexion faible, augmentez peu la vitesse (préserve expérience)
+      if (isMobile) {
+        videoRef.current.playbackRate = 5.0;
+      } else {
+        videoRef.current.playbackRate = 5.0; // Desktop : rapide
       }
-      return () => {
-        if (videoRef.current)
-          videoRef.current.removeEventListener("loadedmetadata", handleLoadedMeta);
-      };
     }
-  }, [videoSource]);
+  }, [isMobile]);
 
-  // Force la vidéo à démarrer automatiquement, SANS aucun bouton "play"
+  // ==> CHARGEMENT AUTO dès le montage (dès que composant monté, lance la vidéo si possible)
   React.useEffect(() => {
+    // Pour s'assurer que la vidéo démarre TOUT DE SUITE si possible
     if (videoRef.current) {
-      videoRef.current.controls = false;
-
-      // Tentative de lecture automatique
-      const attemptPlay = async () => {
-        try {
-          await videoRef.current?.play();
-        } catch (error) {
-          // Si autoplay échoue, on réessaie après un court délai
-          setTimeout(() => {
-            videoRef.current?.play().catch(() => {
-              // En dernier recours, on garde la vidéo en muted autoplay
-            });
-          }, 100);
-        }
-      };
-
-      attemptPlay();
+      const promise = videoRef.current.play();
+      if (promise && promise.catch) {
+        promise.catch(() => {
+          // Sur certains navigateurs le play auto peut échouer sans interaction; ce n'est pas grave ici (muted)
+        });
+      }
     }
   }, [videoSource]);
 
@@ -89,22 +77,17 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
         autoPlay
         muted
         playsInline
-        poster="/logo-symbol.png"
+        // Si possible, force un démarrage rapide/bas débit pour mobile+faible réseau
+        poster="/logo-symbol.png" // Affiche un fallback rapide en attendant le chargement vidéo
         onEnded={onEnd}
-        controls={false}
-        disablePictureInPicture
-        controlsList="nodownload nofullscreen noremoteplayback"
         style={{
           transition: 'filter 0.3s',
           filter: 'brightness(1.10) contrast(1.08)',
           objectFit: 'cover',
           width: '100vw',
           height: '100vh',
-          pointerEvents: 'none',
         }}
         preload="auto"
-        tabIndex={-1}
-        className="[&::-webkit-media-controls]:hidden [&::-webkit-media-controls-enclosure]:hidden [&::-webkit-media-controls-panel]:hidden"
       >
         {/* Fallback image si vidéo ne charge pas sur vieux navigateur */}
         <img src="/logo-symbol.png" alt="Forum GENI Entreprises" />
@@ -121,6 +104,7 @@ export default function RootLayout({
   const [splashDone, setSplashDone] = React.useState(false);
 
   React.useEffect(() => {
+    // Si déjà vu dans la session, ne pas remontrer le splash (optionnel)
     if (typeof window !== "undefined" && window.sessionStorage.getItem('splash-done')) {
       setSplashDone(true);
     }
