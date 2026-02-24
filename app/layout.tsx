@@ -18,7 +18,7 @@ const raleway = Raleway({
 // Splash vidéo forcée à 5s max, quelle que soit la durée réelle de la vidéo
 function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
   const videoRef = React.useRef<HTMLVideoElement>(null);
-  const [videoSource, setVideoSource] = React.useState("/intro.mp4");
+  const [videoSource, setVideoSource] = React.useState("/intro-low.mp4");
 
   // Détecte mobile pour charger une version plus light
   React.useEffect(() => {

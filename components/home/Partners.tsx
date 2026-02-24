@@ -65,7 +65,7 @@ const PartnersSimple = () => {
 
         {/* Mobile: Grid view */}
         <div className="md:hidden">
-          <div className="grid grid-cols-2 gap-2 w-full justify-center">
+          <div className="grid grid-cols-3 gap-2 w-full justify-center">
             {partners.map((partner) => (
               <PartnerCard key={partner.id} partner={partner} />
             ))}
