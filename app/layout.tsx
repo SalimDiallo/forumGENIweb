@@ -1,5 +1,4 @@
 "use client"
-import type { Metadata } from 'next';
 import { Raleway } from 'next/font/google';
 import './globals.css';
 import Footer from '@/components/Footer';
@@ -15,7 +14,7 @@ const raleway = Raleway({
   weight: ['300', '400', '500', '600', '700'],
 });
 
-// Splash vidéo forcée à 5s max, quelle que soit la durée réelle de la vidéo
+// Splash vidéo avec vitesse accélérée
 function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [videoSource, setVideoSource] = React.useState("/intro-low.mp4");
@@ -39,17 +38,13 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
     };
   }, []);
 
-  // Accélère la vidéo pour durer 5 secondes
+  // Accélère la vitesse de lecture de la vidéo (2x plus rapide)
   React.useEffect(() => {
     if (videoRef.current) {
       const handleLoadedMeta = () => {
         if (videoRef.current) {
-          const duration = videoRef.current.duration;
-          if (duration && duration > 0) {
-            videoRef.current.playbackRate = duration / 5;
-          } else {
-            videoRef.current.playbackRate = 5.0;
-          }
+          // Vitesse 2x pour accélérer la vidéo (ajustable selon vos besoins)
+          videoRef.current.playbackRate = 2.0;
         }
       };
       videoRef.current.addEventListener("loadedmetadata", handleLoadedMeta);
@@ -66,26 +61,25 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
   // Force la vidéo à démarrer automatiquement, SANS aucun bouton "play"
   React.useEffect(() => {
     if (videoRef.current) {
-      // Unmute strict laissé, autoplay natif HTML5, pas de boutons
       videoRef.current.controls = false;
-      try {
-        const playPromise = videoRef.current.play();
-        if (playPromise && typeof playPromise.then === "function") {
-          playPromise.catch(() => {
-            // certains navigateurs très stricts: rien à faire, on garde muted autoplay
-          });
+
+      // Tentative de lecture automatique
+      const attemptPlay = async () => {
+        try {
+          await videoRef.current?.play();
+        } catch (error) {
+          // Si autoplay échoue, on réessaie après un court délai
+          setTimeout(() => {
+            videoRef.current?.play().catch(() => {
+              // En dernier recours, on garde la vidéo en muted autoplay
+            });
+          }, 100);
         }
-      } catch {/* ignore */}
+      };
+
+      attemptPlay();
     }
   }, [videoSource]);
-
-  // Déclencher onEnd automatiquement au bout de 5 secondes au maximum (sûreté)
-  React.useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (onEnd) onEnd();
-    }, 5000);
-    return () => clearTimeout(timeout);
-  }, [onEnd]);
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black">
@@ -98,15 +92,19 @@ function VideoSplashScreen({ onEnd }: { onEnd: () => void }) {
         poster="/logo-symbol.png"
         onEnded={onEnd}
         controls={false}
+        disablePictureInPicture
+        controlsList="nodownload nofullscreen noremoteplayback"
         style={{
           transition: 'filter 0.3s',
           filter: 'brightness(1.10) contrast(1.08)',
           objectFit: 'cover',
           width: '100vw',
           height: '100vh',
+          pointerEvents: 'none',
         }}
         preload="auto"
         tabIndex={-1}
+        className="[&::-webkit-media-controls]:hidden [&::-webkit-media-controls-enclosure]:hidden [&::-webkit-media-controls-panel]:hidden"
       >
         {/* Fallback image si vidéo ne charge pas sur vieux navigateur */}
         <img src="/logo-symbol.png" alt="Forum GENI Entreprises" />
