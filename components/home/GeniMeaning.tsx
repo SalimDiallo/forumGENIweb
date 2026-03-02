@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
 
 const GeniMeaning = () => {
@@ -12,17 +11,17 @@ const GeniMeaning = () => {
   const letters = [
     {
       letter: 'G',
-      word: 'Grande',
+      word: 'Grandes',
       delay: 0
     },
     {
       letter: 'E',
-      word: 'École',
+      word: 'Écoles',
       delay: 0.1
     },
     {
       letter: 'N',
-      word: 'Nationale',
+      word: 'Nationales',
       delay: 0.2
     },
     {

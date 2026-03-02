@@ -1,12 +1,10 @@
 // components/home/PartnersSimple.tsx
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import { partners } from '@/lib/data/partners.data';
 import { motion } from 'framer-motion';
 import { ExternalLink, Handshake } from 'lucide-react';
 import Link from 'next/link';
-import { partners } from '@/lib/data/partners.data';
 import { InfiniteScrollRow, PartnerCard } from './InfininityScrollPartner';
 
 // Divide partners array into 3 rows, round robin
@@ -18,7 +16,7 @@ function chunkArray<T>(array: T[], parts: number): T[][] {
   return res;
 }
 
-const ROWS = 3;
+const ROWS = 5;
 // Different durations per row for visual appeal (in seconds)
 const ROW_DURATIONS = [140, 160,180];
 
