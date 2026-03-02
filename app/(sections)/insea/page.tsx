@@ -1,32 +1,24 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
 import PageHero from '@/components/PageHero';
+import { motion } from 'framer-motion';
 import {
-  GraduationCap,
-  Users,
   Award,
-  Globe,
-  Sparkles,
-  Target,
-  Brain,
-  LineChart,
-  Code,
-  Calculator,
   BarChart3,
-  Briefcase,
-  MapPin,
+  Brain,
+  Calculator,
   Calendar,
+  Code,
   ExternalLink,
-  ChevronRight,
-  Star,
-  Trophy,
-  Lightbulb
+  Globe,
+  GraduationCap,
+  LineChart,
+  MapPin,
+  Users
 } from 'lucide-react';
-import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
+import Link from 'next/link';
 
 // Import dynamique pour éviter les erreurs SSR avec Leaflet
 const InteractiveMap = dynamic(() => import('@/components/InteractiveMap'), {
@@ -43,66 +35,66 @@ export default function InseaPage() {
     {
       title: "Actuariat - Finance",
       icon: <Calculator className="w-8 h-8" />,
-      description: "Formation specialisee en mathematiques de l'assurance, finance quantitative et gestion des risques.",
-      niveau: "Acces en 1ere et 2eme annee",
+      description: "Formation spécialisée en mathématiques de l'assurance, finance quantitative et gestion des risques.",
+      niveau: "Accès en 1ère et 2ème année",
       ficheUrl: "https://insea.ac.ma/files/AF_fiche_description_2022.pdf",
       color: "from-emerald-500 to-emerald-600"
     },
     {
       title: "Data Science",
       icon: <BarChart3 className="w-8 h-8" />,
-      description: "Formation d'excellence en analyse de donnees, machine learning et modelisation statistique.",
-      niveau: "Acces en 1ere et 2eme annee",
+      description: "Formation d'excellence en analyse de données, machine learning et modélisation statistique.",
+      niveau: "Accès en 1ère et 2ème année",
       ficheUrl: "https://insea.ac.ma/files/DS_fiche_description_2022.pdf",
       color: "from-emerald-500 to-emerald-600"
     },
     {
       title: "Data and Software Engineering",
       icon: <Code className="w-8 h-8" />,
-      description: "Formation complete en developpement logiciel, architecture des systemes et ingenierie des donnees.",
-      niveau: "Acces en 1ere et 2eme annee",
+      description: "Formation complète en développement logiciel, architecture des systèmes et ingénierie des données.",
+      niveau: "Accès en 1ère et 2ème année",
       ficheUrl: "https://insea.ac.ma/files/DSE_fiche_description_2022.pdf",
       color: "from-emerald-500 to-emerald-600"
     },
     {
-      title: "Biostatistique, Demographie et Big Data",
+      title: "Biostatistique, Démographie et Big Data",
       icon: <Users className="w-8 h-8" />,
-      description: "Formation en biostatistique, analyse demographique et exploitation des grandes bases de donnees.",
-      niveau: "Acces en 1ere annee",
+      description: "Formation en biostatistique, analyse démographique et exploitation des grandes bases de données.",
+      niveau: "Accès en 1ère année",
       ficheUrl: "https://insea.ac.ma/files/BSD_fiche_description_2022.pdf",
       color: "from-emerald-500 to-emerald-600"
     },
     {
-      title: "Economie Appliquee, Statistique et Big Data",
+      title: "Économie Appliquée, Statistique et Big Data",
       icon: <LineChart className="w-8 h-8" />,
-      description: "Formation en econometrie, analyse economique et traitement de donnees massives.",
-      niveau: "Acces en 1ere annee / Statistique-Economie appliquee en 2eme annee",
+      description: "Formation en économétrie, analyse économique et traitement de données massives.",
+      niveau: "Accès en 1ère année / Statistique-Économie appliquée en 2ème année",
       ficheUrl: "https://insea.ac.ma/files/EASBD_fiche_description_2022.pdf",
       color: "from-emerald-500 to-emerald-600"
     },
     {
-      title: "Sciences de la Decision et Recherche Operationnelle",
+      title: "Sciences de la Décision et Recherche Opérationnelle",
       icon: <Brain className="w-8 h-8" />,
-      description: "Formation en optimisation, aide a la decision et modelisation des systemes complexes.",
-      niveau: "Acces en 1ere annee / Recherche Operationnelle et Aide a la Decision en 2eme annee",
+      description: "Formation en optimisation, aide à la décision et modélisation des systèmes complexes.",
+      niveau: "Accès en 1ère année / Recherche Opérationnelle et Aide à la Décision en 2ème année",
       ficheUrl: "https://insea.ac.ma/files/SDRO_fiche_description_2022.pdf",
       color: "from-emerald-500 to-emerald-600"
     },
     // {
-    //   title: "Statistique - Demographie",
+    //   title: "Statistique - Démographie",
     //   icon: <BarChart3 className="w-8 h-8" />,
-    //   description: "Formation specialisee en statistique appliquee et analyse demographique.",
-    //   niveau: "Acces en 2eme annee",
+    //   description: "Formation spécialisée en statistique appliquée et analyse démographique.",
+    //   niveau: "Accès en 2ème année",
     //   ficheUrl: "https://insea.ac.ma/files/Filire_SD_19_24.pdf",
     //   color: "from-emerald-500 to-emerald-600"
     // }
   ];
 
   const chiffresClés = [
-    { label: "Creation", value: "1961", icon: <Calendar className="w-6 h-6" /> },
-    { label: "Laureats (1961-2011)", value: "4943", icon: <GraduationCap className="w-6 h-6" /> },
-    { label: "Etudiants marocains", value: "4403", icon: <Users className="w-6 h-6" /> },
-    { label: "Etudiants etrangers", value: "540", icon: <Globe className="w-6 h-6" /> }
+    { label: "Création", value: "1961", icon: <Calendar className="w-6 h-6" /> },
+    { label: "Lauréats (1961-2011)", value: "4943", icon: <GraduationCap className="w-6 h-6" /> },
+    { label: "Étudiants marocains", value: "4403", icon: <Users className="w-6 h-6" /> },
+    { label: "Étudiants étrangers", value: "540", icon: <Globe className="w-6 h-6" /> }
   ];
 
   return (
@@ -148,7 +140,7 @@ export default function InseaPage() {
 
             {/* Titre section */}
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Excellence en Statistique, Data Science & IA
+              École d’excellence dans les domaines statistiques et économiques
             </h2>
 
             <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-8 leading-relaxed">
@@ -173,7 +165,7 @@ export default function InseaPage() {
 
    
 
-      {/* Presentation */}
+      {/* Présentation */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -184,7 +176,7 @@ export default function InseaPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-              A Propos de l'INSEA
+              À Propos de l'INSEA
             </h2>
             <div className="w-16 h-0.5 bg-emerald-600 mx-auto mb-8" />
           </motion.div>
@@ -199,31 +191,31 @@ export default function InseaPage() {
             >
               <div className="prose prose-lg max-w-none space-y-4">
                 <p className="text-slate-700 leading-relaxed">
-                  Cree en <strong className="text-slate-900">1961</strong> sous l'appellation « Centre de formation des ingenieurs des travaux de la statistique »,
-                  la denomination <strong className="text-emerald-700">Institut National de Statistique et d'Economie Appliquee (INSEA)</strong> a ete adoptee en
-                  <strong> 1967</strong> en application du Decret Royal n° 532-67.
+                  Créé en <strong className="text-slate-900">1961</strong> sous l'appellation « Centre de formation des ingénieurs des travaux de la statistique »,
+                  la dénomination <strong className="text-emerald-700">Institut National de Statistique et d'Économie Appliquée (INSEA)</strong> a été adoptée en
+                  <strong> 1967</strong> en application du Décret Royal n° 532-67.
                 </p>
 
                 <p className="text-slate-700 leading-relaxed">
-                  Jusqu'en <strong>1974</strong>, l'INSEA se limitait a la formation des ingenieurs d'application de la statistique en trois ans et des
+                  Jusqu'en <strong>1974</strong>, l'INSEA se limitait à la formation des ingénieurs d'application de la statistique en trois ans et des
                   adjoints techniques en deux ans. Depuis cette date, et compte tenu des besoins importants dans le domaine de l'informatique,
-                  l'Institut a introduit un cycle de formation des Ingenieurs Analystes et un cycle de Programmeurs, devenant ainsi le
-                  <strong className="text-emerald-700"> premier etablissement superieur au Maroc a former des cadres en informatique</strong>.
+                  l'Institut a introduit un cycle de formation des Ingénieurs Analystes et un cycle de Programmeurs, devenant ainsi le
+                  <strong className="text-emerald-700"> premier établissement supérieur au Maroc à former des cadres en informatique</strong>.
                 </p>
 
                 <p className="text-slate-700 leading-relaxed">
-                  En <strong>1983</strong>, un cycle superieur de formation d'Analyste Concepteur et un autre de Statisticien-Demographe ont ete introduits,
-                  avec l'allongement de la duree de formation des ingenieurs d'application a quatre ans pour ameliorer le niveau de cette formation.
+                  En <strong>1983</strong>, un cycle supérieur de formation d'Analyste Concepteur et un autre de Statisticien-Démographe ont été introduits,
+                  avec l'allongement de la durée de formation des ingénieurs d'application à quatre ans pour améliorer le niveau de cette formation.
                 </p>
 
                 <p className="text-slate-700 leading-relaxed">
-                  En <strong>1995</strong>, l'INSEA a opere un changement majeur en offrant une formation sur trois ans menant a un
-                  <strong className="text-emerald-700"> diplome d'Ingenieur d'Etat de l'INSEA</strong>.
+                  En <strong>1995</strong>, l'INSEA a opéré un changement majeur en offrant une formation sur trois ans menant à un
+                  <strong className="text-emerald-700"> diplôme d'Ingénieur d'État de l'INSEA</strong>.
                 </p>
 
                 <p className="text-slate-700 leading-relaxed">
-                  A partir de <strong>2011</strong>, la formation a l'INSEA est organisee en <strong>3 cycles</strong> :
-                  Cycle Ingenieur, Cycle du Master, et Cycle de Doctorat.
+                  À partir de <strong>2011</strong>, la formation à l'INSEA est organisée en <strong>3 cycles</strong> :
+                  Cycle Ingénieur, Cycle du Master, et Cycle de Doctorat.
                 </p>
               </div>
             </motion.div>
@@ -247,7 +239,7 @@ export default function InseaPage() {
         </div>
       </section>
 
-      {/* L'INSEA en chiffres - Details */}
+      {/* L'INSEA en chiffres - Détails */}
       <section className="py-20 bg-gradient-to-br from-slate-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -262,9 +254,9 @@ export default function InseaPage() {
             </h2>
             <div className="w-16 h-0.5 bg-emerald-600 mx-auto mb-8" />
             <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-              Durant cinquante ans (1961-2011), l'INSEA a forme <strong className="text-emerald-700">4943 etudiants</strong> dont
-              <strong> 4403 etudiants marocains</strong> et <strong>540 etudiants etrangers</strong> provenant de pays africains
-              francophones, maghrebins et arabes.
+              Durant cinquante ans (1961-2011), l'INSEA a formé <strong className="text-emerald-700">4943 étudiants</strong> dont
+              <strong> 4403 étudiants marocains</strong> et <strong>540 étudiants étrangers</strong> provenant de pays africains
+              francophones, maghrébins et arabes.
             </p>
           </motion.div>
 
@@ -279,7 +271,7 @@ export default function InseaPage() {
               <div className="text-center">
                 <div className="text-4xl font-bold text-emerald-600 mb-2">1542</div>
                 <div className="text-sm font-medium text-slate-600 mb-1">31%</div>
-                <div className="text-slate-700 font-medium">Ingenieurs d'Application de la Statistique</div>
+                <div className="text-slate-700 font-medium">Ingénieurs d'Application de la Statistique</div>
               </div>
             </motion.div>
 
@@ -293,7 +285,7 @@ export default function InseaPage() {
               <div className="text-center">
                 <div className="text-4xl font-bold text-emerald-600 mb-2">1421</div>
                 <div className="text-sm font-medium text-slate-600 mb-1">29%</div>
-                <div className="text-slate-700 font-medium">Ingenieurs d'Etat (nouvelle reforme)</div>
+                <div className="text-slate-700 font-medium">Ingénieurs d'État (nouvelle réforme)</div>
               </div>
             </motion.div>
 
@@ -335,7 +327,7 @@ export default function InseaPage() {
               <div className="text-center">
                 <div className="text-4xl font-bold text-emerald-600 mb-2">350</div>
                 <div className="text-sm font-medium text-slate-600 mb-1">7%</div>
-                <div className="text-slate-700 font-medium">Ingenieurs d'Etat (ancien regime)</div>
+                <div className="text-slate-700 font-medium">Ingénieurs d'État (ancien régime)</div>
               </div>
             </motion.div>
 
@@ -356,7 +348,7 @@ export default function InseaPage() {
         </div>
       </section>
 
-      {/* Filieres */}
+      {/* Filières */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -367,11 +359,11 @@ export default function InseaPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-              Nos Filieres
+              Nos Filières
             </h2>
             <div className="w-16 h-0.5 bg-emerald-600 mx-auto mb-8" />
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              L'INSEA propose 5 filieres d'ingenierie de pointe, alliant excellence academique et professionnalisation
+              L'INSEA propose 5 filières d'ingénierie de pointe, alliant excellence académique et professionnalisation
             </p>
           </motion.div>
 
@@ -437,10 +429,10 @@ export default function InseaPage() {
                       Master de Recherche
                     </h4>
                     <p className="text-lg font-semibold text-emerald-700 mb-3">
-                      Systemes d'information et Systemes Intelligents (M2SI)
+                      Systèmes d'information et Systèmes Intelligents (M2SI)
                     </p>
                     <p className="text-slate-600 leading-relaxed mb-4">
-                      Formation approfondie en systemes d'information, intelligence artificielle et recherche en informatique.
+                      Formation approfondie en systèmes d'information, intelligence artificielle et recherche en informatique.
                     </p>
 
                     <Link
@@ -460,7 +452,7 @@ export default function InseaPage() {
         </div>
       </section>
 
-      {/* Activites parascolaires */}
+      {/* Activités parascolaires */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -471,7 +463,7 @@ export default function InseaPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-              Activites parascolaires
+              Activités parascolaires
             </h2>
             <div className="w-16 h-0.5 bg-emerald-600 mx-auto" />
           </motion.div>
@@ -486,16 +478,16 @@ export default function InseaPage() {
               className="bg-slate-50 rounded-xl border border-slate-200 p-8"
             >
               <h3 className="text-2xl font-bold text-slate-900 mb-4">
-                Vie etudiante
+                Vie étudiante
               </h3>
               <div className="space-y-4 text-slate-700 leading-relaxed">
                 <p>
-                  Plusieurs manifestations sont organisees chaque annee par les etudiants comme la <strong>semaine culturelle</strong> qui
-                  traite un theme precis et pendant laquelle des conferences, projections, ateliers et competitions sont au rendez-vous.
+                  Plusieurs manifestations sont organisées chaque année par les étudiants comme la <strong>semaine culturelle</strong> qui
+                  traite un thème précis et pendant laquelle des conférences, projections, ateliers et compétitions sont au rendez-vous.
                 </p>
                 <p>
-                  De meme, des <strong>excursions</strong> sont organisees chaque annee dans differentes regions du pays par et pour
-                  les etudiants de l'institut afin de leur garantir epanouissement et amusement apres les dures periodes de preparation.
+                  De même, des <strong>excursions</strong> sont organisées chaque année dans différentes régions du pays par et pour
+                  les étudiants de l'institut afin de leur garantir épanouissement et amusement après les dures périodes de préparation.
                 </p>
               </div>
             </motion.div>
@@ -513,18 +505,18 @@ export default function InseaPage() {
               </h3>
               <div className="space-y-4 text-slate-700 leading-relaxed">
                 <p>
-                  L'INSEA construit chaque annee un pont entre ses laureats et le monde des entreprises a travers sa participation
-                  du <strong className="text-emerald-700">forum G.E.N.I (Grandes Ecoles Nationales d'Ingenieurs)</strong> de Rabat.
+                  L'INSEA construit chaque année un pont entre ses lauréats et le monde des entreprises à travers sa participation
+                  du <strong className="text-emerald-700">forum G.E.N.I (Grandes Écoles Nationales d'Ingénieurs)</strong> de Rabat.
                 </p>
                 <p>
-                  Ce forum qui reste le fruit de la collaboration de l'<strong>Institut National des Postes et Telecommunication (INPT)</strong> et
-                  l'<strong>Ecole Nationale Superieure d'Informatique et d'Analyse de Systemes (ENSIAS)</strong> avec l'INSEA est un evenement
-                  important pour la valorisation du profil de l'inseaiste aupres des entreprises.
+                  Ce forum qui reste le fruit de la collaboration de l'<strong>Institut National des Postes et Télécommunication (INPT)</strong> et
+                  l'<strong>École Nationale Supérieure d'Informatique et d'Analyse de Systèmes (ENSIAS)</strong> avec l'INSEA est un événement
+                  important pour la valorisation du profil de l'inseaïste auprès des entreprises.
                 </p>
                 <p>
-                  Le forum GENI adopte chaque annee un theme qui conjugue le developpement du Maroc aux competences des ingenieurs et
-                  recoit des personnalites eminentes du monde economique, politique et scientifique qui interviennent au fil des
-                  differentes conferences et tables rondes organisees a cette occasion.
+                  Le forum GENI adopte chaque année un thème qui conjugue le développement du Maroc aux compétences des ingénieurs et
+                  reçoit des personnalités éminentes du monde économique, politique et scientifique qui interviennent au fil des
+                  différentes conférences et tables rondes organisées à cette occasion.
                 </p>
               </div>
             </motion.div>
