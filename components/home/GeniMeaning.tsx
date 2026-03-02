@@ -110,7 +110,7 @@ const GeniMeaning = () => {
                   Signification Complète
                 </p>
                 <h3 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold leading-tight">
-                  Grande École Nationale d'Ingénieurs
+                  Grandes Écoles Nationales d'Ingénieurs
                 </h3>
               </div>
               {/* Decorative elements */}
@@ -128,7 +128,7 @@ const GeniMeaning = () => {
             transition={{ duration: 0.6, delay: 0.7 }}
           >
             <p className="text-neutral-300 text-base md:text-lg leading-relaxed">
-              Un forum d’excellence qui fait le lien entre les étudiants ingénieurs et le monde professionnel, ouvrant la voie aux opportunités, à la collaboration et à l’innovation.
+              Un forum d’excellence qui fait le lien entre les étudiants ingénieurs des grandes écoles nationales et le monde professionnel, ouvrant la voie aux opportunités, à la collaboration et à l’innovation.
             </p>
           </motion.div>
         </div>
