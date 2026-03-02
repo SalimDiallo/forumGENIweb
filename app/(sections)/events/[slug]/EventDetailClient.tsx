@@ -1,22 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
-import Image from 'next/image';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
+import SponsorsGrid from '@/components/SponsorsGrid';
+import ShareButton from '@/components/ui/ShareButton';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
+  ArrowLeft,
   Calendar,
   Clock,
+  ExternalLink,
   MapPin,
   Users,
-  ArrowLeft,
-  ExternalLink,
   X
 } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import { EventDetailType, RelatedEventsType } from './event-detail.query';
-import MarkdownRenderer from '@/components/MarkdownRenderer';
-import ShareButton from '@/components/ui/ShareButton';
-import SponsorsGrid from '@/components/SponsorsGrid';
 import EventGallerySection from './EventGallerySection';
 
 interface Props {
