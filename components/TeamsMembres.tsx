@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useMemo, Suspense } from 'react';
-import { Users, Crown, Shield, Briefcase, Mail, Linkedin, Calendar, Award } from 'lucide-react';
-import Link from 'next/link';
+import { Award, Briefcase, Calendar, Crown, Linkedin, Mail, Shield, Users } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import React, { Suspense, useMemo, useState } from 'react';
 
 interface BureauMember {
   id: number;
@@ -176,7 +176,7 @@ const bureauMembers2025: BureauMember[] = [
     name: "AKKI Imran",
     role: "Chef Cellule Technique",
     description: "Infrastructure, technique, web, événements, innovation.",
-    image: "/team/2025/akki_imran.jpg",
+    image: "/team/2025/imran.png",
     level: 3,
     icon: Shield,
     email: "imranakki10@gmail.com",
@@ -208,7 +208,7 @@ const bureauMembers2026: BureauMember[] = [
   image: "/team/2026/soufiane.jpg",
   level: 2,
   icon: Shield,
-  email: "",
+  email: "soufianeymar11@gmail.com",
   linkedin: "https://www.linkedin.com/in/soufiane-oukessou-b69153253/",
   bureauYear: "2026"},
   // Secrétaire générale
